@@ -75,7 +75,11 @@ function SectionHeader({ number, title, subtitle, color }: { number: string; tit
 function Dashboard() {
   const bp = businessPerformance;
   const o = artistOverview;
-  const { chartmetric, isLive } = useLiveData();
+  const { chartmetric, meltwater, isLive } = useLiveData();
+
+  // Overlay live Meltwater data when available
+  const livePR = meltwater?.prMedia ?? prMedia;
+  const liveSentiment = meltwater?.fanSentiment ?? fanSentiment;
 
   // Overlay live data when available
   const liveListeners = chartmetric?.spotifyMonthlyListeners ?? bp.spotifyMonthlyListeners.current;
@@ -366,12 +370,12 @@ function Dashboard() {
         {/* Section 6: PR & Media */}
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
-          <SectionHeader number="6" title="PR & Media Exposure" subtitle={`Meltwater · ${prMedia.period}`} color="bg-gradient-to-br from-violet-500 to-indigo-400" />
+          <SectionHeader number="6" title="PR & Media Exposure" subtitle={`Meltwater · ${livePR.period}`} color="bg-gradient-to-br from-violet-500 to-indigo-400" />
           <div className="grid grid-cols-3 gap-3 mb-5">
             {[
-              { label: "Total Mentions", value: prMedia.totalMentions.toLocaleString(), accent: "text-violet-400" },
-              { label: "Avg / Day", value: prMedia.perDay.toLocaleString(), accent: "text-white" },
-              { label: "Unique Authors", value: prMedia.uniqueAuthors.toLocaleString(), accent: "text-cyan-400" },
+              { label: "Total Mentions", value: livePR.totalMentions.toLocaleString(), accent: "text-violet-400" },
+              { label: "Avg / Day", value: livePR.perDay.toLocaleString(), accent: "text-white" },
+              { label: "Unique Authors", value: livePR.uniqueAuthors.toLocaleString(), accent: "text-cyan-400" },
             ].map(s => (
               <div key={s.label} className="bg-white/[0.02] rounded-xl p-3 border border-white/[0.04] text-center">
                 <p className="text-[9px] text-neutral-500 uppercase tracking-wider">{s.label}</p>
@@ -380,12 +384,12 @@ function Dashboard() {
             ))}
           </div>
           <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-2">Daily Mention Volume</p>
-          <MentionsChart data={prMedia.timeSeries} />
+          <MentionsChart data={livePR.timeSeries} />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-5">
             <div>
               <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3">Top Countries (Mentions)</p>
               <div className="space-y-2">
-                {prMedia.topCountries.map((c, i) => (
+                {livePR.topCountries.map((c, i) => (
                   <div key={c.code} className="flex items-center gap-3">
                     <span className="text-[10px] text-neutral-600 w-4 text-right">{i + 1}</span>
                     <span className="text-sm">{c.flag}</span>
@@ -398,11 +402,11 @@ function Dashboard() {
             <div>
               <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3">Trending Keyphrases</p>
               <div className="space-y-2">
-                {prMedia.topKeyphrases.slice(0, 6).map((k) => (
+                {livePR.topKeyphrases.slice(0, 6).map((k) => (
                   <div key={k.phrase} className="flex items-center gap-3">
                     <span className="text-sm text-neutral-300 flex-1 truncate">{k.phrase}</span>
                     <div className="w-24 bg-white/[0.04] rounded-full h-1.5 overflow-hidden">
-                      <div className="bg-violet-500 h-full rounded-full" style={{ width: `${(k.count / prMedia.topKeyphrases[0].count) * 100}%` }} />
+                      <div className="bg-violet-500 h-full rounded-full" style={{ width: `${(k.count / (livePR.topKeyphrases[0]?.count || 1)) * 100}%` }} />
                     </div>
                     <span className="text-[10px] font-bold tabular-nums text-neutral-400 w-10 text-right">{k.count}</span>
                   </div>
@@ -416,16 +420,16 @@ function Dashboard() {
         {/* Section 7: Fan Sentiment */}
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
-          <SectionHeader number="7" title="Fan Sentiment" subtitle={`Meltwater · ${fanSentiment.period}`} color="bg-gradient-to-br from-rose-500 to-pink-400" />
+          <SectionHeader number="7" title="Fan Sentiment" subtitle={`Meltwater · ${liveSentiment.period}`} color="bg-gradient-to-br from-rose-500 to-pink-400" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-2">Sentiment Breakdown</p>
-              <SentimentDonut positive={fanSentiment.positive.pct} negative={fanSentiment.negative.pct} neutral={fanSentiment.neutral.pct} />
+              <SentimentDonut positive={liveSentiment.positive.pct} negative={liveSentiment.negative.pct} neutral={liveSentiment.neutral.pct} />
               <div className="flex justify-center gap-6 mt-2">
                 {[
-                  { label: "Positive", pct: fanSentiment.positive.pct, color: "bg-emerald-400" },
-                  { label: "Neutral", pct: fanSentiment.neutral.pct, color: "bg-neutral-600" },
-                  { label: "Negative", pct: fanSentiment.negative.pct, color: "bg-red-400" },
+                  { label: "Positive", pct: liveSentiment.positive.pct, color: "bg-emerald-400" },
+                  { label: "Neutral", pct: liveSentiment.neutral.pct, color: "bg-neutral-600" },
+                  { label: "Negative", pct: liveSentiment.negative.pct, color: "bg-red-400" },
                 ].map(s => (
                   <div key={s.label} className="flex items-center gap-1.5">
                     <div className={`w-2 h-2 rounded-full ${s.color}`} />
@@ -437,11 +441,11 @@ function Dashboard() {
             <div>
               <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3">Top Hashtags (X / Twitter)</p>
               <div className="space-y-2">
-                {fanSentiment.topHashtags.map((h) => (
+                {liveSentiment.topHashtags.map((h) => (
                   <div key={h.tag} className="flex items-center gap-3">
                     <span className="text-sm text-pink-400 flex-1 truncate">{h.tag}</span>
                     <div className="w-20 bg-white/[0.04] rounded-full h-1.5 overflow-hidden">
-                      <div className="bg-pink-500 h-full rounded-full" style={{ width: `${(h.count / fanSentiment.topHashtags[0].count) * 100}%` }} />
+                      <div className="bg-pink-500 h-full rounded-full" style={{ width: `${(h.count / (liveSentiment.topHashtags[0]?.count || 1)) * 100}%` }} />
                     </div>
                     <span className="text-[10px] font-bold tabular-nums text-neutral-400 w-14 text-right">{h.pct}%</span>
                   </div>
