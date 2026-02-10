@@ -11,6 +11,7 @@ const SECTIONS = [
   { id: "charts", label: "Charts", icon: "📈", short: "Charts" },
   { id: "social", label: "Social Media", icon: "2", short: "Social" },
   { id: "virality", label: "Audio Virality", icon: "3", short: "Virality" },
+  { id: "track-radar", label: "Track Comparison", icon: "🎯", short: "Radar" },
   { id: "members", label: "Band Members", icon: "4", short: "Members" },
   { id: "geo", label: "Geo Signals", icon: "5", short: "Geo" },
   { id: "audience", label: "Audience Deep Dive", icon: "📊", short: "Audience" },

@@ -20,6 +20,7 @@ import GrowthVelocity from "./components/GrowthVelocity";
 import SectionNav from "./components/SectionNav";
 import PlatformDistribution from "./components/PlatformDistribution";
 import SentimentGauge from "./components/SentimentGauge";
+import TrackRadar from "./components/TrackRadar";
 
 function fmt(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -419,6 +420,20 @@ function Dashboard() {
             <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-2">Platform Creates Comparison</p>
             <ViralityChart tracks={audioVirality.tracks} />
           </div>
+        </section>
+        </AnimatedSection>
+
+        {/* Track Performance Radar */}
+        <div id="track-radar" className="scroll-mt-16" />
+        <AnimatedSection>
+        <section className="glass-hybe rounded-2xl p-6">
+          <SectionHeader number="🎯" title="Track Performance Comparison" subtitle="Cross-Dimensional Radar" color="bg-gradient-to-br from-emerald-500 to-cyan-500" />
+          <p className="text-[10px] text-neutral-500 mb-4">Each dimension normalized to 100% of the top performer — showing relative strengths across streams, virality, and engagement.</p>
+          <TrackRadar tracks={[
+            { name: "0%", spotifyStreams: liveTrackStreams[0].spotifyStreams.current, dailyStreams: dailyStreams[0]?.streams ?? 0, tiktokCreates: audioVirality.tracks[0]?.tiktokCreates ?? 0, igCreates: audioVirality.tracks[0]?.igCreates ?? 0, saves: dailyStreams[0]?.saves ?? 0 },
+            { name: "0% (PT)", spotifyStreams: liveTrackStreams[1].spotifyStreams.current, dailyStreams: dailyStreams[2]?.streams ?? 0, tiktokCreates: audioVirality.tracks[1]?.tiktokCreates ?? 0, igCreates: audioVirality.tracks[1]?.igCreates ?? 0, saves: dailyStreams[2]?.saves ?? 0 },
+            { name: "KAWASAKI", spotifyStreams: liveTrackStreams[2].spotifyStreams.current, dailyStreams: dailyStreams[1]?.streams ?? 0, tiktokCreates: audioVirality.tracks[2]?.tiktokCreates ?? 0, igCreates: audioVirality.tracks[2]?.igCreates ?? 0, saves: dailyStreams[1]?.saves ?? 0 },
+          ]} />
         </section>
         </AnimatedSection>
 
