@@ -76,7 +76,7 @@ function SectionHeader({ number, title, subtitle, color }: { number: string; tit
 function Dashboard() {
   const bp = businessPerformance;
   const o = artistOverview;
-  const { chartmetric, meltwater, isLive } = useLiveData();
+  const { chartmetric, youtube, meltwater, isLive } = useLiveData();
 
   // Overlay live Meltwater data when available
   const livePR = meltwater?.prMedia ?? prMedia;
@@ -92,6 +92,21 @@ function Dashboard() {
       current: chartmetric?.tracks?.[i]?.spotifyStreams ?? t.spotifyStreams.current,
     },
   }));
+
+  // Overlay live YouTube data when available
+  const liveYTVideos = bp.youtubeVideos.map((v) => {
+    const liveMatch = youtube?.videos?.find((lv) => lv.name === v.name);
+    return {
+      ...v,
+      views: {
+        ...v.views,
+        current: liveMatch?.views ?? v.views.current,
+      },
+      likes: liveMatch?.likes ?? 0,
+      comments: liveMatch?.comments ?? 0,
+    };
+  });
+  const liveYTSubscribers = youtube?.subscribers ?? socialMedia.platforms.find(p => p.platform === "YouTube")?.current ?? 471000;
 
   return (
     <main className="min-h-screen">
@@ -194,7 +209,7 @@ function Dashboard() {
           ))}
           <div className="my-3 border-t border-white/[0.05]" />
           <MetricRow label={bp.totalCrossPlatformStreams.label} current={bp.totalCrossPlatformStreams.current} prior={bp.totalCrossPlatformStreams.prior} />
-          {bp.youtubeVideos.map(v => (
+          {liveYTVideos.map(v => (
             <MetricRow key={v.name} label={`YouTube Views: ${v.name}`} current={v.views.current} prior={v.views.prior} accent="text-ytred" />
           ))}
           <MetricRow label={bp.spl.label} current={bp.spl.current} prior={null} accent="text-amber-400" />
@@ -234,7 +249,7 @@ function Dashboard() {
         <section className="space-y-4">
           <StreamingCharts
             spotifyTracks={bp.tracks.map(t => ({ name: t.name, streams: t.spotifyStreams.current }))}
-            youtubeVideos={bp.youtubeVideos.map(v => ({ name: v.name.split(":")[0].replace("YouTube Views", "").trim() || v.name, views: v.views.current }))}
+            youtubeVideos={liveYTVideos.map(v => ({ name: v.name.split(":")[0].replace("YouTube Views", "").trim() || v.name, views: v.views.current }))}
             dailyStreams={dailyStreams.map(d => ({ name: d.name, streams: d.streams }))}
           />
         </section>

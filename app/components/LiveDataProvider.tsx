@@ -12,6 +12,13 @@ interface LiveChartmetricData {
   fetchedAt: string | null;
 }
 
+interface LiveYouTubeData {
+  videos: { name: string; views: number; likes: number; comments: number }[];
+  subscribers: number | null;
+  totalChannelViews: number | null;
+  fetchedAt: string | null;
+}
+
 interface LiveMeltwaterData {
   prMedia: {
     period: string;
@@ -35,8 +42,10 @@ interface LiveMeltwaterData {
 
 interface LiveDataContextType {
   chartmetric: LiveChartmetricData | null;
+  youtube: LiveYouTubeData | null;
   meltwater: LiveMeltwaterData | null;
   isLive: boolean;
+  isYouTubeLive: boolean;
   isMeltwaterLive: boolean;
   loading: boolean;
   error: string | null;
@@ -45,8 +54,10 @@ interface LiveDataContextType {
 
 const LiveDataContext = createContext<LiveDataContextType>({
   chartmetric: null,
+  youtube: null,
   meltwater: null,
   isLive: false,
+  isYouTubeLive: false,
   isMeltwaterLive: false,
   loading: true,
   error: null,
@@ -60,8 +71,10 @@ export function useLiveData() {
 export function LiveDataProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<LiveDataContextType>({
     chartmetric: null,
+    youtube: null,
     meltwater: null,
     isLive: false,
+    isYouTubeLive: false,
     isMeltwaterLive: false,
     loading: true,
     error: null,
@@ -71,16 +84,19 @@ export function LiveDataProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     Promise.all([
       fetch("/api/chartmetric").then(r => r.json()).catch(() => null),
+      fetch("/api/youtube").then(r => r.json()).catch(() => null),
       fetch("/api/meltwater").then(r => r.json()).catch(() => null),
-    ]).then(([cmRes, mwRes]) => {
+    ]).then(([cmRes, ytRes, mwRes]) => {
       setState({
         chartmetric: cmRes?.data ?? null,
+        youtube: ytRes?.data ?? null,
         meltwater: mwRes?.data ?? null,
         isLive: cmRes?.live === true,
+        isYouTubeLive: ytRes?.live === true,
         isMeltwaterLive: mwRes?.live === true,
         loading: false,
-        error: cmRes?.error ?? mwRes?.error ?? null,
-        lastFetched: cmRes?.data?.fetchedAt ?? mwRes?.data?.fetchedAt ?? null,
+        error: cmRes?.error ?? ytRes?.error ?? mwRes?.error ?? null,
+        lastFetched: cmRes?.data?.fetchedAt ?? ytRes?.data?.fetchedAt ?? mwRes?.data?.fetchedAt ?? null,
       });
     });
   }, []);
@@ -93,7 +109,7 @@ export function LiveDataProvider({ children }: { children: ReactNode }) {
 }
 
 export function LiveBadge() {
-  const { isLive, isMeltwaterLive, loading, lastFetched } = useLiveData();
+  const { isLive, isYouTubeLive, isMeltwaterLive, loading, lastFetched } = useLiveData();
 
   if (loading) {
     return (
@@ -104,11 +120,11 @@ export function LiveBadge() {
     );
   }
 
-  const anyLive = isLive || isMeltwaterLive;
+  const anyLive = isLive || isYouTubeLive || isMeltwaterLive;
 
   if (anyLive) {
     const time = lastFetched ? new Date(lastFetched).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) : "";
-    const sources = [isLive && "CM", isMeltwaterLive && "MW"].filter(Boolean).join(" + ");
+    const sources = [isLive && "CM", isYouTubeLive && "YT", isMeltwaterLive && "MW"].filter(Boolean).join(" + ");
     return (
       <div className="flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg px-2.5 py-1.5" title={`Live: ${sources} | ${time}`}>
         <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse-slow" />
