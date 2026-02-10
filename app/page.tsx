@@ -212,6 +212,61 @@ function Dashboard() {
           {liveYTVideos.map(v => (
             <MetricRow key={v.name} label={`YouTube Views: ${v.name}`} current={v.views.current} prior={v.views.prior} accent="text-ytred" />
           ))}
+
+          {/* YouTube Engagement Breakdown */}
+          {liveYTVideos.some(v => v.likes > 0 || v.comments > 0) && (
+            <>
+              <div className="my-3 border-t border-white/[0.05]" />
+              <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-3 px-2">YouTube Engagement</p>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+                {liveYTVideos.map(v => {
+                  const engRate = v.views.current > 0 ? ((v.likes + v.comments) / v.views.current * 100) : 0;
+                  const shortName = v.name.replace("YouTube Views: ", "").replace(/ (Performance Video|Official MV|Lyric Video|Debut Visualizer)/, "").trim();
+                  return (
+                    <div key={`eng-${v.name}`} className="bg-white/[0.02] rounded-xl p-3 border border-white/[0.04]">
+                      <p className="text-[10px] text-neutral-500 font-medium truncate mb-2">{shortName}</p>
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[9px] text-neutral-600">👍 Likes</span>
+                          <span className="text-xs font-bold text-white tabular-nums">{fmt(v.likes)}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[9px] text-neutral-600">💬 Comments</span>
+                          <span className="text-xs font-bold text-white tabular-nums">{fmt(v.comments)}</span>
+                        </div>
+                        <div className="flex items-center justify-between pt-1 border-t border-white/[0.04]">
+                          <span className="text-[9px] text-neutral-600">Eng. Rate</span>
+                          <span className={`text-xs font-extrabold tabular-nums ${engRate >= 5 ? "text-emerald-400" : engRate >= 3 ? "text-amber-400" : "text-neutral-400"}`}>
+                            {engRate.toFixed(2)}%
+                          </span>
+                        </div>
+                        {/* Engagement bar */}
+                        <div className="w-full bg-white/[0.04] rounded-full h-1 overflow-hidden">
+                          <div
+                            className={`h-full rounded-full transition-all duration-1000 ${engRate >= 5 ? "bg-emerald-500" : engRate >= 3 ? "bg-amber-500" : "bg-neutral-600"}`}
+                            style={{ width: `${Math.min(engRate * 10, 100)}%` }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              {/* Totals row */}
+              <div className="flex items-center justify-between py-2 px-2 bg-white/[0.015] rounded-lg">
+                <span className="text-[10px] text-neutral-500 font-medium">Total Engagement</span>
+                <div className="flex items-center gap-4">
+                  <span className="text-[10px] text-neutral-400">👍 <span className="text-white font-bold">{fmt(liveYTVideos.reduce((s, v) => s + v.likes, 0))}</span></span>
+                  <span className="text-[10px] text-neutral-400">💬 <span className="text-white font-bold">{fmt(liveYTVideos.reduce((s, v) => s + v.comments, 0))}</span></span>
+                  <span className="text-[10px] text-neutral-400">📊 <span className="text-white font-bold">
+                    {((liveYTVideos.reduce((s, v) => s + v.likes + v.comments, 0) / Math.max(liveYTVideos.reduce((s, v) => s + v.views.current, 0), 1) * 100)).toFixed(2)}%
+                  </span> avg</span>
+                </div>
+              </div>
+            </>
+          )}
+
+          <div className="my-3 border-t border-white/[0.05]" />
           <MetricRow label={bp.spl.label} current={bp.spl.current} prior={null} accent="text-amber-400" />
         </section>
         </AnimatedSection>
