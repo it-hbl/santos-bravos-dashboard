@@ -83,11 +83,13 @@ export default function Home() {
           <div className="w-px h-4 bg-white/10" />
           <span className="text-[10px] font-bold text-violet-400 uppercase tracking-[0.15em]">Artist Intelligence</span>
         </div>
-        <div className="flex items-center gap-4">
-          <span className="text-[10px] text-neutral-600 uppercase tracking-widest">{reportDate}</span>
-          <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-3">
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg px-3 py-1.5">
+            <span className="text-[10px] text-white font-bold uppercase tracking-wider">📅 Report: 2/9/2026</span>
+          </div>
+          <div className="flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg px-2.5 py-1.5">
             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse-slow" />
-            <span className="text-[10px] text-emerald-500 font-medium">LIVE</span>
+            <span className="text-[10px] text-emerald-400 font-semibold">LIVE</span>
           </div>
         </div>
       </nav>
@@ -95,6 +97,24 @@ export default function Home() {
       <div className="max-w-7xl mx-auto px-4 py-8 space-y-10">
         {/* Hero */}
         <section className="hero-bg rounded-3xl p-8 md:p-10">
+          {/* Report Date Banner */}
+          <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/[0.05]">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-blue-500 flex items-center justify-center text-sm font-black text-white">9</div>
+              <div>
+                <p className="text-white font-bold text-sm">Daily Report — {reportDate}</p>
+                <p className="text-[10px] text-neutral-500">Compared vs prior report: {priorDate}</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="flex items-center gap-1.5 justify-end">
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse-slow" />
+                <span className="text-[10px] text-emerald-400 font-semibold">DATA CURRENT</span>
+              </div>
+              <p className="text-[9px] text-neutral-600 mt-0.5">Auto-updated via API pipeline</p>
+            </div>
+          </div>
+
           <div className="flex flex-col md:flex-row items-center gap-8">
             <Image src="/sb-avatar.jpg" alt="Santos Bravos" width={120} height={120}
               className="rounded-2xl shadow-2xl shadow-violet-500/20 ring-2 ring-violet-500/20 flex-shrink-0" />
@@ -139,11 +159,11 @@ export default function Home() {
         {/* Section 1: Business Performance */}
         <section className="glass-hybe rounded-2xl p-6">
           <SectionHeader number="1" title="Business Performance Snapshot" subtitle="Spotify + YouTube" color="bg-spotify" />
-          <div className="mb-2 flex items-center gap-6 text-[9px] text-neutral-600 uppercase tracking-wider px-2">
+          <div className="mb-3 flex items-center gap-6 text-[9px] text-neutral-600 uppercase tracking-wider px-2 py-2 bg-white/[0.015] rounded-lg">
             <span className="flex-1">Metric</span>
-            <span className="w-20 text-right">{reportDate.replace("February ", "2/").replace(", 2026", "/26")}</span>
-            <span className="w-16 text-right">Prior</span>
-            <span className="w-16 text-right">Added</span>
+            <span className="w-20 text-right font-bold text-violet-400">2/9/26</span>
+            <span className="w-16 text-right">2/4/26</span>
+            <span className="w-16 text-right">Change</span>
             <span className="w-16 text-right">DoD %</span>
           </div>
           <MetricRow label={bp.spotifyMonthlyListeners.label} current={bp.spotifyMonthlyListeners.current} prior={bp.spotifyMonthlyListeners.prior} accent="text-spotify" />
@@ -161,7 +181,7 @@ export default function Home() {
 
         {/* Daily Streams (SFA) */}
         <section className="glass-hybe rounded-2xl p-6">
-          <SectionHeader number="⚡" title="Spotify Daily Snapshot" subtitle="Feb 8, 2026 · 24h" color="bg-gradient-to-br from-spotify to-emerald-400" />
+          <SectionHeader number="⚡" title="Spotify for Artists — Daily Snapshot" subtitle="Saturday, February 8, 2026 (24h)" color="bg-gradient-to-br from-spotify to-emerald-400" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {dailyStreams.map(t => (
               <div key={t.name} className="bg-white/[0.02] rounded-xl p-4 border border-white/[0.04]">
@@ -196,7 +216,7 @@ export default function Home() {
 
         {/* Section 2: Social Media */}
         <section className="glass-hybe rounded-2xl p-6">
-          <SectionHeader number="2" title="Social Media Performance" subtitle="SNS" color="bg-gradient-to-br from-tiktok to-cyan-300" />
+          <SectionHeader number="2" title="Social Media Performance" subtitle="SNS · As of 2/9/26" color="bg-gradient-to-br from-tiktok to-cyan-300" />
           <MetricRow label={socialMedia.totalFootprint.label} current={socialMedia.totalFootprint.current} prior={socialMedia.totalFootprint.prior} accent="text-tiktok" />
           {socialMedia.platforms.map(p => (
             <MetricRow key={p.platform} label={`${p.platform} ${p.metric} (Total)`} current={p.current} prior={p.prior} accent={`text-[${p.color}]`} />
@@ -208,7 +228,7 @@ export default function Home() {
 
         {/* Section 3: Audio Virality */}
         <section className="glass-hybe rounded-2xl p-6">
-          <SectionHeader number="3" title="Audio Virality" subtitle="TT + IG Audio Tracker" color="bg-gradient-to-br from-purple-500 to-pink-500" />
+          <SectionHeader number="3" title="Audio Virality" subtitle="Cobrand · TT + IG · As of 2/9/26" color="bg-gradient-to-br from-purple-500 to-pink-500" />
           <MetricRow label={audioVirality.totalAudioViews.label} current={audioVirality.totalAudioViews.current} prior={audioVirality.totalAudioViews.prior} />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
             {audioVirality.tracks.map(t => (
@@ -235,7 +255,7 @@ export default function Home() {
 
         {/* Section 4: Band Member Followers */}
         <section className="glass-hybe rounded-2xl p-6">
-          <SectionHeader number="4" title="Band Member Followers" subtitle="Instagram" color="bg-gradient-to-br from-pink-500 to-rose-400" />
+          <SectionHeader number="4" title="Band Member Followers" subtitle="Instagram · As of 2/9/26" color="bg-gradient-to-br from-pink-500 to-rose-400" />
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
             {members.map((m, i) => {
               const gradients = ["from-violet-600 to-blue-500", "from-cyan-500 to-blue-400", "from-pink-500 to-rose-400", "from-amber-500 to-orange-400", "from-emerald-500 to-teal-400"];
@@ -259,7 +279,7 @@ export default function Home() {
 
         {/* Section 5: Geo Signals */}
         <section className="glass-hybe rounded-2xl p-6">
-          <SectionHeader number="5" title="Geo Signals" subtitle="Spotify · 28 Days" color="bg-gradient-to-br from-blue-500 to-indigo-400" />
+          <SectionHeader number="5" title="Geo Signals" subtitle="Spotify · Jan 12 – Feb 8, 2026 (28 Days)" color="bg-gradient-to-br from-blue-500 to-indigo-400" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3">Top Countries</p>
@@ -292,7 +312,7 @@ export default function Home() {
 
         {/* Audience Deep Dive */}
         <section className="glass-hybe rounded-2xl p-6">
-          <SectionHeader number="📊" title="Audience Deep Dive" subtitle={audienceStats.period} color="bg-gradient-to-br from-amber-500 to-orange-400" />
+          <SectionHeader number="📊" title="Audience Deep Dive" subtitle={`Spotify for Artists · ${audienceStats.period}`} color="bg-gradient-to-br from-amber-500 to-orange-400" />
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
             {[
               { label: "Listeners", value: audienceStats.listeners, accent: "" },
