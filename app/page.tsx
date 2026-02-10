@@ -7,7 +7,7 @@ import {
 } from "./lib/data";
 import StreamingCharts from "./components/StreamingCharts";
 import SocialChart from "./components/SocialChart";
-import GeoChart from "./components/GeoChart";
+import GeoChart, { GeoProgressBars } from "./components/GeoChart";
 import MentionsChart from "./components/MentionsChart";
 import SentimentDonut from "./components/SentimentDonut";
 import { AnimatedSection, CountUpValue, StaggerChildren, StaggerItem } from "./components/AnimatedSection";
@@ -312,31 +312,28 @@ function Dashboard() {
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
           <SectionHeader number="5" title="Geo Signals" subtitle="Spotify · Jan 12 – Feb 8, 2026 (28 Days)" color="bg-gradient-to-br from-blue-500 to-indigo-400" />
+          {/* Summary cards */}
+          <div className="grid grid-cols-3 gap-3 mb-6">
+            <div className="bg-white/[0.02] rounded-xl p-3 border border-white/[0.04] text-center">
+              <p className="text-[9px] text-neutral-500 uppercase tracking-wider">Countries</p>
+              <p className="text-xl font-extrabold text-cyan-400 mt-1">{geoCountries.length}+</p>
+            </div>
+            <div className="bg-white/[0.02] rounded-xl p-3 border border-white/[0.04] text-center">
+              <p className="text-[9px] text-neutral-500 uppercase tracking-wider">Top Market</p>
+              <p className="text-xl font-extrabold text-white mt-1">{geoCountries[0]?.flag} {geoCountries[0]?.name}</p>
+            </div>
+            <div className="bg-white/[0.02] rounded-xl p-3 border border-white/[0.04] text-center">
+              <p className="text-[9px] text-neutral-500 uppercase tracking-wider">Top 10 Listeners</p>
+              <p className="text-xl font-extrabold text-blue-400 mt-1">{fmt(geoCountries.reduce((s, c) => s + c.listeners, 0))}</p>
+            </div>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3">Top Countries</p>
-              <div className="space-y-2">
-                {geoCountries.map((c, i) => (
-                  <div key={c.name} className="flex items-center gap-3">
-                    <span className="text-[10px] text-neutral-600 w-4 text-right">{i + 1}</span>
-                    <span className="text-sm">{c.flag}</span>
-                    <span className="text-sm text-neutral-300 flex-1">{c.name}</span>
-                    <span className="text-sm font-bold tabular-nums text-white">{fmt(c.listeners)}</span>
-                  </div>
-                ))}
-              </div>
+              <GeoProgressBars data={geoCountries} color="#6366F1" />
             </div>
             <div>
               <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3">Top Cities</p>
-              <div className="space-y-2 mb-6">
-                {geoCities.map((c, i) => (
-                  <div key={c.name} className="flex items-center gap-3">
-                    <span className="text-[10px] text-neutral-600 w-4 text-right">{i + 1}</span>
-                    <span className="text-sm text-neutral-300 flex-1">{c.name}</span>
-                    <span className="text-sm font-bold tabular-nums text-white">{fmt(c.listeners)}</span>
-                  </div>
-                ))}
-              </div>
               <GeoChart data={geoCities.map(c => ({ name: c.name, listeners: c.listeners }))} color="#06B6D4" />
             </div>
           </div>
