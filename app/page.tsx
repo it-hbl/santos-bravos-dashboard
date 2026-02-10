@@ -16,6 +16,7 @@ import { LiveDataProvider, LiveBadge, useLiveData } from "./components/LiveDataP
 import ViralityChart from "./components/ViralityChart";
 import SourceDonut from "./components/SourceDonut";
 import KeyHighlights from "./components/KeyHighlights";
+import GrowthVelocity from "./components/GrowthVelocity";
 
 function fmt(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -206,6 +207,35 @@ function Dashboard() {
             sentimentPositivePct={liveSentiment.positive.pct}
             topMarket={geoCountries[0]?.name || ""}
           />
+        </AnimatedSection>
+
+        {/* Growth Velocity */}
+        <AnimatedSection>
+        <section className="glass-hybe rounded-2xl p-5 sm:p-6">
+          <SectionHeader number="📊" title="Growth Velocity" subtitle="Period-over-Period %" color="bg-gradient-to-br from-cyan-500 to-blue-500" />
+          <GrowthVelocity items={[
+            ...(bp.spotifyMonthlyListeners.prior ? [{ label: "Spotify Listeners", category: "spotify" as const, pct: ((liveListeners - bp.spotifyMonthlyListeners.prior) / bp.spotifyMonthlyListeners.prior) * 100 }] : []),
+            ...liveTrackStreams.filter(t => t.spotifyStreams.prior).map(t => ({
+              label: `${t.name} Streams`,
+              category: "spotify" as const,
+              pct: ((t.spotifyStreams.current - t.spotifyStreams.prior!) / t.spotifyStreams.prior!) * 100,
+            })),
+            ...liveYTVideos.filter(v => v.views.prior).map(v => {
+              const shortName = v.name.replace(/ (Performance Video|Official MV|Lyric Video|Debut Visualizer)/, "").trim();
+              return {
+                label: `${shortName} YT`,
+                category: "youtube" as const,
+                pct: ((v.views.current - v.views.prior!) / v.views.prior!) * 100,
+              };
+            }),
+            ...socialMedia.platforms.filter(p => p.prior).map(p => ({
+              label: p.platform,
+              category: "sns" as const,
+              pct: ((p.current - p.prior!) / p.prior!) * 100,
+            })),
+            ...(socialMedia.totalFootprint.prior ? [{ label: "Total SNS", category: "sns" as const, pct: ((socialMedia.totalFootprint.current - socialMedia.totalFootprint.prior) / socialMedia.totalFootprint.prior) * 100 }] : []),
+          ]} />
+        </section>
         </AnimatedSection>
 
         {/* Section 1: Business Performance */}
