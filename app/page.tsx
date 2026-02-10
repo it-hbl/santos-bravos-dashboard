@@ -12,6 +12,7 @@ import MentionsChart from "./components/MentionsChart";
 import SentimentDonut from "./components/SentimentDonut";
 import { AnimatedSection, CountUpValue, StaggerChildren, StaggerItem } from "./components/AnimatedSection";
 import Image from "next/image";
+import { LiveDataProvider, LiveBadge, useLiveData } from "./components/LiveDataProvider";
 
 function fmt(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -71,9 +72,21 @@ function SectionHeader({ number, title, subtitle, color }: { number: string; tit
   );
 }
 
-export default function Home() {
+function Dashboard() {
   const bp = businessPerformance;
   const o = artistOverview;
+  const { chartmetric, isLive } = useLiveData();
+
+  // Overlay live data when available
+  const liveListeners = chartmetric?.spotifyMonthlyListeners ?? bp.spotifyMonthlyListeners.current;
+  const livePopularity = chartmetric?.spotifyPopularity ?? bp.spotifyPopularity.current;
+  const liveTrackStreams = bp.tracks.map((t, i) => ({
+    ...t,
+    spotifyStreams: {
+      ...t.spotifyStreams,
+      current: chartmetric?.tracks?.[i]?.spotifyStreams ?? t.spotifyStreams.current,
+    },
+  }));
 
   return (
     <main className="min-h-screen">
@@ -92,10 +105,7 @@ export default function Home() {
           <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg px-3 py-1.5">
             <span className="text-[10px] text-white font-bold uppercase tracking-wider">📅 Report: 2/9/2026</span>
           </div>
-          <div className="flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg px-2.5 py-1.5">
-            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse-slow" />
-            <span className="text-[10px] text-emerald-400 font-semibold">LIVE</span>
-          </div>
+          <LiveBadge />
         </div>
       </nav>
 
@@ -141,8 +151,8 @@ export default function Home() {
             <div className="grid grid-cols-2 gap-3 flex-shrink-0">
               <div className="glass-hybe rounded-xl p-3 text-center min-w-[120px]">
                 <p className="text-[9px] text-neutral-500 uppercase tracking-wider">Listeners</p>
-                <p className="text-xl font-extrabold text-spotify"><CountUpValue value={bp.spotifyMonthlyListeners.current} /></p>
-                <DodBadge current={bp.spotifyMonthlyListeners.current} prior={bp.spotifyMonthlyListeners.prior} />
+                <p className="text-xl font-extrabold text-spotify"><CountUpValue value={liveListeners} /></p>
+                <DodBadge current={liveListeners} prior={bp.spotifyMonthlyListeners.prior} />
               </div>
               <div className="glass-hybe rounded-xl p-3 text-center min-w-[120px]">
                 <p className="text-[9px] text-neutral-500 uppercase tracking-wider">SNS</p>
@@ -172,9 +182,9 @@ export default function Home() {
             <span className="w-16 text-right">Change</span>
             <span className="w-16 text-right">DoD %</span>
           </div>
-          <MetricRow label={bp.spotifyMonthlyListeners.label} current={bp.spotifyMonthlyListeners.current} prior={bp.spotifyMonthlyListeners.prior} accent="text-spotify" />
-          <MetricRow label="Spotify Popularity Index" current={bp.spotifyPopularity.current} prior={bp.spotifyPopularity.prior} />
-          {bp.tracks.map(t => (
+          <MetricRow label={bp.spotifyMonthlyListeners.label} current={liveListeners} prior={bp.spotifyMonthlyListeners.prior} accent="text-spotify" />
+          <MetricRow label="Spotify Popularity Index" current={livePopularity} prior={bp.spotifyPopularity.prior} />
+          {liveTrackStreams.map(t => (
             <MetricRow key={t.name} label={`Spotify Total Streams: ${t.name}`} current={t.spotifyStreams.current} prior={t.spotifyStreams.prior} accent="text-spotify" />
           ))}
           <div className="my-3 border-t border-white/[0.05]" />
@@ -456,5 +466,13 @@ export default function Home() {
         </footer>
       </div>
     </main>
+  );
+}
+
+export default function Home() {
+  return (
+    <LiveDataProvider>
+      <Dashboard />
+    </LiveDataProvider>
   );
 }
