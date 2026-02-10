@@ -44,11 +44,12 @@ const COUNTRY_NAMES: Record<string, string> = {
 
 export async function GET() {
   try {
-    // Fetch analytics + keyphrases + hashtags in parallel
-    const [analyticsRes, keyphrasesRes, hashtagsRes] = await Promise.all([
+    // Fetch analytics + keyphrases + hashtags + sources in parallel
+    const [analyticsRes, keyphrasesRes, hashtagsRes, sourcesRes] = await Promise.all([
       mwGet(`/v3/analytics/${SEARCH_ID}`),
       mwGet(`/v3/analytics/${SEARCH_ID}/top_keyphrases`, { source: "twitter" }),
       mwGet(`/v3/analytics/${SEARCH_ID}/top_tags`, { source: "twitter" }),
+      mwGet(`/v3/analytics/${SEARCH_ID}/top_sources`).catch(() => null),
     ]);
 
     const analytics = analyticsRes;
@@ -103,6 +104,19 @@ export async function GET() {
       };
     });
 
+    // Top sources — media outlets / platforms
+    const rawSources = sourcesRes
+      ? (Array.isArray(sourcesRes) ? sourcesRes
+        : Array.isArray(sourcesRes?.top_sources) ? sourcesRes.top_sources
+        : Array.isArray(sourcesRes?.data) ? sourcesRes.data
+        : [])
+      : [];
+    const topSources = rawSources.slice(0, 8).map((s: any) => ({
+      name: s.name || s.source || s.domain || "Unknown",
+      count: s.count ?? s.volume ?? 0,
+      type: s.type || s.source_type || "other",
+    }));
+
     // Build period string
     const { start, end } = getDateRange();
     const startDate = new Date(start).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
@@ -112,7 +126,7 @@ export async function GET() {
     return NextResponse.json({
       live: true,
       data: {
-        prMedia: { period, totalMentions, perDay, uniqueAuthors, timeSeries, topCountries, topKeyphrases },
+        prMedia: { period, totalMentions, perDay, uniqueAuthors, timeSeries, topCountries, topKeyphrases, topSources },
         fanSentiment: { period, positive, negative, neutral, topHashtags },
         fetchedAt: new Date().toISOString(),
       },

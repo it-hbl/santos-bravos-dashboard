@@ -118,6 +118,16 @@ export const prMedia = {
     { phrase: "festivales de música", count: 125 },
     { phrase: "nuevo video", count: 125 },
   ],
+  topSources: [
+    { name: "X (Twitter)", count: 3842, type: "social" },
+    { name: "Instagram", count: 1105, type: "social" },
+    { name: "TikTok", count: 487, type: "social" },
+    { name: "YouTube", count: 234, type: "social" },
+    { name: "Reddit", count: 156, type: "social" },
+    { name: "News Sites", count: 122, type: "news" },
+    { name: "Blogs", count: 67, type: "blog" },
+    { name: "Facebook", count: 33, type: "social" },
+  ],
 };
 
 // === SECTION 7: Fan Sentiment (Meltwater) ===

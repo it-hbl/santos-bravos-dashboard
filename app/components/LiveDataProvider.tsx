@@ -21,6 +21,7 @@ interface LiveMeltwaterData {
     timeSeries: { date: string; mentions: number }[];
     topCountries: { code: string; name: string; mentions: number; flag: string }[];
     topKeyphrases: { phrase: string; count: number }[];
+    topSources: { name: string; count: number; type: string }[];
   };
   fanSentiment: {
     period: string;
