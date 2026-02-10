@@ -6,6 +6,8 @@ import {
 import StreamingCharts from "./components/StreamingCharts";
 import SocialChart from "./components/SocialChart";
 import GeoChart from "./components/GeoChart";
+import MentionsChart from "./components/MentionsChart";
+import SentimentDonut from "./components/SentimentDonut";
 import Image from "next/image";
 
 function fmt(n: number) {
@@ -334,19 +336,86 @@ export default function Home() {
 
         {/* Section 6: PR & Media */}
         <section className="glass-hybe rounded-2xl p-6">
-          <SectionHeader number="6" title="PR & Media Exposure" color="bg-gradient-to-br from-neutral-500 to-neutral-400" />
-          <div className="text-center py-6">
-            <p className="text-neutral-600 text-sm">{prMedia.note}</p>
-            <p className="text-[10px] text-neutral-700 mt-2">Coming soon: Billboard, press mentions, playlist features</p>
+          <SectionHeader number="6" title="PR & Media Exposure" subtitle={`Meltwater · ${prMedia.period}`} color="bg-gradient-to-br from-violet-500 to-indigo-400" />
+          <div className="grid grid-cols-3 gap-3 mb-5">
+            {[
+              { label: "Total Mentions", value: prMedia.totalMentions.toLocaleString(), accent: "text-violet-400" },
+              { label: "Avg / Day", value: prMedia.perDay.toLocaleString(), accent: "text-white" },
+              { label: "Unique Authors", value: prMedia.uniqueAuthors.toLocaleString(), accent: "text-cyan-400" },
+            ].map(s => (
+              <div key={s.label} className="bg-white/[0.02] rounded-xl p-3 border border-white/[0.04] text-center">
+                <p className="text-[9px] text-neutral-500 uppercase tracking-wider">{s.label}</p>
+                <p className={`text-xl font-extrabold mt-1 ${s.accent}`}>{s.value}</p>
+              </div>
+            ))}
+          </div>
+          <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-2">Daily Mention Volume</p>
+          <MentionsChart data={prMedia.timeSeries} />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-5">
+            <div>
+              <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3">Top Countries (Mentions)</p>
+              <div className="space-y-2">
+                {prMedia.topCountries.map((c, i) => (
+                  <div key={c.code} className="flex items-center gap-3">
+                    <span className="text-[10px] text-neutral-600 w-4 text-right">{i + 1}</span>
+                    <span className="text-sm">{c.flag}</span>
+                    <span className="text-sm text-neutral-300 flex-1">{c.name}</span>
+                    <span className="text-sm font-bold tabular-nums text-white">{c.mentions.toLocaleString()}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3">Trending Keyphrases</p>
+              <div className="space-y-2">
+                {prMedia.topKeyphrases.slice(0, 6).map((k) => (
+                  <div key={k.phrase} className="flex items-center gap-3">
+                    <span className="text-sm text-neutral-300 flex-1 truncate">{k.phrase}</span>
+                    <div className="w-24 bg-white/[0.04] rounded-full h-1.5 overflow-hidden">
+                      <div className="bg-violet-500 h-full rounded-full" style={{ width: `${(k.count / prMedia.topKeyphrases[0].count) * 100}%` }} />
+                    </div>
+                    <span className="text-[10px] font-bold tabular-nums text-neutral-400 w-10 text-right">{k.count}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
 
         {/* Section 7: Fan Sentiment */}
         <section className="glass-hybe rounded-2xl p-6">
-          <SectionHeader number="7" title="Fan Sentiment" color="bg-gradient-to-br from-rose-500 to-pink-400" />
-          <div className="text-center py-6">
-            <p className="text-neutral-600 text-sm">{fanSentiment.note}</p>
-            <p className="text-[10px] text-neutral-700 mt-2">Coming soon: Weverse posts, comments, engagement rate</p>
+          <SectionHeader number="7" title="Fan Sentiment" subtitle={`Meltwater · ${fanSentiment.period}`} color="bg-gradient-to-br from-rose-500 to-pink-400" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-2">Sentiment Breakdown</p>
+              <SentimentDonut positive={fanSentiment.positive.pct} negative={fanSentiment.negative.pct} neutral={fanSentiment.neutral.pct} />
+              <div className="flex justify-center gap-6 mt-2">
+                {[
+                  { label: "Positive", pct: fanSentiment.positive.pct, color: "bg-emerald-400" },
+                  { label: "Neutral", pct: fanSentiment.neutral.pct, color: "bg-neutral-600" },
+                  { label: "Negative", pct: fanSentiment.negative.pct, color: "bg-red-400" },
+                ].map(s => (
+                  <div key={s.label} className="flex items-center gap-1.5">
+                    <div className={`w-2 h-2 rounded-full ${s.color}`} />
+                    <span className="text-[10px] text-neutral-400">{s.label} {s.pct}%</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3">Top Hashtags (X / Twitter)</p>
+              <div className="space-y-2">
+                {fanSentiment.topHashtags.map((h) => (
+                  <div key={h.tag} className="flex items-center gap-3">
+                    <span className="text-sm text-pink-400 flex-1 truncate">{h.tag}</span>
+                    <div className="w-20 bg-white/[0.04] rounded-full h-1.5 overflow-hidden">
+                      <div className="bg-pink-500 h-full rounded-full" style={{ width: `${(h.count / fanSentiment.topHashtags[0].count) * 100}%` }} />
+                    </div>
+                    <span className="text-[10px] font-bold tabular-nums text-neutral-400 w-14 text-right">{h.pct}%</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
 
@@ -360,7 +429,7 @@ export default function Home() {
             <span className="text-[10px] font-medium tracking-[0.15em] text-neutral-600 uppercase">Latin America</span>
           </div>
           <p className="text-neutral-700 text-[10px] uppercase tracking-[0.3em]">Artist Intelligence Platform · {reportDate}</p>
-          <p className="text-neutral-800 text-[10px]">Chartmetric · Spotify for Artists · YouTube Data API · Cobrand · Weverse · Instagram</p>
+          <p className="text-neutral-800 text-[10px]">Chartmetric · Spotify for Artists · YouTube Data API · Cobrand · Weverse · Instagram · Meltwater</p>
         </footer>
       </div>
     </main>

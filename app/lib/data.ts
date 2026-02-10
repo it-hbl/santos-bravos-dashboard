@@ -84,14 +84,57 @@ export const geoCities = [
   { name: "Puebla", listeners: 6711 },
 ];
 
-// === SECTION 6: PR & Media Exposure ===
+// === SECTION 6: PR & Media Exposure (Meltwater) ===
 export const prMedia = {
-  note: "Tracking coverage and mentions — data collection in progress",
+  period: "Feb 3 – Feb 9, 2026",
+  totalMentions: 6046,
+  perDay: 863,
+  uniqueAuthors: 2991,
+  timeSeries: [
+    { date: "Feb 3", mentions: 1717 },
+    { date: "Feb 4", mentions: 935 },
+    { date: "Feb 5", mentions: 895 },
+    { date: "Feb 6", mentions: 797 },
+    { date: "Feb 7", mentions: 687 },
+    { date: "Feb 8", mentions: 609 },
+    { date: "Feb 9", mentions: 406 },
+  ],
+  topCountries: [
+    { code: "PE", name: "Peru", mentions: 329, flag: "🇵🇪" },
+    { code: "MX", name: "Mexico", mentions: 185, flag: "🇲🇽" },
+    { code: "US", name: "United States", mentions: 169, flag: "🇺🇸" },
+    { code: "BR", name: "Brazil", mentions: 112, flag: "🇧🇷" },
+    { code: "JP", name: "Japan", mentions: 55, flag: "🇯🇵" },
+    { code: "AR", name: "Argentina", mentions: 33, flag: "🇦🇷" },
+  ],
+  topKeyphrases: [
+    { phrase: "santos bravos", count: 673 },
+    { phrase: "grupo de kpop", count: 613 },
+    { phrase: "sunbaenim", count: 183 },
+    { phrase: "lindo de verdad", count: 161 },
+    { phrase: "mejores amigos", count: 143 },
+    { phrase: "lives de santos", count: 142 },
+    { phrase: "new group", count: 132 },
+    { phrase: "festivales de música", count: 125 },
+    { phrase: "nuevo video", count: 125 },
+  ],
 };
 
-// === SECTION 7: Fan Sentiment ===
+// === SECTION 7: Fan Sentiment (Meltwater) ===
 export const fanSentiment = {
-  note: "Weverse engagement analysis — data collection in progress",
+  period: "Feb 3 – Feb 9, 2026",
+  positive: { count: 1441, pct: 23.8 },
+  negative: { count: 935, pct: 15.5 },
+  neutral: { count: 3669, pct: 60.7 },
+  topHashtags: [
+    { tag: "#santosbravos", count: 2732, pct: 45.9 },
+    { tag: "#stbv", count: 1477, pct: 24.8 },
+    { tag: "#hybelatinamerica", count: 1056, pct: 17.7 },
+    { tag: "#hybe", count: 1033, pct: 17.3 },
+    { tag: "#alejandroaramburu", count: 453, pct: 7.6 },
+    { tag: "#kawasaki", count: 248, pct: 4.2 },
+    { tag: "#cortis", count: 200, pct: 3.4 },
+  ],
 };
 
 // === Audience Stats (Spotify for Artists, 28 days) ===
