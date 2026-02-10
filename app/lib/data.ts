@@ -145,6 +145,17 @@ export const fanSentiment = {
     { tag: "#kawasaki", count: 248, pct: 4.2 },
     { tag: "#cortis", count: 200, pct: 3.4 },
   ],
+  topEntities: [
+    { name: "Santos Bravos", count: 4200, type: "organization" },
+    { name: "HYBE", count: 1850, type: "organization" },
+    { name: "Kenneth Lavíll", count: 620, type: "person" },
+    { name: "Alejandro Aramburu", count: 453, type: "person" },
+    { name: "Kauê Penna", count: 380, type: "person" },
+    { name: "Drew Venegas", count: 290, type: "person" },
+    { name: "Gabi Bermúdez", count: 215, type: "person" },
+    { name: "Bang Si-Hyuk", count: 89, type: "person" },
+  ],
+  topSharedLinks: [],
 };
 
 // === Audience Stats (Spotify for Artists, 28 days) ===

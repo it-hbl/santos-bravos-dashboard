@@ -510,8 +510,30 @@ function Dashboard() {
         {/* Section 7: Fan Sentiment */}
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
-          <SectionHeader number="7" title="Fan Sentiment" subtitle={`Meltwater · ${liveSentiment.period}`} color="bg-gradient-to-br from-rose-500 to-pink-400" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <SectionHeader number="7" title="Fan Sentiment & Conversation" subtitle={`Meltwater · ${liveSentiment.period}`} color="bg-gradient-to-br from-rose-500 to-pink-400" />
+
+          {/* Sentiment summary cards */}
+          <div className="grid grid-cols-3 gap-3 mb-6">
+            {[
+              { label: "Positive", count: liveSentiment.positive.count, pct: liveSentiment.positive.pct, color: "text-emerald-400", bg: "bg-emerald-500", barBg: "bg-emerald-500/20", emoji: "😊" },
+              { label: "Neutral", count: liveSentiment.neutral.count, pct: liveSentiment.neutral.pct, color: "text-neutral-400", bg: "bg-neutral-500", barBg: "bg-neutral-500/20", emoji: "😐" },
+              { label: "Negative", count: liveSentiment.negative.count, pct: liveSentiment.negative.pct, color: "text-red-400", bg: "bg-red-500", barBg: "bg-red-500/20", emoji: "😟" },
+            ].map(s => (
+              <div key={s.label} className="bg-white/[0.02] rounded-xl p-4 border border-white/[0.04]">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[10px] text-neutral-500 uppercase tracking-wider">{s.emoji} {s.label}</span>
+                  <span className={`text-xs font-bold ${s.color}`}>{s.pct}%</span>
+                </div>
+                <p className={`text-xl font-extrabold ${s.color} tabular-nums`}>{s.count.toLocaleString()}</p>
+                <div className={`w-full ${s.barBg} rounded-full h-1.5 mt-2 overflow-hidden`}>
+                  <div className={`h-full ${s.bg} rounded-full transition-all duration-1000`} style={{ width: `${s.pct}%` }} />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Donut */}
             <div>
               <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-2">Sentiment Breakdown</p>
               <SentimentDonut positive={liveSentiment.positive.pct} negative={liveSentiment.negative.pct} neutral={liveSentiment.neutral.pct} />
@@ -528,6 +550,8 @@ function Dashboard() {
                 ))}
               </div>
             </div>
+
+            {/* Hashtags */}
             <div>
               <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3">Top Hashtags (X / Twitter)</p>
               <div className="space-y-2">
@@ -540,6 +564,27 @@ function Dashboard() {
                     <span className="text-[10px] font-bold tabular-nums text-neutral-400 w-14 text-right">{h.pct}%</span>
                   </div>
                 ))}
+              </div>
+            </div>
+
+            {/* Conversation Drivers (Entities) */}
+            <div>
+              <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3">Conversation Drivers</p>
+              <div className="space-y-2">
+                {(liveSentiment.topEntities || []).slice(0, 8).map((e) => {
+                  const icons: Record<string, string> = { person: "👤", organization: "🏢", location: "📍", unknown: "💬" };
+                  const maxCount = (liveSentiment.topEntities || [])[0]?.count || 1;
+                  return (
+                    <div key={e.name} className="flex items-center gap-2">
+                      <span className="text-xs">{icons[e.type] || "💬"}</span>
+                      <span className="text-sm text-neutral-300 flex-1 truncate">{e.name}</span>
+                      <div className="w-16 bg-white/[0.04] rounded-full h-1.5 overflow-hidden">
+                        <div className="bg-rose-500 h-full rounded-full" style={{ width: `${(e.count / maxCount) * 100}%` }} />
+                      </div>
+                      <span className="text-[10px] font-bold tabular-nums text-neutral-400 w-12 text-right">{e.count.toLocaleString()}</span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>

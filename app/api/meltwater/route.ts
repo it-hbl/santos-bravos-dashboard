@@ -45,11 +45,13 @@ const COUNTRY_NAMES: Record<string, string> = {
 export async function GET() {
   try {
     // Fetch analytics + keyphrases + hashtags + sources in parallel
-    const [analyticsRes, keyphrasesRes, hashtagsRes, sourcesRes] = await Promise.all([
+    const [analyticsRes, keyphrasesRes, hashtagsRes, sourcesRes, entitiesRes, sharedLinksRes] = await Promise.all([
       mwGet(`/v3/analytics/${SEARCH_ID}`),
       mwGet(`/v3/analytics/${SEARCH_ID}/top_keyphrases`, { source: "twitter" }),
       mwGet(`/v3/analytics/${SEARCH_ID}/top_tags`, { source: "twitter" }),
       mwGet(`/v3/analytics/${SEARCH_ID}/top_sources`).catch(() => null),
+      mwGet(`/v3/analytics/${SEARCH_ID}/top_entities`).catch(() => null),
+      mwGet(`/v3/analytics/${SEARCH_ID}/top_shared_links`).catch(() => null),
     ]);
 
     const analytics = analyticsRes;
@@ -117,6 +119,32 @@ export async function GET() {
       type: s.type || s.source_type || "other",
     }));
 
+    // Top entities (people, orgs, places mentioned)
+    const rawEntities = entitiesRes
+      ? (Array.isArray(entitiesRes) ? entitiesRes
+        : Array.isArray(entitiesRes?.top_entities) ? entitiesRes.top_entities
+        : Array.isArray(entitiesRes?.data) ? entitiesRes.data
+        : [])
+      : [];
+    const topEntities = rawEntities.slice(0, 8).map((e: any) => ({
+      name: e.name || e.entity || e.text || "Unknown",
+      count: e.count ?? e.volume ?? 0,
+      type: e.type || e.entity_type || "unknown",
+    }));
+
+    // Top shared links
+    const rawLinks = sharedLinksRes
+      ? (Array.isArray(sharedLinksRes) ? sharedLinksRes
+        : Array.isArray(sharedLinksRes?.top_shared_links) ? sharedLinksRes.top_shared_links
+        : Array.isArray(sharedLinksRes?.data) ? sharedLinksRes.data
+        : [])
+      : [];
+    const topSharedLinks = rawLinks.slice(0, 5).map((l: any) => ({
+      url: l.url || l.link || "",
+      title: l.title || l.text || l.url || "",
+      count: l.count ?? l.shares ?? l.volume ?? 0,
+    }));
+
     // Build period string
     const { start, end } = getDateRange();
     const startDate = new Date(start).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
@@ -127,7 +155,7 @@ export async function GET() {
       live: true,
       data: {
         prMedia: { period, totalMentions, perDay, uniqueAuthors, timeSeries, topCountries, topKeyphrases, topSources },
-        fanSentiment: { period, positive, negative, neutral, topHashtags },
+        fanSentiment: { period, positive, negative, neutral, topHashtags, topEntities, topSharedLinks },
         fetchedAt: new Date().toISOString(),
       },
     });
