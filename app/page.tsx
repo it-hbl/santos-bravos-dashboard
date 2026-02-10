@@ -46,14 +46,14 @@ function DodBadge({ current, prior }: { current: number; prior: number | null })
 function MetricRow({ label, current, prior, accent }: { label: string; current: number; prior: number | null; accent?: string }) {
   const d = dod(current, prior);
   return (
-    <div className="flex items-center justify-between py-3 border-b border-white/[0.03] last:border-0 group hover:bg-white/[0.01] px-2 -mx-2 rounded">
-      <span className="text-sm text-neutral-400 group-hover:text-neutral-300 transition-colors flex-1">{label}</span>
-      <div className="flex items-center gap-4">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3 border-b border-white/[0.03] last:border-0 group hover:bg-white/[0.01] px-2 -mx-2 rounded gap-1 sm:gap-0">
+      <span className="text-sm text-neutral-400 group-hover:text-neutral-300 transition-colors flex-1 truncate">{label}</span>
+      <div className="flex items-center gap-3 sm:gap-4 pl-0 sm:pl-4">
         <span className={`text-sm font-bold tabular-nums ${accent || "text-white"}`}>{fmt(current)}</span>
         {prior !== null && (
           <>
-            <span className="text-[10px] text-neutral-600 tabular-nums w-16 text-right">{fmt(prior)}</span>
-            <span className={`text-[10px] font-semibold tabular-nums w-16 text-right ${d.positive ? "text-emerald-400" : "text-red-400"}`}>{d.diff}</span>
+            <span className="text-[10px] text-neutral-600 tabular-nums hidden sm:inline w-16 text-right">{fmt(prior)}</span>
+            <span className={`text-[10px] font-semibold tabular-nums hidden sm:inline w-16 text-right ${d.positive ? "text-emerald-400" : "text-red-400"}`}>{d.diff}</span>
             <DodBadge current={current} prior={prior} />
           </>
         )}
@@ -112,19 +112,19 @@ function Dashboard() {
   return (
     <main className="min-h-screen">
       {/* Nav */}
-      <nav className="sticky top-0 z-50 glass border-b border-white/5 px-6 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <svg viewBox="0 0 100 24" className="h-4 text-white" fill="currentColor">
+      <nav className="sticky top-0 z-50 glass border-b border-white/5 px-3 sm:px-6 py-3 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+          <svg viewBox="0 0 100 24" className="h-4 text-white flex-shrink-0" fill="currentColor">
             <text x="0" y="20" fontFamily="Inter, system-ui, sans-serif" fontWeight="900" fontSize="22" letterSpacing="3">HYBE</text>
           </svg>
-          <div className="w-px h-4 bg-white/10" />
-          <span className="text-[10px] font-semibold text-neutral-400 uppercase tracking-[0.2em]">Latin America</span>
-          <div className="w-px h-4 bg-white/10" />
-          <span className="text-[10px] font-bold text-violet-400 uppercase tracking-[0.15em]">Artist Intelligence</span>
+          <div className="w-px h-4 bg-white/10 hidden sm:block" />
+          <span className="text-[10px] font-semibold text-neutral-400 uppercase tracking-[0.2em] hidden sm:inline">Latin America</span>
+          <div className="w-px h-4 bg-white/10 hidden md:block" />
+          <span className="text-[10px] font-bold text-violet-400 uppercase tracking-[0.15em] hidden md:inline">Artist Intelligence</span>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg px-3 py-1.5">
-            <span className="text-[10px] text-white font-bold uppercase tracking-wider">📅 Report: 2/9/2026</span>
+        <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg px-2 sm:px-3 py-1.5">
+            <span className="text-[10px] text-white font-bold uppercase tracking-wider">📅 <span className="hidden sm:inline">Report: </span>2/9/2026</span>
           </div>
           <LiveBadge />
         </div>
@@ -132,7 +132,7 @@ function Dashboard() {
 
       <div className="max-w-7xl mx-auto px-4 py-8 space-y-10">
         {/* Hero */}
-        <section className="hero-bg rounded-3xl p-8 md:p-10">
+        <section className="hero-bg rounded-3xl p-5 sm:p-8 md:p-10">
           {/* Report Date Banner */}
           <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/[0.05]">
             <div className="flex items-center gap-3">
@@ -161,7 +161,7 @@ function Dashboard() {
                 </svg>
                 <span className="text-[10px] text-neutral-500">LATIN AMERICA</span>
               </div>
-              <h1 className="text-4xl md:text-5xl font-black tracking-tight sb-gradient">SANTOS BRAVOS</h1>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight sb-gradient">SANTOS BRAVOS</h1>
               <p className="text-neutral-500 text-sm">{o.tagline}</p>
               <div className="flex gap-2 flex-wrap justify-center md:justify-start">
                 {["🎤 Latin Pop", "👥 5 Members", "💿 3 Releases", "🌎 LATAM + US"].map(tag => (
@@ -196,7 +196,7 @@ function Dashboard() {
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
           <SectionHeader number="1" title="Business Performance Snapshot" subtitle="Spotify + YouTube" color="bg-spotify" />
-          <div className="mb-3 flex items-center gap-6 text-[9px] text-neutral-600 uppercase tracking-wider px-2 py-2 bg-white/[0.015] rounded-lg">
+          <div className="mb-3 hidden sm:flex items-center gap-6 text-[9px] text-neutral-600 uppercase tracking-wider px-2 py-2 bg-white/[0.015] rounded-lg">
             <span className="flex-1">Metric</span>
             <span className="w-20 text-right font-bold text-violet-400">2/9/26</span>
             <span className="w-16 text-right">2/4/26</span>
@@ -219,7 +219,7 @@ function Dashboard() {
             <>
               <div className="my-3 border-t border-white/[0.05]" />
               <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-3 px-2">YouTube Engagement</p>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
                 {liveYTVideos.map(v => {
                   const engRate = v.views.current > 0 ? ((v.likes + v.comments) / v.views.current * 100) : 0;
                   const shortName = v.name.replace("YouTube Views: ", "").replace(/ (Performance Video|Official MV|Lyric Video|Debut Visualizer)/, "").trim();
@@ -420,7 +420,7 @@ function Dashboard() {
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
           <SectionHeader number="📊" title="Audience Deep Dive" subtitle={`Spotify for Artists · ${audienceStats.period}`} color="bg-gradient-to-br from-amber-500 to-orange-400" />
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+          <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             {[
               { label: "Listeners", value: audienceStats.listeners, accent: "" },
               { label: "Streams", value: audienceStats.streams, accent: "" },
@@ -458,7 +458,7 @@ function Dashboard() {
           </div>
           <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-2">Daily Mention Volume</p>
           <MentionsChart data={livePR.timeSeries} />
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-5">
             {/* Source Distribution Donut */}
             <div>
               <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-2">Source Distribution</p>
@@ -557,7 +557,7 @@ function Dashboard() {
             ))}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Donut */}
             <div>
               <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-2">Sentiment Breakdown</p>
