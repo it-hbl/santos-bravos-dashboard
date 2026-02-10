@@ -21,6 +21,7 @@ import SectionNav from "./components/SectionNav";
 import PlatformDistribution from "./components/PlatformDistribution";
 import SentimentGauge from "./components/SentimentGauge";
 import TrackRadar from "./components/TrackRadar";
+import CollapsibleSection from "./components/CollapsibleSection";
 
 function fmt(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -221,7 +222,7 @@ function Dashboard() {
         <div id="velocity" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-5 sm:p-6">
-          <SectionHeader number="📊" title="Growth Velocity" subtitle="Period-over-Period %" color="bg-gradient-to-br from-cyan-500 to-blue-500" />
+          <CollapsibleSection id="velocity" number="📊" title="Growth Velocity" subtitle="Period-over-Period %" color="bg-gradient-to-br from-cyan-500 to-blue-500">
           <GrowthVelocity items={[
             ...(bp.spotifyMonthlyListeners.prior ? [{ label: "Spotify Listeners", category: "spotify" as const, pct: ((liveListeners - bp.spotifyMonthlyListeners.prior) / bp.spotifyMonthlyListeners.prior) * 100 }] : []),
             ...liveTrackStreams.filter(t => t.spotifyStreams.prior).map(t => ({
@@ -244,6 +245,7 @@ function Dashboard() {
             })),
             ...(socialMedia.totalFootprint.prior ? [{ label: "Total SNS", category: "sns" as const, pct: ((socialMedia.totalFootprint.current - socialMedia.totalFootprint.prior) / socialMedia.totalFootprint.prior) * 100 }] : []),
           ]} />
+          </CollapsibleSection>
         </section>
         </AnimatedSection>
 
@@ -251,7 +253,7 @@ function Dashboard() {
         <div id="business" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
-          <SectionHeader number="1" title="Business Performance Snapshot" subtitle="Spotify + YouTube" color="bg-spotify" />
+          <CollapsibleSection id="business" number="1" title="Business Performance Snapshot" subtitle="Spotify + YouTube" color="bg-spotify">
           <div className="mb-3 hidden sm:flex items-center gap-6 text-[9px] text-neutral-600 uppercase tracking-wider px-2 py-2 bg-white/[0.015] rounded-lg">
             <span className="flex-1">Metric</span>
             <span className="w-20 text-right font-bold text-violet-400">2/9/26</span>
@@ -325,6 +327,7 @@ function Dashboard() {
 
           <div className="my-3 border-t border-white/[0.05]" />
           <MetricRow label={bp.spl.label} current={bp.spl.current} prior={null} accent="text-amber-400" />
+          </CollapsibleSection>
         </section>
         </AnimatedSection>
 
@@ -332,7 +335,7 @@ function Dashboard() {
         <div id="daily" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
-          <SectionHeader number="⚡" title="Spotify for Artists — Daily Snapshot" subtitle="Saturday, February 8, 2026 (24h)" color="bg-gradient-to-br from-spotify to-emerald-400" />
+          <CollapsibleSection id="daily-snapshot" number="⚡" title="Spotify for Artists — Daily Snapshot" subtitle="Saturday, February 8, 2026 (24h)" color="bg-gradient-to-br from-spotify to-emerald-400">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {dailyStreams.map(t => (
               <div key={t.name} className="bg-white/[0.02] rounded-xl p-4 border border-white/[0.04]">
@@ -354,6 +357,7 @@ function Dashboard() {
               </div>
             ))}
           </div>
+          </CollapsibleSection>
         </section>
         </AnimatedSection>
 
@@ -378,7 +382,7 @@ function Dashboard() {
         <div id="social" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
-          <SectionHeader number="2" title="Social Media Performance" subtitle="SNS · As of 2/9/26" color="bg-gradient-to-br from-tiktok to-cyan-300" />
+          <CollapsibleSection id="social-media" number="2" title="Social Media Performance" subtitle="SNS · As of 2/9/26" color="bg-gradient-to-br from-tiktok to-cyan-300">
           <MetricRow label={socialMedia.totalFootprint.label} current={socialMedia.totalFootprint.current} prior={socialMedia.totalFootprint.prior} accent="text-tiktok" />
           {socialMedia.platforms.map(p => (
             <MetricRow key={p.platform} label={`${p.platform} ${p.metric} (Total)`} current={p.current} prior={p.prior} accent={`text-[${p.color}]`} />
@@ -386,6 +390,7 @@ function Dashboard() {
           <div className="mt-4">
             <SocialChart data={socialMedia.platforms.map(p => ({ platform: p.platform, followers: p.current, color: p.color }))} />
           </div>
+          </CollapsibleSection>
         </section>
         </AnimatedSection>
 
@@ -393,7 +398,7 @@ function Dashboard() {
         <div id="virality" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
-          <SectionHeader number="3" title="Audio Virality" subtitle="Cobrand · TT + IG · As of 2/9/26" color="bg-gradient-to-br from-purple-500 to-pink-500" />
+          <CollapsibleSection id="audio-virality" number="3" title="Audio Virality" subtitle="Cobrand · TT + IG · As of 2/9/26" color="bg-gradient-to-br from-purple-500 to-pink-500">
           <MetricRow label={audioVirality.totalAudioViews.label} current={audioVirality.totalAudioViews.current} prior={audioVirality.totalAudioViews.prior} />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
             {audioVirality.tracks.map(t => (
@@ -420,6 +425,7 @@ function Dashboard() {
             <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-2">Platform Creates Comparison</p>
             <ViralityChart tracks={audioVirality.tracks} />
           </div>
+          </CollapsibleSection>
         </section>
         </AnimatedSection>
 
@@ -427,13 +433,14 @@ function Dashboard() {
         <div id="track-radar" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
-          <SectionHeader number="🎯" title="Track Performance Comparison" subtitle="Cross-Dimensional Radar" color="bg-gradient-to-br from-emerald-500 to-cyan-500" />
+          <CollapsibleSection id="track-comparison" number="🎯" title="Track Performance Comparison" subtitle="Cross-Dimensional Radar" color="bg-gradient-to-br from-emerald-500 to-cyan-500">
           <p className="text-[10px] text-neutral-500 mb-4">Each dimension normalized to 100% of the top performer — showing relative strengths across streams, virality, and engagement.</p>
           <TrackRadar tracks={[
             { name: "0%", spotifyStreams: liveTrackStreams[0].spotifyStreams.current, dailyStreams: dailyStreams[0]?.streams ?? 0, tiktokCreates: audioVirality.tracks[0]?.tiktokCreates ?? 0, igCreates: audioVirality.tracks[0]?.igCreates ?? 0, saves: dailyStreams[0]?.saves ?? 0 },
             { name: "0% (PT)", spotifyStreams: liveTrackStreams[1].spotifyStreams.current, dailyStreams: dailyStreams[2]?.streams ?? 0, tiktokCreates: audioVirality.tracks[1]?.tiktokCreates ?? 0, igCreates: audioVirality.tracks[1]?.igCreates ?? 0, saves: dailyStreams[2]?.saves ?? 0 },
             { name: "KAWASAKI", spotifyStreams: liveTrackStreams[2].spotifyStreams.current, dailyStreams: dailyStreams[1]?.streams ?? 0, tiktokCreates: audioVirality.tracks[2]?.tiktokCreates ?? 0, igCreates: audioVirality.tracks[2]?.igCreates ?? 0, saves: dailyStreams[1]?.saves ?? 0 },
           ]} />
+          </CollapsibleSection>
         </section>
         </AnimatedSection>
 
@@ -441,7 +448,7 @@ function Dashboard() {
         <div id="members" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
-          <SectionHeader number="4" title="Band Member Followers" subtitle="Instagram · As of 2/9/26" color="bg-gradient-to-br from-pink-500 to-rose-400" />
+          <CollapsibleSection id="band-members" number="4" title="Band Member Followers" subtitle="Instagram · As of 2/9/26" color="bg-gradient-to-br from-pink-500 to-rose-400">
           <StaggerChildren className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
             {members.map((m, i) => {
               const gradients = ["from-violet-600 to-blue-500", "from-cyan-500 to-blue-400", "from-pink-500 to-rose-400", "from-amber-500 to-orange-400", "from-emerald-500 to-teal-400"];
@@ -480,6 +487,7 @@ function Dashboard() {
             <span className="text-sm font-semibold text-neutral-400">Total Band Member Followers</span>
             <span className="text-xl font-extrabold text-white">{fmt(totalMemberFollowers.current)}</span>
           </div>
+          </CollapsibleSection>
         </section>
         </AnimatedSection>
 
@@ -487,7 +495,7 @@ function Dashboard() {
         <div id="geo" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
-          <SectionHeader number="5" title="Geo Signals" subtitle="Spotify · Jan 12 – Feb 8, 2026 (28 Days)" color="bg-gradient-to-br from-blue-500 to-indigo-400" />
+          <CollapsibleSection id="geo-signals" number="5" title="Geo Signals" subtitle="Spotify · Jan 12 – Feb 8, 2026 (28 Days)" color="bg-gradient-to-br from-blue-500 to-indigo-400">
           {/* Summary cards */}
           <div className="grid grid-cols-3 gap-3 mb-6">
             <div className="bg-white/[0.02] rounded-xl p-3 border border-white/[0.04] text-center">
@@ -513,6 +521,7 @@ function Dashboard() {
               <GeoChart data={geoCities.map(c => ({ name: c.name, listeners: c.listeners }))} color="#06B6D4" />
             </div>
           </div>
+          </CollapsibleSection>
         </section>
         </AnimatedSection>
 
@@ -520,7 +529,7 @@ function Dashboard() {
         <div id="audience" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
-          <SectionHeader number="📊" title="Audience Deep Dive" subtitle={`Spotify for Artists · ${audienceStats.period}`} color="bg-gradient-to-br from-amber-500 to-orange-400" />
+          <CollapsibleSection id="audience-dive" number="📊" title="Audience Deep Dive" subtitle={`Spotify for Artists · ${audienceStats.period}`} color="bg-gradient-to-br from-amber-500 to-orange-400">
           <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             {[
               { label: "Listeners", value: audienceStats.listeners, accent: "" },
@@ -538,6 +547,7 @@ function Dashboard() {
               </div>
             ))}
           </div>
+          </CollapsibleSection>
         </section>
         </AnimatedSection>
 
@@ -545,7 +555,7 @@ function Dashboard() {
         <div id="pr" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
-          <SectionHeader number="6" title="PR & Media Exposure" subtitle={`Meltwater · ${livePR.period}`} color="bg-gradient-to-br from-violet-500 to-indigo-400" />
+          <CollapsibleSection id="pr-media" number="6" title="PR & Media Exposure" subtitle={`Meltwater · ${livePR.period}`} color="bg-gradient-to-br from-violet-500 to-indigo-400">
           <div className="grid grid-cols-3 gap-3 mb-5">
             {[
               { label: "Total Mentions", value: livePR.totalMentions, accent: "text-violet-400" },
@@ -631,6 +641,7 @@ function Dashboard() {
               </div>
             </div>
           </div>
+          </CollapsibleSection>
         </section>
         </AnimatedSection>
 
@@ -638,7 +649,7 @@ function Dashboard() {
         <div id="sentiment" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
-          <SectionHeader number="7" title="Fan Sentiment & Conversation" subtitle={`Meltwater · ${liveSentiment.period}`} color="bg-gradient-to-br from-rose-500 to-pink-400" />
+          <CollapsibleSection id="fan-sentiment" number="7" title="Fan Sentiment & Conversation" subtitle={`Meltwater · ${liveSentiment.period}`} color="bg-gradient-to-br from-rose-500 to-pink-400">
 
           {/* Sentiment summary cards */}
           <div className="grid grid-cols-3 gap-3 mb-6">
@@ -759,6 +770,7 @@ function Dashboard() {
               </div>
             </div>
           )}
+          </CollapsibleSection>
         </section>
         </AnimatedSection>
 
