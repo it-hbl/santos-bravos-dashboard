@@ -1,3 +1,5 @@
+"use client";
+
 import {
   reportDate, priorDate, businessPerformance, dailyStreams, socialMedia,
   audioVirality, members, totalMemberFollowers, geoCountries, geoCities,
@@ -8,6 +10,7 @@ import SocialChart from "./components/SocialChart";
 import GeoChart from "./components/GeoChart";
 import MentionsChart from "./components/MentionsChart";
 import SentimentDonut from "./components/SentimentDonut";
+import { AnimatedSection, CountUpValue, StaggerChildren, StaggerItem } from "./components/AnimatedSection";
 import Image from "next/image";
 
 function fmt(n: number) {
@@ -138,27 +141,28 @@ export default function Home() {
             <div className="grid grid-cols-2 gap-3 flex-shrink-0">
               <div className="glass-hybe rounded-xl p-3 text-center min-w-[120px]">
                 <p className="text-[9px] text-neutral-500 uppercase tracking-wider">Listeners</p>
-                <p className="text-xl font-extrabold text-spotify">{fmt(bp.spotifyMonthlyListeners.current)}</p>
+                <p className="text-xl font-extrabold text-spotify"><CountUpValue value={bp.spotifyMonthlyListeners.current} /></p>
                 <DodBadge current={bp.spotifyMonthlyListeners.current} prior={bp.spotifyMonthlyListeners.prior} />
               </div>
               <div className="glass-hybe rounded-xl p-3 text-center min-w-[120px]">
                 <p className="text-[9px] text-neutral-500 uppercase tracking-wider">SNS</p>
-                <p className="text-xl font-extrabold text-tiktok">{fmt(socialMedia.totalFootprint.current)}</p>
+                <p className="text-xl font-extrabold text-tiktok"><CountUpValue value={socialMedia.totalFootprint.current} /></p>
                 <DodBadge current={socialMedia.totalFootprint.current} prior={socialMedia.totalFootprint.prior} />
               </div>
               <div className="glass-hybe rounded-xl p-3 text-center min-w-[120px]">
                 <p className="text-[9px] text-neutral-500 uppercase tracking-wider">Streams</p>
-                <p className="text-xl font-extrabold text-white">{fmt(bp.totalCrossPlatformStreams.current)}</p>
+                <p className="text-xl font-extrabold text-white"><CountUpValue value={bp.totalCrossPlatformStreams.current} /></p>
               </div>
               <div className="glass-hybe rounded-xl p-3 text-center min-w-[120px]">
                 <p className="text-[9px] text-neutral-500 uppercase tracking-wider">SPL</p>
-                <p className="text-xl font-extrabold text-amber-400">{bp.spl.current}</p>
+                <p className="text-xl font-extrabold text-amber-400"><CountUpValue value={bp.spl.current * 1000} formatFn={(n) => (n / 1000).toFixed(3)} /></p>
               </div>
             </div>
           </div>
         </section>
 
         {/* Section 1: Business Performance */}
+        <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
           <SectionHeader number="1" title="Business Performance Snapshot" subtitle="Spotify + YouTube" color="bg-spotify" />
           <div className="mb-3 flex items-center gap-6 text-[9px] text-neutral-600 uppercase tracking-wider px-2 py-2 bg-white/[0.015] rounded-lg">
@@ -180,8 +184,10 @@ export default function Home() {
           ))}
           <MetricRow label={bp.spl.label} current={bp.spl.current} prior={null} accent="text-amber-400" />
         </section>
+        </AnimatedSection>
 
         {/* Daily Streams (SFA) */}
+        <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
           <SectionHeader number="⚡" title="Spotify for Artists — Daily Snapshot" subtitle="Saturday, February 8, 2026 (24h)" color="bg-gradient-to-br from-spotify to-emerald-400" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -206,8 +212,10 @@ export default function Home() {
             ))}
           </div>
         </section>
+        </AnimatedSection>
 
         {/* Charts */}
+        <AnimatedSection>
         <section className="space-y-4">
           <StreamingCharts
             spotifyTracks={bp.tracks.map(t => ({ name: t.name, streams: t.spotifyStreams.current }))}
@@ -215,8 +223,10 @@ export default function Home() {
             dailyStreams={dailyStreams.map(d => ({ name: d.name, streams: d.streams }))}
           />
         </section>
+        </AnimatedSection>
 
         {/* Section 2: Social Media */}
+        <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
           <SectionHeader number="2" title="Social Media Performance" subtitle="SNS · As of 2/9/26" color="bg-gradient-to-br from-tiktok to-cyan-300" />
           <MetricRow label={socialMedia.totalFootprint.label} current={socialMedia.totalFootprint.current} prior={socialMedia.totalFootprint.prior} accent="text-tiktok" />
@@ -227,8 +237,10 @@ export default function Home() {
             <SocialChart data={socialMedia.platforms.map(p => ({ platform: p.platform, followers: p.current, color: p.color }))} />
           </div>
         </section>
+        </AnimatedSection>
 
         {/* Section 3: Audio Virality */}
+        <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
           <SectionHeader number="3" title="Audio Virality" subtitle="Cobrand · TT + IG · As of 2/9/26" color="bg-gradient-to-br from-purple-500 to-pink-500" />
           <MetricRow label={audioVirality.totalAudioViews.label} current={audioVirality.totalAudioViews.current} prior={audioVirality.totalAudioViews.prior} />
@@ -254,32 +266,36 @@ export default function Home() {
             ))}
           </div>
         </section>
+        </AnimatedSection>
 
         {/* Section 4: Band Member Followers */}
+        <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
           <SectionHeader number="4" title="Band Member Followers" subtitle="Instagram · As of 2/9/26" color="bg-gradient-to-br from-pink-500 to-rose-400" />
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
+          <StaggerChildren className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
             {members.map((m, i) => {
               const gradients = ["from-violet-600 to-blue-500", "from-cyan-500 to-blue-400", "from-pink-500 to-rose-400", "from-amber-500 to-orange-400", "from-emerald-500 to-teal-400"];
               return (
-                <div key={m.handle} className="bg-white/[0.02] rounded-xl p-4 text-center border border-white/[0.04] hover:border-violet-500/20 hover:-translate-y-0.5 transition-all">
+                <StaggerItem key={m.handle} className="bg-white/[0.02] rounded-xl p-4 text-center border border-white/[0.04] hover:border-violet-500/20 hover:-translate-y-0.5 transition-all">
                   <div className={`w-12 h-12 mx-auto rounded-lg bg-gradient-to-br ${gradients[i]} flex items-center justify-center text-sm font-bold text-white mb-2`}>
                     {m.country}
                   </div>
                   <p className="font-bold text-xs text-white">{m.name}</p>
                   <p className="text-[9px] text-neutral-600">{m.handle}</p>
                   <p className="text-base font-extrabold text-pink-400 mt-1">{fmt(m.followers)}</p>
-                </div>
+                </StaggerItem>
               );
             })}
-          </div>
+          </StaggerChildren>
           <div className="flex items-center justify-between py-3 px-2 bg-white/[0.02] rounded-lg border border-white/[0.04]">
             <span className="text-sm font-semibold text-neutral-400">Total Band Member Followers</span>
             <span className="text-xl font-extrabold text-white">{fmt(totalMemberFollowers.current)}</span>
           </div>
         </section>
+        </AnimatedSection>
 
         {/* Section 5: Geo Signals */}
+        <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
           <SectionHeader number="5" title="Geo Signals" subtitle="Spotify · Jan 12 – Feb 8, 2026 (28 Days)" color="bg-gradient-to-br from-blue-500 to-indigo-400" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -311,8 +327,10 @@ export default function Home() {
             </div>
           </div>
         </section>
+        </AnimatedSection>
 
         {/* Audience Deep Dive */}
+        <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
           <SectionHeader number="📊" title="Audience Deep Dive" subtitle={`Spotify for Artists · ${audienceStats.period}`} color="bg-gradient-to-br from-amber-500 to-orange-400" />
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
@@ -333,8 +351,10 @@ export default function Home() {
             ))}
           </div>
         </section>
+        </AnimatedSection>
 
         {/* Section 6: PR & Media */}
+        <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
           <SectionHeader number="6" title="PR & Media Exposure" subtitle={`Meltwater · ${prMedia.period}`} color="bg-gradient-to-br from-violet-500 to-indigo-400" />
           <div className="grid grid-cols-3 gap-3 mb-5">
@@ -381,8 +401,10 @@ export default function Home() {
             </div>
           </div>
         </section>
+        </AnimatedSection>
 
         {/* Section 7: Fan Sentiment */}
+        <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
           <SectionHeader number="7" title="Fan Sentiment" subtitle={`Meltwater · ${fanSentiment.period}`} color="bg-gradient-to-br from-rose-500 to-pink-400" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -418,6 +440,7 @@ export default function Home() {
             </div>
           </div>
         </section>
+        </AnimatedSection>
 
         {/* Footer */}
         <footer className="text-center py-10 border-t border-white/[0.03] space-y-2">
