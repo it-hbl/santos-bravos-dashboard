@@ -19,6 +19,7 @@ import KeyHighlights from "./components/KeyHighlights";
 import GrowthVelocity from "./components/GrowthVelocity";
 import SectionNav from "./components/SectionNav";
 import PlatformDistribution from "./components/PlatformDistribution";
+import SentimentGauge from "./components/SentimentGauge";
 
 function fmt(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -626,21 +627,27 @@ function Dashboard() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Donut */}
-            <div>
-              <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-2">Sentiment Breakdown</p>
-              <SentimentDonut positive={liveSentiment.positive.pct} negative={liveSentiment.negative.pct} neutral={liveSentiment.neutral.pct} />
-              <div className="flex justify-center gap-6 mt-2">
-                {[
-                  { label: "Positive", pct: liveSentiment.positive.pct, color: "bg-emerald-400" },
-                  { label: "Neutral", pct: liveSentiment.neutral.pct, color: "bg-neutral-600" },
-                  { label: "Negative", pct: liveSentiment.negative.pct, color: "bg-red-400" },
-                ].map(s => (
-                  <div key={s.label} className="flex items-center gap-1.5">
-                    <div className={`w-2 h-2 rounded-full ${s.color}`} />
-                    <span className="text-[10px] text-neutral-400">{s.label} {s.pct}%</span>
-                  </div>
-                ))}
+            {/* Gauge + Donut */}
+            <div className="space-y-5">
+              <div>
+                <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-2">Net Sentiment Score</p>
+                <SentimentGauge positive={liveSentiment.positive.pct} negative={liveSentiment.negative.pct} neutral={liveSentiment.neutral.pct} />
+              </div>
+              <div>
+                <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-2">Sentiment Breakdown</p>
+                <SentimentDonut positive={liveSentiment.positive.pct} negative={liveSentiment.negative.pct} neutral={liveSentiment.neutral.pct} />
+                <div className="flex justify-center gap-6 mt-2">
+                  {[
+                    { label: "Positive", pct: liveSentiment.positive.pct, color: "bg-emerald-400" },
+                    { label: "Neutral", pct: liveSentiment.neutral.pct, color: "bg-neutral-600" },
+                    { label: "Negative", pct: liveSentiment.negative.pct, color: "bg-red-400" },
+                  ].map(s => (
+                    <div key={s.label} className="flex items-center gap-1.5">
+                      <div className={`w-2 h-2 rounded-full ${s.color}`} />
+                      <span className="text-[10px] text-neutral-400">{s.label} {s.pct}%</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
