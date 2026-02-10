@@ -14,6 +14,7 @@ import { AnimatedSection, CountUpValue, StaggerChildren, StaggerItem } from "./c
 import Image from "next/image";
 import { LiveDataProvider, LiveBadge, useLiveData } from "./components/LiveDataProvider";
 import ViralityChart from "./components/ViralityChart";
+import SourceDonut from "./components/SourceDonut";
 
 function fmt(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -457,9 +458,31 @@ function Dashboard() {
           </div>
           <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-2">Daily Mention Volume</p>
           <MentionsChart data={livePR.timeSeries} />
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-5">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-5">
+            {/* Source Distribution Donut */}
             <div>
-              <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3">Top Countries (Mentions)</p>
+              <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-2">Source Distribution</p>
+              <SourceDonut sources={livePR.topSources} />
+              <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-2">
+                {livePR.topSources.slice(0, 5).map((s) => {
+                  const colors: Record<string, string> = {
+                    "X (Twitter)": "bg-[#1DA1F2]", "Twitter": "bg-[#1DA1F2]", "Instagram": "bg-[#E1306C]",
+                    "TikTok": "bg-[#00F2EA]", "YouTube": "bg-[#FF0000]", "Reddit": "bg-[#FF4500]",
+                    "News Sites": "bg-violet-400", "Blogs": "bg-amber-400", "Facebook": "bg-[#1877F2]",
+                  };
+                  const totalCount = livePR.topSources.reduce((a, b) => a + b.count, 0);
+                  return (
+                    <div key={s.name} className="flex items-center gap-1.5">
+                      <div className={`w-2 h-2 rounded-full ${colors[s.name] || "bg-indigo-400"}`} />
+                      <span className="text-[9px] text-neutral-500">{s.name} {totalCount > 0 ? ((s.count / totalCount) * 100).toFixed(0) : 0}%</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            {/* Top Countries */}
+            <div>
+              <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3">Top Countries</p>
               <div className="space-y-2">
                 {livePR.topCountries.map((c, i) => (
                   <div key={c.code} className="flex items-center gap-3">
@@ -471,6 +494,7 @@ function Dashboard() {
                 ))}
               </div>
             </div>
+            {/* Top Sources (bars) */}
             <div>
               <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3">Top Sources</p>
               <div className="space-y-2">
@@ -480,7 +504,7 @@ function Dashboard() {
                     <div key={s.name} className="flex items-center gap-3">
                       <span className="text-sm">{icons[s.type] || "📄"}</span>
                       <span className="text-sm text-neutral-300 flex-1 truncate">{s.name}</span>
-                      <div className="w-20 bg-white/[0.04] rounded-full h-1.5 overflow-hidden">
+                      <div className="w-16 bg-white/[0.04] rounded-full h-1.5 overflow-hidden">
                         <div className="bg-indigo-500 h-full rounded-full" style={{ width: `${(s.count / (livePR.topSources[0]?.count || 1)) * 100}%` }} />
                       </div>
                       <span className="text-[10px] font-bold tabular-nums text-neutral-400 w-12 text-right">{s.count.toLocaleString()}</span>
@@ -489,13 +513,14 @@ function Dashboard() {
                 })}
               </div>
             </div>
+            {/* Trending Keyphrases */}
             <div>
               <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3">Trending Keyphrases</p>
               <div className="space-y-2">
                 {livePR.topKeyphrases.slice(0, 6).map((k) => (
                   <div key={k.phrase} className="flex items-center gap-3">
                     <span className="text-sm text-neutral-300 flex-1 truncate">{k.phrase}</span>
-                    <div className="w-20 bg-white/[0.04] rounded-full h-1.5 overflow-hidden">
+                    <div className="w-16 bg-white/[0.04] rounded-full h-1.5 overflow-hidden">
                       <div className="bg-violet-500 h-full rounded-full" style={{ width: `${(k.count / (livePR.topKeyphrases[0]?.count || 1)) * 100}%` }} />
                     </div>
                     <span className="text-[10px] font-bold tabular-nums text-neutral-400 w-10 text-right">{k.count}</span>
