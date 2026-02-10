@@ -18,6 +18,7 @@ import SourceDonut from "./components/SourceDonut";
 import KeyHighlights from "./components/KeyHighlights";
 import GrowthVelocity from "./components/GrowthVelocity";
 import SectionNav from "./components/SectionNav";
+import PlatformDistribution from "./components/PlatformDistribution";
 
 function fmt(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -362,6 +363,11 @@ function Dashboard() {
             spotifyTracks={bp.tracks.map(t => ({ name: t.name, streams: t.spotifyStreams.current }))}
             youtubeVideos={liveYTVideos.map(v => ({ name: v.name.split(":")[0].replace("YouTube Views", "").trim() || v.name, views: v.views.current }))}
             dailyStreams={dailyStreams.map(d => ({ name: d.name, streams: d.streams }))}
+          />
+          <PlatformDistribution
+            spotifyStreams={liveTrackStreams.reduce((s, t) => s + t.spotifyStreams.current, 0)}
+            youtubeViews={liveYTVideos.reduce((s, v) => s + v.views.current, 0)}
+            tiktokAudioViews={audioVirality.totalAudioViews.current}
           />
         </section>
         </AnimatedSection>
