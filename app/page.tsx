@@ -23,6 +23,7 @@ import SentimentGauge from "./components/SentimentGauge";
 import TrackRadar from "./components/TrackRadar";
 import CollapsibleSection from "./components/CollapsibleSection";
 import ScrollProgress from "./components/ScrollProgress";
+import CopySummary from "./components/CopySummary";
 
 function fmt(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -135,6 +136,23 @@ function Dashboard() {
           <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg px-2 sm:px-3 py-1.5">
             <span className="text-[10px] text-white font-bold uppercase tracking-wider">📅 <span className="hidden sm:inline">Report: </span>2/9/2026</span>
           </div>
+          <CopySummary data={{
+            reportDate,
+            listeners: liveListeners,
+            listenersPrior: bp.spotifyMonthlyListeners.prior,
+            totalStreams: bp.totalCrossPlatformStreams.current,
+            snsFootprint: socialMedia.totalFootprint.current,
+            snsFootprintPrior: socialMedia.totalFootprint.prior,
+            tracks: liveTrackStreams.map(t => ({ name: t.name, streams: t.spotifyStreams.current })),
+            ytVideos: liveYTVideos.map(v => ({ name: v.name, views: v.views.current })),
+            ytSubscribers: liveYTSubscribers,
+            platforms: socialMedia.platforms.map(p => ({ platform: p.platform, current: p.current })),
+            prMentions: livePR.totalMentions,
+            prPerDay: livePR.perDay,
+            sentimentPositive: liveSentiment.positive.pct,
+            sentimentNegative: liveSentiment.negative.pct,
+            sentimentNeutral: liveSentiment.neutral.pct,
+          }} />
           <LiveBadge />
         </div>
       </nav>
