@@ -78,14 +78,21 @@ export async function GET() {
       flag: FLAG_MAP[c.code || c.country_code || ""] || "🌍",
     }));
 
-    // Top keyphrases
-    const topKeyphrases = (keyphrasesRes?.top_keyphrases || keyphrasesRes || []).slice(0, 9).map((k: any) => ({
+    // Top keyphrases — handle various response shapes
+    const rawPhrases = Array.isArray(keyphrasesRes) ? keyphrasesRes
+      : Array.isArray(keyphrasesRes?.top_keyphrases) ? keyphrasesRes.top_keyphrases
+      : Array.isArray(keyphrasesRes?.data) ? keyphrasesRes.data
+      : [];
+    const topKeyphrases = rawPhrases.slice(0, 9).map((k: any) => ({
       phrase: k.phrase || k.keyphrase || k.text || "",
       count: k.count ?? k.volume ?? 0,
     }));
 
-    // Top hashtags
-    const rawTags = hashtagsRes?.top_tags || hashtagsRes || [];
+    // Top hashtags — handle various response shapes
+    const rawTags = Array.isArray(hashtagsRes) ? hashtagsRes
+      : Array.isArray(hashtagsRes?.top_tags) ? hashtagsRes.top_tags
+      : Array.isArray(hashtagsRes?.data) ? hashtagsRes.data
+      : [];
     const topHashtags = rawTags.slice(0, 7).map((h: any) => {
       const tag = h.tag || h.hashtag || h.text || "";
       const count = h.count ?? h.volume ?? 0;
