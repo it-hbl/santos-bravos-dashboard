@@ -1,6 +1,7 @@
 import {
-  artistOverview, spotifyTracks, youtubeVideos, dailyStreams,
-  socialMedia, audioVirality, members, geoCountries, geoCities, audienceStats,
+  reportDate, priorDate, businessPerformance, dailyStreams, socialMedia,
+  audioVirality, members, totalMemberFollowers, geoCountries, geoCities,
+  prMedia, fanSentiment, audienceStats, artistOverview,
 } from "./lib/data";
 import StreamingCharts from "./components/StreamingCharts";
 import SocialChart from "./components/SocialChart";
@@ -13,52 +14,65 @@ function fmt(n: number) {
   return n.toLocaleString();
 }
 
-function StatCard({ label, value, accent, sub }: { label: string; value: string; accent?: string; sub?: string }) {
+function dod(current: number, prior: number | null) {
+  if (prior === null || prior === 0) return { diff: "—", pct: "—", positive: true };
+  const diff = current - prior;
+  const pct = ((diff / prior) * 100).toFixed(1);
+  return {
+    diff: (diff >= 0 ? "+" : "") + fmt(diff),
+    pct: (diff >= 0 ? "+" : "") + pct + "%",
+    positive: diff >= 0,
+  };
+}
+
+function DodBadge({ current, prior }: { current: number; prior: number | null }) {
+  if (prior === null) return null;
+  const d = dod(current, prior);
   return (
-    <div className="glass-hybe rounded-2xl p-5 flex flex-col gap-1 hover:border-purple-500/30 transition-all duration-300 group">
-      <span className="text-[10px] uppercase tracking-[0.2em] text-neutral-500 font-medium">{label}</span>
-      <span className={`text-2xl md:text-3xl font-extrabold ${accent || "text-white"} group-hover:scale-105 transition-transform origin-left`}>{value}</span>
-      {sub && <span className="text-[10px] text-neutral-600">{sub}</span>}
-    </div>
+    <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${d.positive ? "text-emerald-400 bg-emerald-500/10" : "text-red-400 bg-red-500/10"}`}>
+      {d.pct}
+    </span>
   );
 }
 
-function TrackCard({ name, image, streams, views, daily }: { name: string; image?: string; streams: string; views?: string; daily?: string }) {
+function MetricRow({ label, current, prior, accent }: { label: string; current: number; prior: number | null; accent?: string }) {
+  const d = dod(current, prior);
   return (
-    <div className="glass-hybe rounded-2xl p-4 flex gap-4 items-center hover:border-purple-500/30 transition-all duration-300">
-      {image && (
-        <Image src={image} alt={name} width={64} height={64} className="rounded-lg object-cover w-16 h-16" />
-      )}
-      <div className="flex-1 min-w-0">
-        <p className="font-bold text-sm text-white truncate">{name}</p>
-        <div className="flex gap-4 mt-1">
-          <div>
-            <p className="text-[9px] text-neutral-500 uppercase tracking-wider">Streams</p>
-            <p className="text-sm font-bold text-spotify">{streams}</p>
-          </div>
-          {views && (
-            <div>
-              <p className="text-[9px] text-neutral-500 uppercase tracking-wider">YT Views</p>
-              <p className="text-sm font-bold text-ytred">{views}</p>
-            </div>
-          )}
-          {daily && (
-            <div>
-              <p className="text-[9px] text-neutral-500 uppercase tracking-wider">24h</p>
-              <p className="text-sm font-bold text-cyan-400">{daily}</p>
-            </div>
-          )}
-        </div>
+    <div className="flex items-center justify-between py-3 border-b border-white/[0.03] last:border-0 group hover:bg-white/[0.01] px-2 -mx-2 rounded">
+      <span className="text-sm text-neutral-400 group-hover:text-neutral-300 transition-colors flex-1">{label}</span>
+      <div className="flex items-center gap-4">
+        <span className={`text-sm font-bold tabular-nums ${accent || "text-white"}`}>{fmt(current)}</span>
+        {prior !== null && (
+          <>
+            <span className="text-[10px] text-neutral-600 tabular-nums w-16 text-right">{fmt(prior)}</span>
+            <span className={`text-[10px] font-semibold tabular-nums w-16 text-right ${d.positive ? "text-emerald-400" : "text-red-400"}`}>{d.diff}</span>
+            <DodBadge current={current} prior={prior} />
+          </>
+        )}
       </div>
     </div>
   );
 }
 
+function SectionHeader({ number, title, subtitle, color }: { number: string; title: string; subtitle?: string; color: string }) {
+  return (
+    <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center gap-3">
+        <div className={`w-8 h-8 rounded-lg ${color} flex items-center justify-center text-[11px] font-black text-white`}>{number}</div>
+        <h2 className="text-lg font-bold tracking-tight text-white">{title}</h2>
+      </div>
+      {subtitle && <span className="text-[10px] text-neutral-600 uppercase tracking-widest">{subtitle}</span>}
+    </div>
+  );
+}
+
 export default function Home() {
+  const bp = businessPerformance;
   const o = artistOverview;
+
   return (
     <main className="min-h-screen">
-      {/* Top Bar */}
+      {/* Nav */}
       <nav className="sticky top-0 z-50 glass border-b border-white/5 px-6 py-3 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <svg viewBox="0 0 100 24" className="h-4 text-white" fill="currentColor">
@@ -70,7 +84,7 @@ export default function Home() {
           <span className="text-[10px] font-bold text-violet-400 uppercase tracking-[0.15em]">Artist Intelligence</span>
         </div>
         <div className="flex items-center gap-4">
-          <span className="text-[10px] text-neutral-600 uppercase tracking-widest">Feb 9, 2026</span>
+          <span className="text-[10px] text-neutral-600 uppercase tracking-widest">{reportDate}</span>
           <div className="flex items-center gap-1.5">
             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse-slow" />
             <span className="text-[10px] text-emerald-500 font-medium">LIVE</span>
@@ -78,212 +92,246 @@ export default function Home() {
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-4 py-8 space-y-14">
+      <div className="max-w-7xl mx-auto px-4 py-8 space-y-10">
         {/* Hero */}
-        <section className="hero-bg rounded-3xl p-8 md:p-12">
+        <section className="hero-bg rounded-3xl p-8 md:p-10">
           <div className="flex flex-col md:flex-row items-center gap-8">
-            <div className="relative flex-shrink-0">
-              <Image 
-                src="/sb-avatar.jpg" 
-                alt="Santos Bravos" 
-                width={140} 
-                height={140} 
-                className="rounded-2xl shadow-2xl shadow-violet-500/20 ring-2 ring-violet-500/20"
-              />
-              <div className="absolute -bottom-2 -right-2 bg-gradient-to-r from-violet-500 to-blue-500 text-[8px] font-bold px-2.5 py-0.5 rounded-full text-white uppercase tracking-wider shadow-lg">Active</div>
-            </div>
-            <div className="text-center md:text-left space-y-3 flex-1">
+            <Image src="/sb-avatar.jpg" alt="Santos Bravos" width={120} height={120}
+              className="rounded-2xl shadow-2xl shadow-violet-500/20 ring-2 ring-violet-500/20 flex-shrink-0" />
+            <div className="text-center md:text-left space-y-2 flex-1">
               <div className="flex items-center gap-2 justify-center md:justify-start">
                 <svg viewBox="0 0 60 14" className="h-2.5 text-neutral-500" fill="currentColor">
                   <text x="0" y="12" fontFamily="Inter, system-ui, sans-serif" fontWeight="900" fontSize="13" letterSpacing="2">HYBE</text>
                 </svg>
-                <span className="text-[10px] text-neutral-500 font-medium">LATIN AMERICA</span>
+                <span className="text-[10px] text-neutral-500">LATIN AMERICA</span>
               </div>
-              <h1 className="text-4xl md:text-6xl font-black tracking-tight sb-gradient leading-tight">SANTOS BRAVOS</h1>
-              <p className="text-neutral-500 text-sm font-medium">The First Latin Boy Band by HYBE</p>
-              <div className="flex gap-2 flex-wrap justify-center md:justify-start mt-3">
+              <h1 className="text-4xl md:text-5xl font-black tracking-tight sb-gradient">SANTOS BRAVOS</h1>
+              <p className="text-neutral-500 text-sm">{o.tagline}</p>
+              <div className="flex gap-2 flex-wrap justify-center md:justify-start">
                 {["🎤 Latin Pop", "👥 5 Members", "💿 3 Releases", "🌎 LATAM + US"].map(tag => (
-                  <span key={tag} className="text-[10px] bg-white/[0.03] border border-white/[0.06] rounded-full px-3 py-1 text-neutral-500 hover:border-violet-500/30 transition-colors">{tag}</span>
+                  <span key={tag} className="text-[10px] bg-white/[0.03] border border-white/[0.06] rounded-full px-3 py-1 text-neutral-500">{tag}</span>
                 ))}
               </div>
             </div>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-10">
-            <StatCard label="Monthly Listeners" value={fmt(o.monthlyListeners)} accent="text-spotify" sub="Spotify Global" />
-            <StatCard label="Followers" value={fmt(o.followers)} accent="text-spotify" sub="Spotify" />
-            <StatCard label="Cross-Platform Streams" value={fmt(o.totalStreams)} sub="All DSPs + YouTube" />
-            <StatCard label="SNS Footprint" value={fmt(o.snsFootprint)} accent="text-tiktok" sub="YT + TT + IG + WV" />
+            <div className="grid grid-cols-2 gap-3 flex-shrink-0">
+              <div className="glass-hybe rounded-xl p-3 text-center min-w-[120px]">
+                <p className="text-[9px] text-neutral-500 uppercase tracking-wider">Listeners</p>
+                <p className="text-xl font-extrabold text-spotify">{fmt(bp.spotifyMonthlyListeners.current)}</p>
+                <DodBadge current={bp.spotifyMonthlyListeners.current} prior={bp.spotifyMonthlyListeners.prior} />
+              </div>
+              <div className="glass-hybe rounded-xl p-3 text-center min-w-[120px]">
+                <p className="text-[9px] text-neutral-500 uppercase tracking-wider">SNS</p>
+                <p className="text-xl font-extrabold text-tiktok">{fmt(socialMedia.totalFootprint.current)}</p>
+                <DodBadge current={socialMedia.totalFootprint.current} prior={socialMedia.totalFootprint.prior} />
+              </div>
+              <div className="glass-hybe rounded-xl p-3 text-center min-w-[120px]">
+                <p className="text-[9px] text-neutral-500 uppercase tracking-wider">Streams</p>
+                <p className="text-xl font-extrabold text-white">{fmt(bp.totalCrossPlatformStreams.current)}</p>
+              </div>
+              <div className="glass-hybe rounded-xl p-3 text-center min-w-[120px]">
+                <p className="text-[9px] text-neutral-500 uppercase tracking-wider">SPL</p>
+                <p className="text-xl font-extrabold text-amber-400">{bp.spl.current}</p>
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* Track Cards */}
-        <section className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold tracking-tight flex items-center gap-3">
-              <span className="w-1.5 h-6 rounded-full bg-gradient-to-b from-spotify to-emerald-400 inline-block" />
-              Releases
-            </h2>
+        {/* Section 1: Business Performance */}
+        <section className="glass-hybe rounded-2xl p-6">
+          <SectionHeader number="1" title="Business Performance Snapshot" subtitle="Spotify + YouTube" color="bg-spotify" />
+          <div className="mb-2 flex items-center gap-6 text-[9px] text-neutral-600 uppercase tracking-wider px-2">
+            <span className="flex-1">Metric</span>
+            <span className="w-20 text-right">{reportDate.replace("February ", "2/").replace(", 2026", "/26")}</span>
+            <span className="w-16 text-right">Prior</span>
+            <span className="w-16 text-right">Added</span>
+            <span className="w-16 text-right">DoD %</span>
           </div>
+          <MetricRow label={bp.spotifyMonthlyListeners.label} current={bp.spotifyMonthlyListeners.current} prior={bp.spotifyMonthlyListeners.prior} accent="text-spotify" />
+          <MetricRow label="Spotify Popularity Index" current={bp.spotifyPopularity.current} prior={bp.spotifyPopularity.prior} />
+          {bp.tracks.map(t => (
+            <MetricRow key={t.name} label={`Spotify Total Streams: ${t.name}`} current={t.spotifyStreams.current} prior={t.spotifyStreams.prior} accent="text-spotify" />
+          ))}
+          <div className="my-3 border-t border-white/[0.05]" />
+          <MetricRow label={bp.totalCrossPlatformStreams.label} current={bp.totalCrossPlatformStreams.current} prior={bp.totalCrossPlatformStreams.prior} />
+          {bp.youtubeVideos.map(v => (
+            <MetricRow key={v.name} label={`YouTube Views: ${v.name}`} current={v.views.current} prior={v.views.prior} accent="text-ytred" />
+          ))}
+          <MetricRow label={bp.spl.label} current={bp.spl.current} prior={null} accent="text-amber-400" />
+        </section>
+
+        {/* Daily Streams (SFA) */}
+        <section className="glass-hybe rounded-2xl p-6">
+          <SectionHeader number="⚡" title="Spotify Daily Snapshot" subtitle="Feb 8, 2026 · 24h" color="bg-gradient-to-br from-spotify to-emerald-400" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <TrackCard name="0%" image="/zero-percent-thumb.jpg" streams={fmt(4818683)} views={fmt(12084773)} daily={fmt(30444)} />
-            <TrackCard name="0% (Portuguese)" image="/visualizer-thumb.jpg" streams={fmt(902520)} views={fmt(953545)} daily={fmt(10121)} />
-            <TrackCard name="KAWASAKI" image="/kawasaki-thumb.jpg" streams={fmt(914305)} views={fmt(3849420)} daily={fmt(73780)} />
-          </div>
-        </section>
-
-        {/* Streaming Charts */}
-        <section className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold tracking-tight flex items-center gap-3">
-              <span className="w-1.5 h-6 rounded-full bg-gradient-to-b from-spotify to-emerald-400 inline-block" />
-              Streaming Breakdown
-            </h2>
-            <span className="text-[10px] text-neutral-600 uppercase tracking-widest">Spotify + YouTube</span>
-          </div>
-          <StreamingCharts spotifyTracks={spotifyTracks} youtubeVideos={youtubeVideos} dailyStreams={dailyStreams} />
-        </section>
-
-        {/* Social Media */}
-        <section className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold tracking-tight flex items-center gap-3">
-              <span className="w-1.5 h-6 rounded-full bg-gradient-to-b from-tiktok to-cyan-300 inline-block" />
-              Social Footprint
-            </h2>
-            <span className="text-[10px] text-neutral-600 uppercase tracking-widest">{fmt(o.snsFootprint)} Total</span>
-          </div>
-          <div className="glass-hybe rounded-2xl p-6">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-              {socialMedia.map((s) => (
-                <div key={s.platform} className="text-center p-4 rounded-xl bg-white/[0.02] border border-white/[0.04] hover:border-white/10 transition-colors">
-                  <p className="text-2xl font-extrabold" style={{ color: s.color }}>{fmt(s.followers)}</p>
-                  <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] mt-1.5 font-medium">{s.platform}</p>
-                </div>
-              ))}
-            </div>
-            <SocialChart data={socialMedia} />
-          </div>
-        </section>
-
-        {/* Audio Virality */}
-        <section className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold tracking-tight flex items-center gap-3">
-              <span className="w-1.5 h-6 rounded-full bg-gradient-to-b from-purple-500 to-pink-500 inline-block" />
-              Audio Virality
-            </h2>
-            <span className="text-[10px] text-neutral-600 uppercase tracking-widest">Cobrand · TT + IG</span>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="glass-hybe rounded-2xl p-6">
-              <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium">Total Audio Views</p>
-              <p className="text-3xl font-extrabold text-white mt-2">{fmt(audioVirality.totalAudioViews)}</p>
-              <div className="mt-4 space-y-3">
-                {audioVirality.tracks.map((t) => (
-                  <div key={t.name} className="flex justify-between items-center">
-                    <span className="text-sm text-neutral-400">{t.name}</span>
-                    <span className="font-mono text-sm text-white font-semibold">{fmt(t.views)}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="glass-hybe rounded-2xl p-6 flex flex-col justify-between">
-              <div>
-                <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium">TikTok Creates</p>
-                <p className="text-3xl font-extrabold text-tiktok mt-2">{audioVirality.tiktokCreates.lifetime.toLocaleString()}</p>
-              </div>
-              <p className="text-[10px] text-neutral-600 mt-4">Lifetime · {audioVirality.tiktokCreates.track}</p>
-            </div>
-            <div className="glass-hybe rounded-2xl p-6 flex flex-col justify-between">
-              <div>
-                <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium">Instagram Creates</p>
-                <p className="text-3xl font-extrabold text-pink-500 mt-2">{audioVirality.instagramCreates.lifetime.toLocaleString()}</p>
-              </div>
-              <p className="text-[10px] text-neutral-600 mt-4">Lifetime · {audioVirality.instagramCreates.track}</p>
-            </div>
-          </div>
-        </section>
-
-        {/* Band Members */}
-        <section className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold tracking-tight flex items-center gap-3">
-              <span className="w-1.5 h-6 rounded-full bg-gradient-to-b from-pink-500 to-rose-400 inline-block" />
-              Members
-            </h2>
-            <span className="text-[10px] text-neutral-600 uppercase tracking-widest">Instagram Followers</span>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            {members.map((m, i) => {
-              const gradients = [
-                "from-violet-600 to-blue-500",
-                "from-cyan-500 to-blue-400",
-                "from-pink-500 to-rose-400",
-                "from-amber-500 to-orange-400",
-                "from-emerald-500 to-teal-400",
-              ];
-              return (
-                <div key={m.handle} className="glass-hybe rounded-2xl p-5 text-center space-y-3 hover:border-purple-500/30 hover:-translate-y-1 transition-all duration-300">
-                  <div className={`w-14 h-14 mx-auto rounded-xl bg-gradient-to-br ${gradients[i]} flex items-center justify-center text-base font-bold text-white shadow-lg`}>
-                    {m.name.split(" ").map((w) => w[0]).join("")}
+            {dailyStreams.map(t => (
+              <div key={t.name} className="bg-white/[0.02] rounded-xl p-4 border border-white/[0.04]">
+                <p className="font-bold text-white text-sm mb-3">{t.name}</p>
+                <div className="grid grid-cols-3 gap-2">
+                  <div>
+                    <p className="text-[9px] text-neutral-500 uppercase">Streams</p>
+                    <p className="text-lg font-extrabold text-spotify">{fmt(t.streams)}</p>
                   </div>
                   <div>
-                    <p className="font-bold text-sm text-white">{m.name}</p>
-                    <p className="text-[10px] text-neutral-600 mt-0.5">{m.handle}</p>
+                    <p className="text-[9px] text-neutral-500 uppercase">Listeners</p>
+                    <p className="text-lg font-extrabold text-white">{fmt(t.listeners)}</p>
                   </div>
-                  <p className="text-lg font-extrabold text-pink-400">{fmt(m.followers)}</p>
+                  <div>
+                    <p className="text-[9px] text-neutral-500 uppercase">Saves</p>
+                    <p className="text-lg font-extrabold text-violet-400">{fmt(t.saves)}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Charts */}
+        <section className="space-y-4">
+          <StreamingCharts
+            spotifyTracks={bp.tracks.map(t => ({ name: t.name, streams: t.spotifyStreams.current }))}
+            youtubeVideos={bp.youtubeVideos.map(v => ({ name: v.name.split(":")[0].replace("YouTube Views", "").trim() || v.name, views: v.views.current }))}
+            dailyStreams={dailyStreams.map(d => ({ name: d.name, streams: d.streams }))}
+          />
+        </section>
+
+        {/* Section 2: Social Media */}
+        <section className="glass-hybe rounded-2xl p-6">
+          <SectionHeader number="2" title="Social Media Performance" subtitle="SNS" color="bg-gradient-to-br from-tiktok to-cyan-300" />
+          <MetricRow label={socialMedia.totalFootprint.label} current={socialMedia.totalFootprint.current} prior={socialMedia.totalFootprint.prior} accent="text-tiktok" />
+          {socialMedia.platforms.map(p => (
+            <MetricRow key={p.platform} label={`${p.platform} ${p.metric} (Total)`} current={p.current} prior={p.prior} accent={`text-[${p.color}]`} />
+          ))}
+          <div className="mt-4">
+            <SocialChart data={socialMedia.platforms.map(p => ({ platform: p.platform, followers: p.current, color: p.color }))} />
+          </div>
+        </section>
+
+        {/* Section 3: Audio Virality */}
+        <section className="glass-hybe rounded-2xl p-6">
+          <SectionHeader number="3" title="Audio Virality" subtitle="TT + IG Audio Tracker" color="bg-gradient-to-br from-purple-500 to-pink-500" />
+          <MetricRow label={audioVirality.totalAudioViews.label} current={audioVirality.totalAudioViews.current} prior={audioVirality.totalAudioViews.prior} />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+            {audioVirality.tracks.map(t => (
+              <div key={t.name} className="bg-white/[0.02] rounded-xl p-4 border border-white/[0.04]">
+                <p className="font-bold text-white text-sm mb-2">{t.name}</p>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-[10px] text-neutral-500">Audio Views</span>
+                    <span className="text-sm font-bold text-white">{fmt(t.views)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[10px] text-neutral-500">TikTok Creates</span>
+                    <span className="text-sm font-bold text-tiktok">{t.tiktokCreates.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[10px] text-neutral-500">IG Creates</span>
+                    <span className="text-sm font-bold text-pink-400">{t.igCreates.toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Section 4: Band Member Followers */}
+        <section className="glass-hybe rounded-2xl p-6">
+          <SectionHeader number="4" title="Band Member Followers" subtitle="Instagram" color="bg-gradient-to-br from-pink-500 to-rose-400" />
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
+            {members.map((m, i) => {
+              const gradients = ["from-violet-600 to-blue-500", "from-cyan-500 to-blue-400", "from-pink-500 to-rose-400", "from-amber-500 to-orange-400", "from-emerald-500 to-teal-400"];
+              return (
+                <div key={m.handle} className="bg-white/[0.02] rounded-xl p-4 text-center border border-white/[0.04] hover:border-violet-500/20 hover:-translate-y-0.5 transition-all">
+                  <div className={`w-12 h-12 mx-auto rounded-lg bg-gradient-to-br ${gradients[i]} flex items-center justify-center text-sm font-bold text-white mb-2`}>
+                    {m.country}
+                  </div>
+                  <p className="font-bold text-xs text-white">{m.name}</p>
+                  <p className="text-[9px] text-neutral-600">{m.handle}</p>
+                  <p className="text-base font-extrabold text-pink-400 mt-1">{fmt(m.followers)}</p>
                 </div>
               );
             })}
           </div>
-          <div className="glass-hybe rounded-2xl p-4 flex items-center justify-between">
-            <span className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium">Total Band Member Followers</span>
-            <span className="text-xl font-extrabold text-white">{fmt(members.reduce((a, m) => a + m.followers, 0))}</span>
+          <div className="flex items-center justify-between py-3 px-2 bg-white/[0.02] rounded-lg border border-white/[0.04]">
+            <span className="text-sm font-semibold text-neutral-400">Total Band Member Followers</span>
+            <span className="text-xl font-extrabold text-white">{fmt(totalMemberFollowers.current)}</span>
           </div>
         </section>
 
-        {/* Geo Insights */}
-        <section className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold tracking-tight flex items-center gap-3">
-              <span className="w-1.5 h-6 rounded-full bg-gradient-to-b from-blue-500 to-indigo-400 inline-block" />
-              Geo Insights
-            </h2>
-            <span className="text-[10px] text-neutral-600 uppercase tracking-widest">Spotify · 28 Days</span>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="glass-hybe rounded-2xl p-6">
-              <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-4">Top Countries</p>
-              <GeoChart data={geoCountries} color="#8B5CF6" />
+        {/* Section 5: Geo Signals */}
+        <section className="glass-hybe rounded-2xl p-6">
+          <SectionHeader number="5" title="Geo Signals" subtitle="Spotify · 28 Days" color="bg-gradient-to-br from-blue-500 to-indigo-400" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3">Top Countries</p>
+              <div className="space-y-2">
+                {geoCountries.map((c, i) => (
+                  <div key={c.name} className="flex items-center gap-3">
+                    <span className="text-[10px] text-neutral-600 w-4 text-right">{i + 1}</span>
+                    <span className="text-sm">{c.flag}</span>
+                    <span className="text-sm text-neutral-300 flex-1">{c.name}</span>
+                    <span className="text-sm font-bold tabular-nums text-white">{fmt(c.listeners)}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="glass-hybe rounded-2xl p-6">
-              <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-4">Top Cities</p>
-              <GeoChart data={geoCities} color="#06B6D4" />
+            <div>
+              <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3">Top Cities</p>
+              <div className="space-y-2 mb-6">
+                {geoCities.map((c, i) => (
+                  <div key={c.name} className="flex items-center gap-3">
+                    <span className="text-[10px] text-neutral-600 w-4 text-right">{i + 1}</span>
+                    <span className="text-sm text-neutral-300 flex-1">{c.name}</span>
+                    <span className="text-sm font-bold tabular-nums text-white">{fmt(c.listeners)}</span>
+                  </div>
+                ))}
+              </div>
+              <GeoChart data={geoCities.map(c => ({ name: c.name, listeners: c.listeners }))} color="#06B6D4" />
             </div>
           </div>
         </section>
 
-        {/* Audience Stats */}
-        <section className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold tracking-tight flex items-center gap-3">
-              <span className="w-1.5 h-6 rounded-full bg-gradient-to-b from-amber-500 to-orange-400 inline-block" />
-              Audience
-            </h2>
-            <span className="text-[10px] text-neutral-600 uppercase tracking-widest">{audienceStats.period}</span>
+        {/* Audience Deep Dive */}
+        <section className="glass-hybe rounded-2xl p-6">
+          <SectionHeader number="📊" title="Audience Deep Dive" subtitle={audienceStats.period} color="bg-gradient-to-br from-amber-500 to-orange-400" />
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            {[
+              { label: "Listeners", value: audienceStats.listeners, accent: "" },
+              { label: "Streams", value: audienceStats.streams, accent: "" },
+              { label: "Streams / Listener", value: audienceStats.streamsPerListener, accent: "text-amber-400", isSpl: true },
+              { label: "Saves", value: audienceStats.saves, accent: "text-violet-400" },
+              { label: "Playlist Adds", value: audienceStats.playlistAdds, accent: "text-cyan-400" },
+              { label: "Followers", value: audienceStats.followers, accent: "text-spotify" },
+            ].map(s => (
+              <div key={s.label} className="bg-white/[0.02] rounded-xl p-3 border border-white/[0.04] text-center">
+                <p className="text-[9px] text-neutral-500 uppercase tracking-wider">{s.label}</p>
+                <p className={`text-lg font-extrabold mt-1 ${s.accent || "text-white"}`}>
+                  {s.isSpl ? (s.value as number).toFixed(2) : fmt(s.value as number)}
+                </p>
+              </div>
+            ))}
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            <StatCard label="Listeners" value={fmt(audienceStats.listeners)} />
-            <StatCard label="Streams" value={fmt(audienceStats.streams)} />
-            <StatCard label="Streams / Listener" value={audienceStats.streamsPerListener.toFixed(2)} />
-            <StatCard label="Saves" value={fmt(audienceStats.saves)} />
-            <StatCard label="Playlist Adds" value={fmt(audienceStats.playlistAdds)} />
-            <StatCard label="Followers" value={fmt(97592)} accent="text-spotify" />
+        </section>
+
+        {/* Section 6: PR & Media */}
+        <section className="glass-hybe rounded-2xl p-6">
+          <SectionHeader number="6" title="PR & Media Exposure" color="bg-gradient-to-br from-neutral-500 to-neutral-400" />
+          <div className="text-center py-6">
+            <p className="text-neutral-600 text-sm">{prMedia.note}</p>
+            <p className="text-[10px] text-neutral-700 mt-2">Coming soon: Billboard, press mentions, playlist features</p>
+          </div>
+        </section>
+
+        {/* Section 7: Fan Sentiment */}
+        <section className="glass-hybe rounded-2xl p-6">
+          <SectionHeader number="7" title="Fan Sentiment" color="bg-gradient-to-br from-rose-500 to-pink-400" />
+          <div className="text-center py-6">
+            <p className="text-neutral-600 text-sm">{fanSentiment.note}</p>
+            <p className="text-[10px] text-neutral-700 mt-2">Coming soon: Weverse posts, comments, engagement rate</p>
           </div>
         </section>
 
         {/* Footer */}
-        <footer className="text-center py-12 border-t border-white/[0.03] space-y-3">
+        <footer className="text-center py-10 border-t border-white/[0.03] space-y-2">
           <div className="flex items-center justify-center gap-3">
             <svg viewBox="0 0 60 14" className="h-3 text-neutral-600" fill="currentColor">
               <text x="0" y="12" fontFamily="Inter, system-ui, sans-serif" fontWeight="900" fontSize="13" letterSpacing="2">HYBE</text>
@@ -291,8 +339,8 @@ export default function Home() {
             <span className="text-neutral-700">·</span>
             <span className="text-[10px] font-medium tracking-[0.15em] text-neutral-600 uppercase">Latin America</span>
           </div>
-          <p className="text-neutral-700 text-[10px] uppercase tracking-[0.3em]">Artist Intelligence Platform</p>
-          <p className="text-neutral-800 text-[10px]">Data: Chartmetric · Spotify for Artists · YouTube · Cobrand · Weverse</p>
+          <p className="text-neutral-700 text-[10px] uppercase tracking-[0.3em]">Artist Intelligence Platform · {reportDate}</p>
+          <p className="text-neutral-800 text-[10px]">Chartmetric · Spotify for Artists · YouTube Data API · Cobrand · Weverse · Instagram</p>
         </footer>
       </div>
     </main>

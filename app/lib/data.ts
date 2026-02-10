@@ -1,78 +1,125 @@
-// Centralized data — swap these functions for live API calls later
+// Centralized data — swap these for live API calls later
+// All data as of Feb 9, 2026. Prior day = Feb 4, 2026 (last report)
 
-export const artistOverview = {
-  name: "Santos Bravos",
-  tagline: "HYBE Latin Pop Group",
-  monthlyListeners: 335584,
-  followers: 97592,
-  totalStreams: 29700000,
-  snsFootprint: 1700000,
-};
+export const reportDate = "February 9, 2026";
+export const priorDate = "February 4, 2026";
 
-export const spotifyTracks = [
-  { name: "0%", streams: 4818683 },
-  { name: "0% PT", streams: 902520 },
-  { name: "KAWASAKI", streams: 914305 },
-];
-
-export const youtubeVideos = [
-  { name: "0% MV", views: 12084773 },
-  { name: "0% Visualizer", views: 6224940 },
-  { name: "0% PT MV", views: 953545 },
-  { name: "KAWASAKI MV", views: 3849420 },
-];
-
-export const dailyStreams = [
-  { name: "KAWASAKI", streams: 73780 },
-  { name: "0%", streams: 30444 },
-  { name: "0% PT", streams: 10121 },
-];
-
-export const socialMedia = [
-  { platform: "TikTok", followers: 652800, color: "#00F2EA" },
-  { platform: "YouTube", followers: 471000, color: "#FF0000" },
-  { platform: "Instagram", followers: 399500, color: "#E1306C" },
-  { platform: "Weverse", followers: 183000, color: "#B8FF01" },
-];
-
-export const audioVirality = {
-  totalAudioViews: 10400000,
+// === SECTION 1: Business Performance Snapshot ===
+export const businessPerformance = {
+  spotifyMonthlyListeners: { current: 335584, prior: 325961, label: "Spotify Monthly Listeners (Global)" },
+  spotifyPopularity: { current: 51, prior: null, label: "Spotify Popularity Index" },
+  spotifyFollowers: { current: 97592, prior: null, label: "Spotify Followers" },
   tracks: [
-    { name: "0%", views: 8470000 },
-    { name: "0% PT", views: 1930000 },
-    { name: "KAWASAKI", views: 0 },
+    { name: "0%", spotifyStreams: { current: 4818683, prior: 4712736 } },
+    { name: "0% (Portuguese Version)", spotifyStreams: { current: 902520, prior: 868325 } },
+    { name: "KAWASAKI", spotifyStreams: { current: 914305, prior: 648672 } },
   ],
-  tiktokCreates: { track: "0%", lifetime: 7657 },
-  instagramCreates: { track: "0%", lifetime: 1781 },
+  totalCrossPlatformStreams: { current: 29748186, prior: null, label: "Total Cross-Platform Streams (All DSPs + YouTube)" },
+  youtubeVideos: [
+    { name: "KAWASAKI Performance Video", views: { current: 3849420, prior: 2158030 } },
+    { name: "0% Official MV", views: { current: 12084773, prior: 11975502 } },
+    { name: "0% (Portuguese) Lyric Video", views: { current: 953545, prior: 941246 } },
+    { name: "0% Debut Visualizer", views: { current: 6224940, prior: 6181833 } },
+  ],
+  spl: { current: 6.129, label: "Streams Per Listener (SPL) — 28 Days" },
 };
 
-export const members = [
-  { name: "Kenneth Lavíll", handle: "@soykennethlavill", followers: 685000 },
-  { name: "Kauê Penna", handle: "@kauepenna", followers: 250000 },
-  { name: "Alejandro Aramburu", handle: "@alearamburu_oficial", followers: 207000 },
-  { name: "Drew Venegas", handle: "@and.venn", followers: 179000 },
-  { name: "Gabi Bermúdez", handle: "@gabiprpr", followers: 130000 },
+// Daily streams from Spotify for Artists (Feb 8, 24h)
+export const dailyStreams = [
+  { name: "KAWASAKI", streams: 73780, listeners: 41053, saves: 5906 },
+  { name: "0%", streams: 30444, listeners: 21361, saves: 1084 },
+  { name: "0% (Portuguese)", streams: 10121, listeners: 6363, saves: 288 },
 ];
 
+// === SECTION 2: Social Media Performance (SNS) ===
+export const socialMedia = {
+  totalFootprint: { current: 1706313, prior: 1663235, label: "Total SNS Footprint (IG + TT + YT + WV)" },
+  platforms: [
+    { platform: "YouTube", metric: "Subscribers", current: 471000, prior: 459235, color: "#FF0000", icon: "▶" },
+    { platform: "TikTok", metric: "Followers", current: 652800, prior: 639100, color: "#00F2EA", icon: "♪" },
+    { platform: "Instagram", metric: "Followers", current: 399513, prior: 386935, color: "#E1306C", icon: "◉" },
+    { platform: "Weverse", metric: "Members", current: 183000, prior: 177965, color: "#B8FF01", icon: "W" },
+  ],
+};
+
+// === SECTION 3: Audio Virality (TT + IG Audio Tracker) ===
+export const audioVirality = {
+  totalAudioViews: { current: 10404617, prior: 10263380, label: "Total Audio Views (TT + IG)" },
+  tracks: [
+    { name: "0%", views: 8469658, tiktokCreates: 7657, igCreates: 1781 },
+    { name: "0% (Portuguese)", views: 1934959, tiktokCreates: 7657, igCreates: 0 },
+    { name: "KAWASAKI", views: 0, tiktokCreates: 4903, igCreates: 0 },
+  ],
+};
+
+// === SECTION 4: Band Member Followers ===
+export const members = [
+  { name: "Kenneth Lavíll", handle: "@soykennethlavill", followers: 685000, country: "🇲🇽" },
+  { name: "Kauê Penna", handle: "@kauepenna", followers: 250000, country: "🇧🇷" },
+  { name: "Alejandro Aramburu", handle: "@alearamburu_oficial", followers: 207000, country: "🇲🇽" },
+  { name: "Drew Venegas", handle: "@and.venn", followers: 179000, country: "🇺🇸" },
+  { name: "Gabi Bermúdez", handle: "@gabiprpr", followers: 130000, country: "🇵🇷" },
+];
+export const totalMemberFollowers = { current: 1451000, prior: null };
+
+// === SECTION 5: Geo Signals ===
 export const geoCountries = [
-  { name: "Mexico", listeners: 136133 },
-  { name: "Peru", listeners: 46276 },
-  { name: "United States", listeners: 33662 },
-  { name: "Brazil", listeners: 26778 },
-  { name: "Chile", listeners: 21296 },
+  { name: "Mexico", listeners: 136133, flag: "🇲🇽" },
+  { name: "Peru", listeners: 46276, flag: "🇵🇪" },
+  { name: "United States", listeners: 33662, flag: "🇺🇸" },
+  { name: "Brazil", listeners: 26778, flag: "🇧🇷" },
+  { name: "Chile", listeners: 21296, flag: "🇨🇱" },
+  { name: "Colombia", listeners: 11763, flag: "🇨🇴" },
+  { name: "Argentina", listeners: 11527, flag: "🇦🇷" },
+  { name: "Spain", listeners: 6728, flag: "🇪🇸" },
+  { name: "Guatemala", listeners: 5584, flag: "🇬🇹" },
+  { name: "Ecuador", listeners: 5039, flag: "🇪🇨" },
 ];
 
 export const geoCities = [
   { name: "Mexico City", listeners: 36503 },
   { name: "Lima", listeners: 30136 },
   { name: "Santiago", listeners: 13296 },
+  { name: "Guadalajara", listeners: 7529 },
+  { name: "Puebla", listeners: 6711 },
 ];
 
+// === SECTION 6: PR & Media Exposure ===
+export const prMedia = {
+  note: "Tracking coverage and mentions — data collection in progress",
+};
+
+// === SECTION 7: Fan Sentiment ===
+export const fanSentiment = {
+  note: "Weverse engagement analysis — data collection in progress",
+};
+
+// === Audience Stats (Spotify for Artists, 28 days) ===
 export const audienceStats = {
-  period: "28 days",
+  period: "Jan 12 – Feb 8, 2026",
   listeners: 345077,
   streams: 2114959,
   streamsPerListener: 6.129,
   saves: 120154,
   playlistAdds: 105653,
+  followers: 97592,
 };
+
+// Legacy exports for chart components
+export const artistOverview = {
+  name: "Santos Bravos",
+  tagline: "The First Latin Boy Band by HYBE",
+  monthlyListeners: 335584,
+  followers: 97592,
+  totalStreams: 29748186,
+  snsFootprint: 1706313,
+};
+
+export const spotifyTracks = businessPerformance.tracks.map(t => ({
+  name: t.name, streams: t.spotifyStreams.current
+}));
+
+export const youtubeVideos = businessPerformance.youtubeVideos.map(v => ({
+  name: v.name.replace(/ (Performance Video|Official MV|Lyric Video|Debut Visualizer)/, ""),
+  views: v.views.current
+}));
