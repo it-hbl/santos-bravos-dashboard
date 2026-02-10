@@ -514,13 +514,13 @@ function Dashboard() {
           <SectionHeader number="6" title="PR & Media Exposure" subtitle={`Meltwater · ${livePR.period}`} color="bg-gradient-to-br from-violet-500 to-indigo-400" />
           <div className="grid grid-cols-3 gap-3 mb-5">
             {[
-              { label: "Total Mentions", value: livePR.totalMentions.toLocaleString(), accent: "text-violet-400" },
-              { label: "Avg / Day", value: livePR.perDay.toLocaleString(), accent: "text-white" },
-              { label: "Unique Authors", value: livePR.uniqueAuthors.toLocaleString(), accent: "text-cyan-400" },
+              { label: "Total Mentions", value: livePR.totalMentions, accent: "text-violet-400" },
+              { label: "Avg / Day", value: livePR.perDay, accent: "text-white" },
+              { label: "Unique Authors", value: livePR.uniqueAuthors, accent: "text-cyan-400" },
             ].map(s => (
               <div key={s.label} className="bg-white/[0.02] rounded-xl p-3 border border-white/[0.04] text-center">
                 <p className="text-[9px] text-neutral-500 uppercase tracking-wider">{s.label}</p>
-                <p className={`text-xl font-extrabold mt-1 ${s.accent}`}>{s.value}</p>
+                <p className={`text-xl font-extrabold mt-1 ${s.accent}`}><CountUpValue value={s.value} /></p>
               </div>
             ))}
           </div>
@@ -688,6 +688,43 @@ function Dashboard() {
               </div>
             </div>
           </div>
+
+          {/* Top Shared Links */}
+          {(liveSentiment.topSharedLinks || []).length > 0 && (
+            <div className="mt-6 pt-5 border-t border-white/[0.05]">
+              <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3">🔗 Most Shared Links</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {(liveSentiment.topSharedLinks || []).slice(0, 6).map((link, i) => {
+                  let domain = "";
+                  try { domain = new URL(link.url).hostname.replace("www.", ""); } catch { domain = link.url; }
+                  const maxShares = (liveSentiment.topSharedLinks || [])[0]?.count || 1;
+                  return (
+                    <a
+                      key={`${link.url}-${i}`}
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group bg-white/[0.02] hover:bg-white/[0.04] rounded-xl p-3 border border-white/[0.04] hover:border-rose-500/20 transition-all"
+                    >
+                      <div className="flex items-start gap-2 mb-2">
+                        <span className="text-[10px] font-bold text-rose-400 tabular-nums mt-0.5">#{i + 1}</span>
+                        <p className="text-xs text-neutral-300 group-hover:text-white transition-colors line-clamp-2 flex-1 leading-relaxed">
+                          {link.title || domain}
+                        </p>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-[9px] text-neutral-600 truncate max-w-[60%]">{domain}</span>
+                        <span className="text-[10px] font-bold text-rose-400 tabular-nums">{link.count.toLocaleString()} shares</span>
+                      </div>
+                      <div className="w-full bg-white/[0.04] rounded-full h-1 mt-2 overflow-hidden">
+                        <div className="bg-rose-500/60 h-full rounded-full transition-all duration-700" style={{ width: `${(link.count / maxShares) * 100}%` }} />
+                      </div>
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </section>
         </AnimatedSection>
 
