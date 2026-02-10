@@ -13,6 +13,7 @@ import SentimentDonut from "./components/SentimentDonut";
 import { AnimatedSection, CountUpValue, StaggerChildren, StaggerItem } from "./components/AnimatedSection";
 import Image from "next/image";
 import { LiveDataProvider, LiveBadge, useLiveData } from "./components/LiveDataProvider";
+import ViralityChart from "./components/ViralityChart";
 
 function fmt(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -278,6 +279,10 @@ function Dashboard() {
                 </div>
               </div>
             ))}
+          </div>
+          <div className="mt-5">
+            <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-2">Platform Creates Comparison</p>
+            <ViralityChart tracks={audioVirality.tracks} />
           </div>
         </section>
         </AnimatedSection>
