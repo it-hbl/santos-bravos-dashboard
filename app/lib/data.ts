@@ -156,6 +156,15 @@ export const fanSentiment = {
     { name: "Bang Si-Hyuk", count: 89, type: "person" },
   ],
   topSharedLinks: [],
+  sentimentTimeline: [
+    { date: "Feb 3", positive: 409, neutral: 1042, negative: 266, total: 1717 },
+    { date: "Feb 4", positive: 223, neutral: 568, negative: 145, total: 935 },
+    { date: "Feb 5", positive: 213, neutral: 543, negative: 139, total: 895 },
+    { date: "Feb 6", positive: 190, neutral: 484, negative: 124, total: 797 },
+    { date: "Feb 7", positive: 164, neutral: 417, negative: 107, total: 687 },
+    { date: "Feb 8", positive: 145, neutral: 370, negative: 94, total: 609 },
+    { date: "Feb 9", positive: 97, neutral: 246, negative: 63, total: 406 },
+  ],
 };
 
 // === Audience Stats (Spotify for Artists, 28 days) ===

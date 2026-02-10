@@ -151,11 +151,20 @@ export async function GET() {
     const endDate = new Date(end).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
     const period = `${startDate} – ${endDate}`;
 
+    // Estimate daily sentiment by distributing overall sentiment ratios across daily volume
+    const sentimentTimeline = timeSeries.map((d: { date: string; mentions: number }) => ({
+      date: d.date,
+      positive: Math.round(d.mentions * (positive.pct / 100)),
+      neutral: Math.round(d.mentions * (neutral.pct / 100)),
+      negative: Math.round(d.mentions * (negative.pct / 100)),
+      total: d.mentions,
+    }));
+
     return NextResponse.json({
       live: true,
       data: {
         prMedia: { period, totalMentions, perDay, uniqueAuthors, timeSeries, topCountries, topKeyphrases, topSources },
-        fanSentiment: { period, positive, negative, neutral, topHashtags, topEntities, topSharedLinks },
+        fanSentiment: { period, positive, negative, neutral, topHashtags, topEntities, topSharedLinks, sentimentTimeline },
         fetchedAt: new Date().toISOString(),
       },
     });

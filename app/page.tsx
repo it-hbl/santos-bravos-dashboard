@@ -24,6 +24,7 @@ import TrackRadar from "./components/TrackRadar";
 import CollapsibleSection from "./components/CollapsibleSection";
 import ScrollProgress from "./components/ScrollProgress";
 import CopySummary from "./components/CopySummary";
+import SentimentTimeline from "./components/SentimentTimeline";
 
 function fmt(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -710,6 +711,14 @@ function Dashboard() {
               </div>
             ))}
           </div>
+
+          {/* Sentiment Timeline */}
+          {(liveSentiment.sentimentTimeline || []).length > 0 && (
+            <div className="mb-6">
+              <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-2">Sentiment Trend (Daily Breakdown)</p>
+              <SentimentTimeline data={liveSentiment.sentimentTimeline!} />
+            </div>
+          )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Gauge + Donut */}

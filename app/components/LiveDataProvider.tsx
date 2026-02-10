@@ -38,6 +38,7 @@ interface LiveMeltwaterData {
     topHashtags: { tag: string; count: number; pct: number }[];
     topEntities?: { name: string; count: number; type: string }[];
     topSharedLinks?: { url: string; title: string; count: number }[];
+    sentimentTimeline?: { date: string; positive: number; neutral: number; negative: number; total: number }[];
   };
   fetchedAt: string | null;
 }
