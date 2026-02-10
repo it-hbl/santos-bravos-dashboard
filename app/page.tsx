@@ -17,6 +17,7 @@ import ViralityChart from "./components/ViralityChart";
 import SourceDonut from "./components/SourceDonut";
 import KeyHighlights from "./components/KeyHighlights";
 import GrowthVelocity from "./components/GrowthVelocity";
+import SectionNav from "./components/SectionNav";
 
 function fmt(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -133,8 +134,11 @@ function Dashboard() {
       </nav>
 
       <div className="max-w-7xl mx-auto px-4 py-8 space-y-10">
+        {/* Section Nav */}
+        <SectionNav />
+
         {/* Hero */}
-        <section className="hero-bg rounded-3xl p-5 sm:p-8 md:p-10">
+        <section id="hero" className="hero-bg rounded-3xl p-5 sm:p-8 md:p-10 scroll-mt-16">
           {/* Report Date Banner */}
           <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/[0.05]">
             <div className="flex items-center gap-3">
@@ -195,6 +199,7 @@ function Dashboard() {
         </section>
 
         {/* Key Highlights - Executive Summary */}
+        <div id="highlights" className="scroll-mt-16" />
         <AnimatedSection>
           <KeyHighlights
             spotifyListeners={{ current: liveListeners, prior: bp.spotifyMonthlyListeners.prior }}
@@ -210,6 +215,7 @@ function Dashboard() {
         </AnimatedSection>
 
         {/* Growth Velocity */}
+        <div id="velocity" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-5 sm:p-6">
           <SectionHeader number="📊" title="Growth Velocity" subtitle="Period-over-Period %" color="bg-gradient-to-br from-cyan-500 to-blue-500" />
@@ -239,6 +245,7 @@ function Dashboard() {
         </AnimatedSection>
 
         {/* Section 1: Business Performance */}
+        <div id="business" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
           <SectionHeader number="1" title="Business Performance Snapshot" subtitle="Spotify + YouTube" color="bg-spotify" />
@@ -319,6 +326,7 @@ function Dashboard() {
         </AnimatedSection>
 
         {/* Daily Streams (SFA) */}
+        <div id="daily" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
           <SectionHeader number="⚡" title="Spotify for Artists — Daily Snapshot" subtitle="Saturday, February 8, 2026 (24h)" color="bg-gradient-to-br from-spotify to-emerald-400" />
@@ -347,6 +355,7 @@ function Dashboard() {
         </AnimatedSection>
 
         {/* Charts */}
+        <div id="charts" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="space-y-4">
           <StreamingCharts
@@ -358,6 +367,7 @@ function Dashboard() {
         </AnimatedSection>
 
         {/* Section 2: Social Media */}
+        <div id="social" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
           <SectionHeader number="2" title="Social Media Performance" subtitle="SNS · As of 2/9/26" color="bg-gradient-to-br from-tiktok to-cyan-300" />
@@ -372,6 +382,7 @@ function Dashboard() {
         </AnimatedSection>
 
         {/* Section 3: Audio Virality */}
+        <div id="virality" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
           <SectionHeader number="3" title="Audio Virality" subtitle="Cobrand · TT + IG · As of 2/9/26" color="bg-gradient-to-br from-purple-500 to-pink-500" />
@@ -405,6 +416,7 @@ function Dashboard() {
         </AnimatedSection>
 
         {/* Section 4: Band Member Followers */}
+        <div id="members" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
           <SectionHeader number="4" title="Band Member Followers" subtitle="Instagram · As of 2/9/26" color="bg-gradient-to-br from-pink-500 to-rose-400" />
@@ -431,6 +443,7 @@ function Dashboard() {
         </AnimatedSection>
 
         {/* Section 5: Geo Signals */}
+        <div id="geo" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
           <SectionHeader number="5" title="Geo Signals" subtitle="Spotify · Jan 12 – Feb 8, 2026 (28 Days)" color="bg-gradient-to-br from-blue-500 to-indigo-400" />
@@ -463,6 +476,7 @@ function Dashboard() {
         </AnimatedSection>
 
         {/* Audience Deep Dive */}
+        <div id="audience" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
           <SectionHeader number="📊" title="Audience Deep Dive" subtitle={`Spotify for Artists · ${audienceStats.period}`} color="bg-gradient-to-br from-amber-500 to-orange-400" />
@@ -487,6 +501,7 @@ function Dashboard() {
         </AnimatedSection>
 
         {/* Section 6: PR & Media */}
+        <div id="pr" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
           <SectionHeader number="6" title="PR & Media Exposure" subtitle={`Meltwater · ${livePR.period}`} color="bg-gradient-to-br from-violet-500 to-indigo-400" />
@@ -579,6 +594,7 @@ function Dashboard() {
         </AnimatedSection>
 
         {/* Section 7: Fan Sentiment */}
+        <div id="sentiment" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
           <SectionHeader number="7" title="Fan Sentiment & Conversation" subtitle={`Meltwater · ${liveSentiment.period}`} color="bg-gradient-to-br from-rose-500 to-pink-400" />
