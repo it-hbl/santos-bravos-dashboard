@@ -22,6 +22,7 @@ import PlatformDistribution from "./components/PlatformDistribution";
 import SentimentGauge from "./components/SentimentGauge";
 import TrackRadar from "./components/TrackRadar";
 import CollapsibleSection from "./components/CollapsibleSection";
+import ScrollProgress from "./components/ScrollProgress";
 
 function fmt(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -118,6 +119,7 @@ function Dashboard() {
 
   return (
     <main className="min-h-screen">
+      <ScrollProgress />
       {/* Nav */}
       <nav className="sticky top-0 z-50 glass border-b border-white/5 px-3 sm:px-6 py-3 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 sm:gap-4 min-w-0">
