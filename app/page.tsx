@@ -15,6 +15,7 @@ import Image from "next/image";
 import { LiveDataProvider, LiveBadge, useLiveData } from "./components/LiveDataProvider";
 import ViralityChart from "./components/ViralityChart";
 import SourceDonut from "./components/SourceDonut";
+import KeyHighlights from "./components/KeyHighlights";
 
 function fmt(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -191,6 +192,21 @@ function Dashboard() {
             </div>
           </div>
         </section>
+
+        {/* Key Highlights - Executive Summary */}
+        <AnimatedSection>
+          <KeyHighlights
+            spotifyListeners={{ current: liveListeners, prior: bp.spotifyMonthlyListeners.prior }}
+            tracks={liveTrackStreams.map(t => ({ name: t.name, current: t.spotifyStreams.current, prior: t.spotifyStreams.prior }))}
+            ytVideos={liveYTVideos.map(v => ({ name: v.name, current: v.views.current, prior: v.views.prior }))}
+            snsTotal={{ current: socialMedia.totalFootprint.current, prior: socialMedia.totalFootprint.prior }}
+            totalStreams={{ current: bp.totalCrossPlatformStreams.current, prior: bp.totalCrossPlatformStreams.prior }}
+            dailyTopTrack={dailyStreams.length > 0 ? { name: dailyStreams[0].name, streams: dailyStreams[0].streams } : null}
+            mentionVolume={livePR.totalMentions}
+            sentimentPositivePct={liveSentiment.positive.pct}
+            topMarket={geoCountries[0]?.name || ""}
+          />
+        </AnimatedSection>
 
         {/* Section 1: Business Performance */}
         <AnimatedSection>
