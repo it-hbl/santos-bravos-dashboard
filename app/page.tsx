@@ -430,14 +430,33 @@ function Dashboard() {
           <StaggerChildren className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
             {members.map((m, i) => {
               const gradients = ["from-violet-600 to-blue-500", "from-cyan-500 to-blue-400", "from-pink-500 to-rose-400", "from-amber-500 to-orange-400", "from-emerald-500 to-teal-400"];
+              const barColors = ["bg-violet-500", "bg-cyan-500", "bg-pink-500", "bg-amber-500", "bg-emerald-500"];
+              const sharePct = totalMemberFollowers.current > 0 ? (m.followers / totalMemberFollowers.current) * 100 : 0;
+              const igUrl = `https://instagram.com/${m.handle.replace("@", "")}/`;
               return (
-                <StaggerItem key={m.handle} className="bg-white/[0.02] rounded-xl p-4 text-center border border-white/[0.04] hover:border-violet-500/20 hover:-translate-y-0.5 transition-all">
-                  <div className={`w-12 h-12 mx-auto rounded-lg bg-gradient-to-br ${gradients[i]} flex items-center justify-center text-sm font-bold text-white mb-2`}>
-                    {m.country}
-                  </div>
-                  <p className="font-bold text-xs text-white">{m.name}</p>
-                  <p className="text-[9px] text-neutral-600">{m.handle}</p>
-                  <p className="text-base font-extrabold text-pink-400 mt-1">{fmt(m.followers)}</p>
+                <StaggerItem key={m.handle}>
+                  <a
+                    href={igUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block bg-white/[0.02] rounded-xl p-4 text-center border border-white/[0.04] hover:border-pink-500/30 hover:-translate-y-1 hover:shadow-lg hover:shadow-pink-500/5 transition-all group"
+                  >
+                    <div className="relative">
+                      <div className={`w-12 h-12 mx-auto rounded-lg bg-gradient-to-br ${gradients[i]} flex items-center justify-center text-sm font-bold text-white mb-2 group-hover:scale-105 transition-transform`}>
+                        {m.country}
+                      </div>
+                      <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-white/[0.06] flex items-center justify-center text-[9px] font-black text-neutral-500">#{i + 1}</span>
+                    </div>
+                    <p className="font-bold text-xs text-white group-hover:text-pink-300 transition-colors">{m.name}</p>
+                    <p className="text-[9px] text-neutral-600 group-hover:text-neutral-400 transition-colors">{m.handle}</p>
+                    <p className="text-base font-extrabold text-pink-400 mt-1">{fmt(m.followers)}</p>
+                    <div className="mt-2">
+                      <div className="w-full bg-white/[0.04] rounded-full h-1.5 overflow-hidden">
+                        <div className={`h-full ${barColors[i]} rounded-full transition-all duration-1000`} style={{ width: `${sharePct}%` }} />
+                      </div>
+                      <p className="text-[9px] text-neutral-600 mt-1">{sharePct.toFixed(1)}% of total</p>
+                    </div>
+                  </a>
                 </StaggerItem>
               );
             })}
