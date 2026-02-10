@@ -54,3 +54,113 @@ body {
 .animate-pulse-slow {
   animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
+
+/* ─── Print Styles ─── */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm 10mm;
+  }
+
+  body {
+    background: white !important;
+    color: #111 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Remove dark glass backgrounds, use white + subtle borders */
+  .glass, .glass-hybe {
+    background: white !important;
+    backdrop-filter: none !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: none !important;
+  }
+
+  .hero-bg {
+    background: #f9fafb !important;
+  }
+
+  /* Force dark text everywhere */
+  h1, h2, h3, p, span, div, a {
+    color: #111 !important;
+    -webkit-text-fill-color: #111 !important;
+  }
+
+  /* Gradient text → solid for print */
+  .sb-gradient, .hybe-gradient {
+    background: none !important;
+    -webkit-text-fill-color: #7C3AED !important;
+    color: #7C3AED !important;
+  }
+
+  /* Accent colors stay readable */
+  .text-spotify { color: #1DB954 !important; -webkit-text-fill-color: #1DB954 !important; }
+  .text-tiktok { color: #00B4D8 !important; -webkit-text-fill-color: #00B4D8 !important; }
+  .text-ytred { color: #DC2626 !important; -webkit-text-fill-color: #DC2626 !important; }
+  .text-violet-400 { color: #7C3AED !important; -webkit-text-fill-color: #7C3AED !important; }
+  .text-pink-400 { color: #EC4899 !important; -webkit-text-fill-color: #EC4899 !important; }
+  .text-emerald-400 { color: #059669 !important; -webkit-text-fill-color: #059669 !important; }
+  .text-red-400 { color: #DC2626 !important; -webkit-text-fill-color: #DC2626 !important; }
+  .text-cyan-400 { color: #0891B2 !important; -webkit-text-fill-color: #0891B2 !important; }
+  .text-amber-400 { color: #D97706 !important; -webkit-text-fill-color: #D97706 !important; }
+  .text-rose-400 { color: #E11D48 !important; -webkit-text-fill-color: #E11D48 !important; }
+  .text-blue-400 { color: #2563EB !important; -webkit-text-fill-color: #2563EB !important; }
+  .text-neutral-400, .text-neutral-500, .text-neutral-600 {
+    color: #6B7280 !important;
+    -webkit-text-fill-color: #6B7280 !important;
+  }
+
+  /* Muted bg cards → light gray */
+  [class*="bg-white/[0.02]"], [class*="bg-white/[0.03]"], [class*="bg-white/[0.04]"],
+  [class*="bg-white/[0.01]"], [class*="bg-white/[0.015]"] {
+    background: #f9fafb !important;
+    border-color: #e5e7eb !important;
+  }
+
+  /* Progress bars keep their color on print */
+  .bg-emerald-500, .bg-red-500, .bg-neutral-500, .bg-indigo-500, .bg-violet-500,
+  .bg-pink-500, .bg-rose-500, .bg-cyan-500, .bg-amber-500, .bg-blue-500 {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Hide interactive-only elements */
+  nav, [data-print-hide], .animate-pulse-slow {
+    display: none !important;
+  }
+
+  /* Keep the section nav hidden */
+  #section-nav-sidebar {
+    display: none !important;
+  }
+
+  /* Scroll progress bar */
+  [style*="z-index: 60"] {
+    display: none !important;
+  }
+
+  /* Force all collapsible sections open */
+  [data-collapsed="true"] > [data-collapsible-body] {
+    max-height: none !important;
+    opacity: 1 !important;
+    overflow: visible !important;
+  }
+
+  /* Prevent page breaks inside cards */
+  .glass-hybe, section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Recharts SVGs print */
+  .recharts-wrapper {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Print header — rendered by PrintHeader component */
+  .print-header {
+    display: block !important;
+  }
+}

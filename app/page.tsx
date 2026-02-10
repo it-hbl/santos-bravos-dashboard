@@ -120,6 +120,19 @@ function Dashboard() {
 
   return (
     <main className="min-h-screen">
+      {/* Print-only header */}
+      <div className="print-header hidden" style={{ display: 'none' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #7C3AED', paddingBottom: '8px', marginBottom: '16px' }}>
+          <div>
+            <div style={{ fontSize: '18px', fontWeight: 900, letterSpacing: '3px' }}>HYBE</div>
+            <div style={{ fontSize: '10px', color: '#6B7280', textTransform: 'uppercase', letterSpacing: '2px' }}>Latin America · Artist Intelligence</div>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontSize: '14px', fontWeight: 700 }}>SANTOS BRAVOS — Daily Report</div>
+            <div style={{ fontSize: '11px', color: '#6B7280' }}>{reportDate} · Printed {new Date().toLocaleDateString()}</div>
+          </div>
+        </div>
+      </div>
       <ScrollProgress />
       {/* Nav */}
       <nav className="sticky top-0 z-50 glass border-b border-white/5 px-3 sm:px-6 py-3 flex items-center justify-between gap-2">
@@ -136,6 +149,13 @@ function Dashboard() {
           <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg px-2 sm:px-3 py-1.5">
             <span className="text-[10px] text-white font-bold uppercase tracking-wider">📅 <span className="hidden sm:inline">Report: </span>2/9/2026</span>
           </div>
+          <button
+            onClick={() => window.print()}
+            className="bg-white/[0.04] border border-white/[0.06] rounded-lg px-2 sm:px-3 py-1.5 hover:bg-white/[0.08] transition-colors"
+            title="Print / Save as PDF"
+          >
+            <span className="text-[10px] text-white font-bold uppercase tracking-wider">🖨️<span className="hidden sm:inline"> PDF</span></span>
+          </button>
           <CopySummary data={{
             reportDate,
             listeners: liveListeners,
