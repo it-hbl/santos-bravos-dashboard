@@ -30,6 +30,7 @@ import AudienceFunnel from "./components/AudienceFunnel";
 import DataSourcesStatus from "./components/DataSourcesStatus";
 import MilestonesTracker from "./components/MilestonesTracker";
 import Sparkline from "./components/Sparkline";
+import KeyboardShortcuts from "./components/KeyboardShortcuts";
 
 function fmt(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -107,7 +108,7 @@ function SectionHeader({ number, title, subtitle, color }: { number: string; tit
 function Dashboard() {
   const bp = businessPerformance;
   const o = artistOverview;
-  const { chartmetric, youtube, meltwater, isLive } = useLiveData();
+  const { chartmetric, youtube, meltwater, isLive, refresh } = useLiveData();
 
   // Overlay live Meltwater data when available
   const livePR = meltwater?.prMedia ?? prMedia;
@@ -893,6 +894,7 @@ function Dashboard() {
           </div>
         </footer>
       </div>
+      <KeyboardShortcuts onRefresh={refresh} />
     </main>
   );
 }
