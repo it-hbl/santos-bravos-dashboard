@@ -5,6 +5,8 @@ interface Milestone {
   label: string;
   current: number;
   target: number;
+  prior?: number | null;       // value at priorDate
+  priorDaysAgo?: number;       // how many days between prior and current report
   icon: string;
   color: string; // tailwind gradient from
   formatFn?: (n: number) => string;
@@ -38,6 +40,30 @@ export default function MilestonesTracker({ milestones }: { milestones: Mileston
           const fmt = m.formatFn || defaultFmt;
           const remaining = m.target - m.current;
           const isComplete = pct >= 100;
+
+          // Calculate projected completion date based on growth velocity
+          let projectedDate: string | null = null;
+          let daysToTarget: number | null = null;
+          let dailyGrowth: number | null = null;
+          const periodDays = m.priorDaysAgo ?? 5; // default 5 days between reports
+          if (!isComplete && m.prior != null && m.prior > 0 && m.current > m.prior) {
+            dailyGrowth = (m.current - m.prior) / periodDays;
+            daysToTarget = Math.ceil(remaining / dailyGrowth);
+            const targetDate = new Date();
+            targetDate.setDate(targetDate.getDate() + daysToTarget);
+            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            projectedDate = `${monthNames[targetDate.getMonth()]} ${targetDate.getDate()}, ${targetDate.getFullYear()}`;
+          }
+          // Pace label
+          let paceLabel: string | null = null;
+          let paceColor = "text-neutral-500";
+          if (daysToTarget !== null) {
+            if (daysToTarget <= 30) { paceLabel = "🔥 On fire"; paceColor = "text-emerald-400"; }
+            else if (daysToTarget <= 90) { paceLabel = "🚀 Strong pace"; paceColor = "text-emerald-400"; }
+            else if (daysToTarget <= 180) { paceLabel = "📈 Steady"; paceColor = "text-amber-400"; }
+            else if (daysToTarget <= 365) { paceLabel = "🐢 Slow"; paceColor = "text-orange-400"; }
+            else { paceLabel = "⏳ Long road"; paceColor = "text-neutral-500"; }
+          }
           return (
             <div
               key={m.label}
@@ -76,6 +102,19 @@ export default function MilestonesTracker({ milestones }: { milestones: Mileston
                   </span>
                 )}
               </div>
+              {/* Projected completion date */}
+              {!isComplete && projectedDate && dailyGrowth !== null && (
+                <div className="mt-2 pt-2 border-t border-white/[0.04] flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <span className={`text-[9px] font-semibold ${paceColor}`}>{paceLabel}</span>
+                    <span className="text-[9px] text-neutral-600">·</span>
+                    <span className="text-[9px] text-neutral-500 tabular-nums">+{fmt(Math.round(dailyGrowth))}/day</span>
+                  </div>
+                  <span className="text-[9px] font-semibold text-violet-400 tabular-nums" title={`Estimated at current growth rate (~${daysToTarget} days)`}>
+                    📅 {projectedDate}
+                  </span>
+                </div>
+              )}
             </div>
           );
         })}
