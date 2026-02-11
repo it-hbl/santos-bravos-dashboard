@@ -55,7 +55,7 @@ export default function SourceDonut({ sources }: { sources: SourceData[] }) {
           </Pie>
           <Tooltip
             contentStyle={{ background: "#18181b", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, fontSize: 12 }}
-            formatter={(value: number, name: string) => [`${value.toLocaleString()} (${((value / total) * 100).toFixed(1)}%)`, name]}
+            formatter={(value: number, name: string) => [`${value?.toLocaleString() ?? "—"} (${((value / total) * 100).toFixed(1)}%)`, name]}
           />
         </PieChart>
       </ResponsiveContainer>

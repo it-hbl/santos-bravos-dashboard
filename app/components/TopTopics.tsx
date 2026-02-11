@@ -45,11 +45,11 @@ export default function TopTopics({ topics }: TopTopicsProps) {
               cursor-default group
             `}
             style={{ fontSize: `${Math.max(10, 10 + (t.scale - 0.7) * 10)}px` }}
-            title={`${t.topic}: ${t.count.toLocaleString()} mentions`}
+            title={`${t.topic}: ${t.count?.toLocaleString() ?? "—"} mentions`}
           >
             <span className="font-semibold">{t.topic}</span>
             <span className="ml-1.5 text-[9px] opacity-60 font-bold tabular-nums group-hover:opacity-100 transition-opacity">
-              {t.count.toLocaleString()}
+              {t.count?.toLocaleString() ?? "—"}
             </span>
           </div>
         ))}

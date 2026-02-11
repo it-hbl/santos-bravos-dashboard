@@ -38,7 +38,7 @@ export default function TopInfluencers({ mentions }: { mentions: Mention[] }) {
                   style={{ width: `${(m.count / max) * 100}%` }}
                 />
               </div>
-              <span className="text-[10px] font-bold tabular-nums text-neutral-400 w-12 text-right">{m.count.toLocaleString()}</span>
+              <span className="text-[10px] font-bold tabular-nums text-neutral-400 w-12 text-right">{m.count?.toLocaleString() ?? "—"}</span>
               <span className="text-[9px] text-neutral-600 w-10 text-right tabular-nums">{pct}%</span>
             </a>
           );
@@ -46,7 +46,7 @@ export default function TopInfluencers({ mentions }: { mentions: Mention[] }) {
       </div>
       <div className="mt-2 pt-2 border-t border-white/[0.03] flex items-center justify-between px-1.5">
         <span className="text-[9px] text-neutral-600">Total mentions of handles</span>
-        <span className="text-[10px] font-bold text-neutral-500 tabular-nums">{total.toLocaleString()}</span>
+        <span className="text-[10px] font-bold text-neutral-500 tabular-nums">{total?.toLocaleString() ?? "—"}</span>
       </div>
     </div>
   );

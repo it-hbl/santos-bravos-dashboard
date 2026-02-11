@@ -65,7 +65,7 @@ function CustomContent(props: any) {
           fill="rgba(255,255,255,0.7)"
           fontSize={9}
         >
-          {listeners >= 1000 ? (listeners / 1000).toFixed(1) + "K" : listeners.toLocaleString()}
+          {listeners >= 1000 ? (listeners / 1000).toFixed(1) + "K" : listeners?.toLocaleString() ?? "—"}
         </text>
       )}
     </g>
@@ -81,7 +81,7 @@ function CustomTooltip({ active, payload }: any) {
     <div className="bg-neutral-900/95 border border-white/10 rounded-lg px-3 py-2 shadow-xl backdrop-blur-sm">
       <p className="text-sm font-bold text-white">{d.flag} {d.name}</p>
       <p className="text-xs text-neutral-400 mt-1">
-        <span className="text-violet-400 font-bold">{d.listeners.toLocaleString()}</span> listeners · <span className="text-cyan-400 font-semibold">{pct}%</span> of top 10
+        <span className="text-violet-400 font-bold">{d.listeners?.toLocaleString() ?? "—"}</span> listeners · <span className="text-cyan-400 font-semibold">{pct}%</span> of top 10
       </p>
     </div>
   );

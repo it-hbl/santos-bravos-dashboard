@@ -13,7 +13,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return (
     <div className="glass rounded-lg px-3 py-2 text-sm">
       <p className="font-semibold">{label}</p>
-      <p className="font-mono">{payload[0].value.toLocaleString()}</p>
+      <p className="font-mono">{payload[0]?.value?.toLocaleString() ?? "—"}</p>
     </div>
   );
 };
