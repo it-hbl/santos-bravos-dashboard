@@ -39,6 +39,7 @@ import StickyTicker from "./components/StickyTicker";
 import DataFreshness from "./components/DataFreshness";
 import AnalystNote from "./components/AnalystNote";
 import ExportCSV from "./components/ExportCSV";
+import RegionalBreakdown from "./components/RegionalBreakdown";
 
 function fmt(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -695,6 +696,10 @@ function Dashboard() {
               <p className="text-[9px] text-neutral-500 uppercase tracking-wider">Top 10 Listeners</p>
               <p className="text-xl font-extrabold text-blue-400 mt-1">{fmt(geoCountries.reduce((s, c) => s + c.listeners, 0))}</p>
             </div>
+          </div>
+          {/* Regional Breakdown */}
+          <div className="mb-6">
+            <RegionalBreakdown data={geoCountries} />
           </div>
           {/* Geographic Treemap */}
           <div className="mb-6">
