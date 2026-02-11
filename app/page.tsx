@@ -195,6 +195,7 @@ function Dashboard() {
 
   // Overlay live data when available
   const liveListeners = chartmetric?.spotifyMonthlyListeners ?? bp.spotifyMonthlyListeners.current;
+  const liveFollowers = chartmetric?.spotifyFollowers ?? bp.spotifyFollowers.current;
   const livePopularity = chartmetric?.spotifyPopularity ?? bp.spotifyPopularity.current;
   const liveTrackStreams = bp.tracks.map((t, i) => ({
     ...t,
@@ -256,6 +257,11 @@ function Dashboard() {
           color: "text-spotify",
           change: bp.spotifyMonthlyListeners.prior ? dod(liveListeners, bp.spotifyMonthlyListeners.prior).pct : undefined,
           positive: bp.spotifyMonthlyListeners.prior ? dod(liveListeners, bp.spotifyMonthlyListeners.prior).positive : true,
+        },
+        {
+          label: "Followers",
+          value: fmt(liveFollowers),
+          color: "text-spotify",
         },
         {
           label: "Streams",
@@ -331,7 +337,7 @@ function Dashboard() {
             reportDate,
             listeners: liveListeners,
             listenersPrior: bp.spotifyMonthlyListeners.prior,
-            spotifyFollowers: bp.spotifyFollowers.current ?? 97592,
+            spotifyFollowers: liveFollowers,
             spotifyPopularity: livePopularity,
             totalStreams: bp.totalCrossPlatformStreams.current,
             spl: bp.spl.current,
@@ -592,6 +598,7 @@ function Dashboard() {
             <span className="w-16 text-right"><MetricTooltip term="DoD">DoD %</MetricTooltip></span>
           </div>
           <MetricRow label={bp.spotifyMonthlyListeners.label} current={liveListeners} prior={bp.spotifyMonthlyListeners.prior} accent="text-spotify" />
+          <MetricRow label={bp.spotifyFollowers.label} current={liveFollowers} prior={bp.spotifyFollowers.prior} accent="text-spotify" />
           <MetricRow label="Spotify Popularity Index" current={livePopularity} prior={bp.spotifyPopularity.prior} tooltip="Spotify Popularity Index" />
           {liveTrackStreams.map(t => (
             <MetricRow key={t.name} label={`Spotify Total Streams: ${t.name}`} current={t.spotifyStreams.current} prior={t.spotifyStreams.prior} accent="text-spotify" />
