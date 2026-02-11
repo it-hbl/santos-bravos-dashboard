@@ -22,6 +22,7 @@ import PlatformDistribution from "./components/PlatformDistribution";
 import SentimentGauge from "./components/SentimentGauge";
 import TrackRadar from "./components/TrackRadar";
 import CollapsibleSection from "./components/CollapsibleSection";
+import MemberBuzz from "./components/MemberBuzz";
 import ScrollProgress from "./components/ScrollProgress";
 import CopySummary from "./components/CopySummary";
 import SentimentTimeline from "./components/SentimentTimeline";
@@ -529,6 +530,10 @@ function Dashboard() {
             <span className="text-sm font-semibold text-neutral-400">Total Band Member Followers</span>
             <span className="text-xl font-extrabold text-white">{fmt(totalMemberFollowers.current)}</span>
           </div>
+          <MemberBuzz
+            members={members.map(m => ({ name: m.name, followers: m.followers }))}
+            mentions={(liveSentiment.topEntities || []).filter(e => e.type === "person")}
+          />
           </CollapsibleSection>
         </section>
         </AnimatedSection>
