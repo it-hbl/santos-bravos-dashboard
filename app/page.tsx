@@ -57,6 +57,7 @@ import SocialMediaCards from "./components/SocialMediaCards";
 import SkeletonLoader from "./components/SkeletonLoader";
 import MediaVsAudience from "./components/MediaVsAudience";
 import MentionMomentum from "./components/MentionMomentum";
+import HistoricalTrends from "./components/HistoricalTrends";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 
 /** Extract short date like "2/9/26" from "February 9, 2026" or ISO date */
@@ -654,6 +655,16 @@ function Dashboard() {
             })),
             ...(liveSocialMedia.totalFootprint.prior ? [{ label: "Total SNS", category: "sns" as const, pct: ((liveSocialMedia.totalFootprint.current - liveSocialMedia.totalFootprint.prior) / liveSocialMedia.totalFootprint.prior) * 100 }] : []),
           ]} />
+          </CollapsibleSection>
+        </section>
+        </AnimatedSection>
+
+        {/* Historical Trends — multi-date line chart from Supabase */}
+        <div id="historical" className="scroll-mt-16" />
+        <AnimatedSection>
+        <section className="glass-hybe rounded-2xl p-6">
+          <CollapsibleSection id="historical-trends" number="📈" title="Historical Trends" subtitle="All Report Dates" color="bg-gradient-to-br from-emerald-500 to-cyan-400">
+            <HistoricalTrends />
           </CollapsibleSection>
         </section>
         </AnimatedSection>

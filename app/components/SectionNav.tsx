@@ -8,6 +8,7 @@ const SECTIONS = [
   { id: "score", label: "Performance Score", icon: "⚡", short: "Score" },
   { id: "milestones", label: "Milestones", icon: "🎯", short: "Goals" },
   { id: "velocity", label: "Growth Velocity", icon: "📊", short: "Growth" },
+  { id: "historical", label: "Historical Trends", icon: "📈", short: "History" },
   { id: "business", label: "Business Performance", icon: "1", short: "Business" },
   { id: "daily", label: "Daily Snapshot", icon: "⚡", short: "Daily" },
   { id: "charts", label: "Charts", icon: "📈", short: "Charts" },
