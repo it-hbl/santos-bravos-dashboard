@@ -57,6 +57,7 @@ import SocialMediaCards from "./components/SocialMediaCards";
 import SkeletonLoader from "./components/SkeletonLoader";
 import MediaVsAudience from "./components/MediaVsAudience";
 import MentionMomentum from "./components/MentionMomentum";
+import WeekdayHeatmap from "./components/WeekdayHeatmap";
 import HistoricalTrends from "./components/HistoricalTrends";
 import QuickShare from "./components/QuickShare";
 import { ErrorBoundary } from "./components/ErrorBoundary";
@@ -1067,6 +1068,12 @@ function Dashboard() {
           {((livePR as any).topTopics || []).length > 0 && (
             <div className="mt-5">
               <TopTopics topics={(livePR as any).topTopics || []} />
+            </div>
+          )}
+          {/* Weekday Heatmap */}
+          {livePR.timeSeries && livePR.timeSeries.length >= 3 && (
+            <div className="bg-white/[0.02] rounded-xl p-4 border border-white/[0.04] mt-5">
+              <WeekdayHeatmap timeSeries={livePR.timeSeries} />
             </div>
           )}
           {/* Row 1: Source Donut + Countries + Sources (3 cols) */}
