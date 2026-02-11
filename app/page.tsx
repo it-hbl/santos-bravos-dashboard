@@ -55,6 +55,7 @@ import TopTopics from "./components/TopTopics";
 import ReleaseTimeline from "./components/ReleaseTimeline";
 import SocialMediaCards from "./components/SocialMediaCards";
 import SkeletonLoader from "./components/SkeletonLoader";
+import MediaVsAudience from "./components/MediaVsAudience";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 
 function fmt(n: number | null | undefined) {
@@ -919,7 +920,7 @@ function Dashboard() {
               <TopTopics topics={(livePR as any).topTopics || []} />
             </div>
           )}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mt-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-6 mt-5">
             {/* Source Distribution Donut */}
             <div>
               <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-2">Source Distribution</p>
@@ -991,6 +992,8 @@ function Dashboard() {
             </div>
             {/* Top Mentions / Influencers */}
             <TopInfluencers mentions={livePR.topMentions || []} />
+            {/* Media vs Audience Geography */}
+            <MediaVsAudience mediaCountries={livePR.topCountries} listenerCountries={geoCountries.map(c => ({ country: (c as any).name || (c as any).country, listeners: c.listeners, flag: c.flag }))} />
           </div>
           </CollapsibleSection>
         </section>
