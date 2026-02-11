@@ -56,6 +56,7 @@ import ReleaseTimeline from "./components/ReleaseTimeline";
 import SocialMediaCards from "./components/SocialMediaCards";
 import SkeletonLoader from "./components/SkeletonLoader";
 import MediaVsAudience from "./components/MediaVsAudience";
+import MentionMomentum from "./components/MentionMomentum";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 
 /** Extract short date like "2/9/26" from "February 9, 2026" or ISO date */
@@ -940,7 +941,11 @@ function Dashboard() {
           </div>
           <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-2">Daily Mention Volume</p>
           <MentionsChart data={livePR.timeSeries} />
-          {livePR.wow && <WowComparison data={livePR.wow} />}
+          {/* Momentum + WoW row */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
+            <MentionMomentum timeSeries={livePR.timeSeries} totalMentions={livePR.totalMentions} />
+            {livePR.wow && <div><WowComparison data={livePR.wow} /></div>}
+          </div>
           {/* Conversation Topics */}
           {((livePR as any).topTopics || []).length > 0 && (
             <div className="mt-5">
