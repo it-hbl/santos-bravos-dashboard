@@ -166,6 +166,22 @@ export const prMedia = {
   },
 };
 
+// Top Topics (Meltwater conversation themes)
+// Appended to prMedia
+// @ts-ignore — accessed via prMedia.topTopics
+(prMedia as any).topTopics = [
+  { topic: "Latin Pop Debut", count: 1842 },
+  { topic: "Boy Band / Group Formation", count: 1203 },
+  { topic: "Music Video Release", count: 987 },
+  { topic: "HYBE Expansion", count: 856 },
+  { topic: "K-pop Crossover", count: 643 },
+  { topic: "TikTok Viral", count: 521 },
+  { topic: "Concert / Live Performance", count: 398 },
+  { topic: "Fan Community", count: 312 },
+  { topic: "Streaming Records", count: 287 },
+  { topic: "Cultural Representation", count: 234 },
+];
+
 // === SECTION 7: Fan Sentiment (Meltwater) ===
 export const fanSentiment = {
   period: "Feb 3 – Feb 9, 2026",

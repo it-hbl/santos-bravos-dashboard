@@ -58,7 +58,7 @@ export async function GET() {
     // Fetch analytics + keyphrases + hashtags + sources in parallel
     // Also fetch 14-day analytics for WoW comparison
     const { start: start14, end: end14 } = get14DayRange();
-    const [analyticsRes, keyphrasesRes, hashtagsRes, sourcesRes, entitiesRes, sharedLinksRes, mentionsRes, analytics14Res] = await Promise.all([
+    const [analyticsRes, keyphrasesRes, hashtagsRes, sourcesRes, entitiesRes, sharedLinksRes, mentionsRes, topicsRes, analytics14Res] = await Promise.all([
       mwGet(`/v3/analytics/${SEARCH_ID}`),
       mwGet(`/v3/analytics/${SEARCH_ID}/top_keyphrases`, { source: "twitter" }),
       mwGet(`/v3/analytics/${SEARCH_ID}/top_tags`, { source: "twitter" }),
@@ -66,6 +66,7 @@ export async function GET() {
       mwGet(`/v3/analytics/${SEARCH_ID}/top_entities`).catch(() => null),
       mwGet(`/v3/analytics/${SEARCH_ID}/top_shared_links`).catch(() => null),
       mwGet(`/v3/analytics/${SEARCH_ID}/top_mentions`, { source: "twitter" }).catch(() => null),
+      mwGet(`/v3/analytics/${SEARCH_ID}/top_topics`).catch(() => null),
       fetch(`${BASE}/v3/analytics/${SEARCH_ID}?start=${start14}&end=${end14}&tz=America/Mexico_City`, {
         headers: { apikey: MW_TOKEN, Accept: "application/json" },
       }).then(r => r.ok ? r.json() : null).catch(() => null),
@@ -162,6 +163,18 @@ export async function GET() {
       count: l.count ?? l.shares ?? l.volume ?? 0,
     }));
 
+    // Top topics (conversation themes)
+    const rawTopics = topicsRes
+      ? (Array.isArray(topicsRes) ? topicsRes
+        : Array.isArray(topicsRes?.top_topics) ? topicsRes.top_topics
+        : Array.isArray(topicsRes?.data) ? topicsRes.data
+        : [])
+      : [];
+    const topTopics = rawTopics.slice(0, 10).map((t: any) => ({
+      topic: t.topic || t.name || t.text || "Unknown",
+      count: t.count ?? t.volume ?? 0,
+    }));
+
     // Top mentions (influencer handles)
     const rawMentions = mentionsRes
       ? (Array.isArray(mentionsRes) ? mentionsRes
@@ -218,7 +231,7 @@ export async function GET() {
     return NextResponse.json({
       live: true,
       data: {
-        prMedia: { period, totalMentions, perDay, uniqueAuthors, timeSeries, topCountries, topKeyphrases, topSources, topMentions, wow },
+        prMedia: { period, totalMentions, perDay, uniqueAuthors, timeSeries, topCountries, topKeyphrases, topSources, topMentions, topTopics, wow },
         fanSentiment: { period, positive, negative, neutral, topHashtags, topEntities, topSharedLinks, sentimentTimeline },
         fetchedAt: new Date().toISOString(),
       },

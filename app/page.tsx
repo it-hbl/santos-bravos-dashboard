@@ -44,6 +44,7 @@ import PerformanceScore from "./components/PerformanceScore";
 import WowComparison from "./components/WowComparison";
 import MobileNav from "./components/MobileNav";
 import CommandPalette from "./components/CommandPalette";
+import TopTopics from "./components/TopTopics";
 
 function fmt(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -829,6 +830,12 @@ function Dashboard() {
           <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-2">Daily Mention Volume</p>
           <MentionsChart data={livePR.timeSeries} />
           {livePR.wow && <WowComparison data={livePR.wow} />}
+          {/* Conversation Topics */}
+          {((livePR as any).topTopics || []).length > 0 && (
+            <div className="mt-5">
+              <TopTopics topics={(livePR as any).topTopics || []} />
+            </div>
+          )}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mt-5">
             {/* Source Distribution Donut */}
             <div>
