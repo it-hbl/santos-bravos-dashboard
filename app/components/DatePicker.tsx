@@ -31,11 +31,47 @@ export default function DatePicker({ selectedDate, availableDates, onDateChange,
     return d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" });
   };
 
+  const sortedDates = [...availableDates].sort();
+  const currentIdx = sortedDates.indexOf(selectedDate);
+  const hasPrev = currentIdx > 0;
+  const hasNext = currentIdx < sortedDates.length - 1;
+
+  const goPrev = () => {
+    if (hasPrev && !loading) onDateChange(sortedDates[currentIdx - 1]);
+  };
+  const goNext = () => {
+    if (hasNext && !loading) onDateChange(sortedDates[currentIdx + 1]);
+  };
+
+  // Keyboard arrow navigation
+  useEffect(() => {
+    function handleKey(e: KeyboardEvent) {
+      if ((e.target as HTMLElement)?.tagName === "INPUT" || (e.target as HTMLElement)?.tagName === "TEXTAREA") return;
+      if (e.key === "[" || (e.key === "ArrowLeft" && e.altKey)) { e.preventDefault(); goPrev(); }
+      if (e.key === "]" || (e.key === "ArrowRight" && e.altKey)) { e.preventDefault(); goNext(); }
+    }
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  });
+
   return (
-    <div ref={ref} className="relative">
+    <div ref={ref} className="relative flex items-center gap-0.5">
+      {/* Prev date arrow */}
+      {sortedDates.length > 1 && (
+        <button
+          onClick={goPrev}
+          disabled={!hasPrev || loading}
+          className="bg-white/[0.04] border border-white/[0.06] rounded-l-lg rounded-r-none px-1.5 py-1.5 hover:bg-white/[0.08] hover:border-violet-500/30 transition-all disabled:opacity-20 disabled:cursor-not-allowed border-r-0"
+          title="Previous report date ( [ )"
+        >
+          <svg className="w-3 h-3 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+      )}
       <button
         onClick={() => setOpen(!open)}
-        className="bg-white/[0.04] border border-white/[0.06] rounded-lg px-2 sm:px-3 py-1.5 hover:bg-white/[0.08] hover:border-violet-500/30 transition-all flex items-center gap-1.5"
+        className={`bg-white/[0.04] border border-white/[0.06] ${sortedDates.length > 1 ? "rounded-none" : "rounded-lg"} px-2 sm:px-3 py-1.5 hover:bg-white/[0.08] hover:border-violet-500/30 transition-all flex items-center gap-1.5`}
       >
         {loading && (
           <svg className="animate-spin h-3 w-3 text-violet-400" viewBox="0 0 24 24">
@@ -50,6 +86,19 @@ export default function DatePicker({ selectedDate, availableDates, onDateChange,
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </button>
+      {/* Next date arrow */}
+      {sortedDates.length > 1 && (
+        <button
+          onClick={goNext}
+          disabled={!hasNext || loading}
+          className="bg-white/[0.04] border border-white/[0.06] rounded-r-lg rounded-l-none px-1.5 py-1.5 hover:bg-white/[0.08] hover:border-violet-500/30 transition-all disabled:opacity-20 disabled:cursor-not-allowed border-l-0"
+          title="Next report date ( ] )"
+        >
+          <svg className="w-3 h-3 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      )}
 
       {open && (
         <div className="absolute right-0 top-full mt-1 z-[100] bg-neutral-900/95 backdrop-blur-xl border border-white/[0.08] rounded-xl shadow-2xl shadow-black/50 py-1 min-w-[220px] overflow-hidden">
