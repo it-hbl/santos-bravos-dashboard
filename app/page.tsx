@@ -238,6 +238,18 @@ function Dashboard() {
   const liveSocialMedia = socialMedia;
   const liveYTSubscribers = socialMedia.platforms.find(p => p.platform === "YouTube")?.current ?? 471000;
 
+  // Compute section trends for collapsed badges
+  function sectionTrend(current: number, prior: number | null | undefined): { value: string; positive: boolean } | null {
+    if (prior == null || prior === 0) return null;
+    const pct = ((current - prior) / prior * 100).toFixed(1);
+    return { value: `${Math.abs(parseFloat(pct))}%`, positive: current >= prior };
+  }
+  const trendListeners = sectionTrend(bp.spotifyMonthlyListeners.current, bp.spotifyMonthlyListeners.prior);
+  const trendSNS = sectionTrend(liveSocialMedia.totalFootprint.current, liveSocialMedia.totalFootprint.prior);
+  const trendSentiment = liveSentiment.positive.pct > liveSentiment.negative.pct
+    ? { value: `+${(liveSentiment.positive.pct - liveSentiment.negative.pct).toFixed(0)} net`, positive: true }
+    : { value: `${(liveSentiment.positive.pct - liveSentiment.negative.pct).toFixed(0)} net`, positive: false };
+
   return (
     <main className="min-h-screen">
       {/* Print-only header */}
@@ -636,7 +648,7 @@ function Dashboard() {
         <div id="business" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
-          <CollapsibleSection id="business" number="1" title="Business Performance Snapshot" subtitle="Spotify + YouTube" color="bg-spotify">
+          <CollapsibleSection id="business" number="1" title="Business Performance Snapshot" subtitle="Spotify + YouTube" color="bg-spotify" trend={trendListeners}>
           <div className="mb-3 hidden sm:flex items-center gap-6 text-[9px] text-neutral-600 uppercase tracking-wider px-2 py-2 bg-white/[0.015] rounded-lg">
             <span className="flex-1">Metric</span>
             <span className="w-20 text-right font-bold text-violet-400">{shortDate(reportDate)}</span>
@@ -767,7 +779,7 @@ function Dashboard() {
         <div id="social" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
-          <CollapsibleSection id="social-media" number="2" title="Social Media Performance" subtitle={`SNS · ${sectionDate(reportDate)}`} color="bg-gradient-to-br from-tiktok to-cyan-300">
+          <CollapsibleSection id="social-media" number="2" title="Social Media Performance" subtitle={`SNS · ${sectionDate(reportDate)}`} color="bg-gradient-to-br from-tiktok to-cyan-300" trend={trendSNS}>
           <SocialMediaCards
             platforms={liveSocialMedia.platforms}
             totalFootprint={liveSocialMedia.totalFootprint}
@@ -961,7 +973,7 @@ function Dashboard() {
         <div id="pr" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
-          <CollapsibleSection id="pr-media" number="6" title="PR & Media Exposure" subtitle={`Meltwater · ${livePR.period}`} color="bg-gradient-to-br from-violet-500 to-indigo-400">
+          <CollapsibleSection id="pr-media" number="6" title="PR & Media Exposure" subtitle={`Meltwater · ${livePR.period}`} color="bg-gradient-to-br from-violet-500 to-indigo-400" trend={livePR.wow ? { value: `${Math.abs(livePR.wow.changePct)}% WoW`, positive: livePR.wow.changePct >= 0 } : null}>
           <div className="grid grid-cols-3 gap-3 mb-5">
             {[
               { label: "Total Mentions", value: livePR.totalMentions, accent: "text-violet-400" },
@@ -1092,7 +1104,7 @@ function Dashboard() {
         <div id="sentiment" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
-          <CollapsibleSection id="fan-sentiment" number="7" title="Fan Sentiment & Conversation" subtitle={`Meltwater · ${liveSentiment.period}`} color="bg-gradient-to-br from-rose-500 to-pink-400">
+          <CollapsibleSection id="fan-sentiment" number="7" title="Fan Sentiment & Conversation" subtitle={`Meltwater · ${liveSentiment.period}`} color="bg-gradient-to-br from-rose-500 to-pink-400" trend={trendSentiment}>
 
           {/* Sentiment summary cards */}
           <div className="grid grid-cols-3 gap-3 mb-6">

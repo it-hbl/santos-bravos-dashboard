@@ -28,6 +28,7 @@ export default function CollapsibleSection({
   color,
   children,
   defaultOpen = true,
+  trend,
 }: {
   id: string;
   number: string;
@@ -36,6 +37,7 @@ export default function CollapsibleSection({
   color: string;
   children: ReactNode;
   defaultOpen?: boolean;
+  trend?: { value: string; positive: boolean } | null;
 }) {
   const [open, setOpen] = useState(defaultOpen);
 
@@ -69,6 +71,18 @@ export default function CollapsibleSection({
           </h2>
         </div>
         <div className="flex items-center gap-3">
+          {/* Trend badge — visible when collapsed */}
+          {trend && !open && (
+            <span
+              className={`text-[10px] font-bold px-2 py-0.5 rounded-full tabular-nums ${
+                trend.positive
+                  ? "bg-emerald-500/10 text-emerald-400"
+                  : "bg-red-500/10 text-red-400"
+              }`}
+            >
+              {trend.positive ? "↑" : "↓"} {trend.value}
+            </span>
+          )}
           {subtitle && (
             <span className="text-[10px] text-neutral-600 uppercase tracking-widest hidden sm:inline">
               {subtitle}
