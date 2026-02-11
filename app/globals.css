@@ -28,6 +28,23 @@ body {
   background: linear-gradient(135deg, rgba(15, 15, 20, 0.9), rgba(20, 15, 30, 0.8));
   backdrop-filter: blur(16px);
   border: 1px solid rgba(139, 92, 246, 0.15);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-hybe:hover {
+  border-color: rgba(139, 92, 246, 0.35);
+  box-shadow:
+    0 0 20px rgba(139, 92, 246, 0.08),
+    0 0 40px rgba(139, 92, 246, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Premium animated gradient border on focus-within (interactive cards) */
+.glass-hybe:focus-within {
+  border-color: rgba(139, 92, 246, 0.4);
+  box-shadow:
+    0 0 24px rgba(139, 92, 246, 0.12),
+    0 0 48px rgba(6, 182, 212, 0.06);
 }
 
 .stat-glow {
@@ -80,6 +97,43 @@ body {
 @keyframes heroRotate {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+/* Shine sweep effect for hero stat cards */
+@keyframes shineSweep {
+  0% { transform: translateX(-100%) skewX(-15deg); }
+  100% { transform: translateX(200%) skewX(-15deg); }
+}
+
+.glass-hybe-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-hybe-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.03) 45%,
+    rgba(255, 255, 255, 0.06) 50%,
+    rgba(255, 255, 255, 0.03) 55%,
+    transparent 100%
+  );
+  transform: translateX(-100%) skewX(-15deg);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.glass-hybe-card:hover::after {
+  animation: shineSweep 0.8s ease-out forwards;
+}
+
+/* Subtle lift on section hover */
+.glass-hybe:hover {
+  transform: translateY(-1px);
 }
 
 .border-glow-purple {

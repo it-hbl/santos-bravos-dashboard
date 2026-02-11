@@ -322,7 +322,7 @@ function Dashboard() {
                 { label: "Streams", value: bp.totalCrossPlatformStreams.current, prior: bp.totalCrossPlatformStreams.prior, color: "#FFFFFF", accent: "text-white", tooltip: "Cross-Platform Streams" },
                 { label: "SPL", value: bp.spl.current, prior: null, color: "#FBBF24", accent: "text-amber-400", isSpl: true, tooltip: "SPL" },
               ].map(card => (
-                <div key={card.label} className="glass-hybe rounded-xl p-3 text-center min-w-[120px] relative overflow-hidden">
+                <div key={card.label} className="glass-hybe glass-hybe-card rounded-xl p-3 text-center min-w-[120px] relative overflow-hidden cursor-default">
                   <div className="absolute bottom-0 right-0 opacity-40 pointer-events-none">
                     <Sparkline
                       data={trendPoints(card.prior, card.isSpl ? card.value * 1000 : card.value)}
