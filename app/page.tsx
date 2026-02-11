@@ -32,6 +32,7 @@ import MilestonesTracker from "./components/MilestonesTracker";
 import Sparkline from "./components/Sparkline";
 import KeyboardShortcuts from "./components/KeyboardShortcuts";
 import GeoTreemap from "./components/GeoTreemap";
+import DailyComparisonChart from "./components/DailyComparisonChart";
 
 function fmt(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -443,6 +444,7 @@ function Dashboard() {
               </div>
             ))}
           </div>
+          <DailyComparisonChart tracks={dailyStreams} />
           </CollapsibleSection>
         </section>
         </AnimatedSection>
