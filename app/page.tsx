@@ -28,6 +28,7 @@ import CopySummary from "./components/CopySummary";
 import SentimentTimeline from "./components/SentimentTimeline";
 import AudienceFunnel from "./components/AudienceFunnel";
 import DataSourcesStatus from "./components/DataSourcesStatus";
+import MilestonesTracker from "./components/MilestonesTracker";
 
 function fmt(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -260,6 +261,19 @@ function Dashboard() {
             sentimentPositivePct={liveSentiment.positive.pct}
             topMarket={geoCountries[0]?.name || ""}
           />
+        </AnimatedSection>
+
+        {/* Milestones & Targets */}
+        <div id="milestones" className="scroll-mt-16" />
+        <AnimatedSection>
+          <MilestonesTracker milestones={[
+            { label: "Spotify Monthly Listeners", current: liveListeners, target: 500000, icon: "🎧", color: "bg-gradient-to-r from-spotify to-emerald-400" },
+            { label: "0% — 10M Streams", current: liveTrackStreams[0]?.spotifyStreams.current ?? 0, target: 10000000, icon: "💿", color: "bg-gradient-to-r from-violet-500 to-purple-400" },
+            { label: "KAWASAKI — 2M Streams", current: liveTrackStreams[2]?.spotifyStreams.current ?? 0, target: 2000000, icon: "🏍️", color: "bg-gradient-to-r from-pink-500 to-rose-400" },
+            { label: "SNS Footprint — 2M", current: socialMedia.totalFootprint.current, target: 2000000, icon: "📱", color: "bg-gradient-to-r from-tiktok to-cyan-400" },
+            { label: "YouTube Subscribers — 500K", current: liveYTSubscribers, target: 500000, icon: "▶️", color: "bg-gradient-to-r from-red-500 to-red-400" },
+            { label: "Cross-Platform Streams — 50M", current: bp.totalCrossPlatformStreams.current, target: 50000000, icon: "🌎", color: "bg-gradient-to-r from-amber-500 to-orange-400" },
+          ]} />
         </AnimatedSection>
 
         {/* Growth Velocity */}
