@@ -54,6 +54,7 @@ import CommandPalette from "./components/CommandPalette";
 import TopTopics from "./components/TopTopics";
 import ReleaseTimeline from "./components/ReleaseTimeline";
 import SocialMediaCards from "./components/SocialMediaCards";
+import SkeletonLoader from "./components/SkeletonLoader";
 
 function fmt(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -367,6 +368,12 @@ function Dashboard() {
       <div className="max-w-7xl mx-auto px-4 py-8 space-y-10">
         {/* Section Nav */}
         <SectionNav />
+
+        {/* Skeleton loading state when switching dates */}
+        {dateLoading && <SkeletonLoader />}
+
+        {/* Main dashboard content — hidden during date loading */}
+        <div className={dateLoading ? "hidden" : "space-y-10"}>
 
         {/* Hero */}
         <section id="hero" className="hero-bg rounded-3xl p-5 sm:p-8 md:p-10 scroll-mt-16">
@@ -1167,6 +1174,7 @@ function Dashboard() {
             <DataSourcesStatus />
           </div>
         </footer>
+        </div>{/* end dateLoading wrapper */}
       </div>
       <KeyboardShortcuts onRefresh={refresh} />
       <CommandPalette onRefresh={refresh} />
