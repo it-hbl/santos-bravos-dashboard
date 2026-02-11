@@ -34,6 +34,7 @@ import KeyboardShortcuts from "./components/KeyboardShortcuts";
 import GeoTreemap from "./components/GeoTreemap";
 import DailyComparisonChart from "./components/DailyComparisonChart";
 import TopInfluencers from "./components/TopInfluencers";
+import MetricTooltip from "./components/MetricTooltip";
 
 function fmt(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -62,11 +63,13 @@ function DodBadge({ current, prior }: { current: number; prior: number | null })
   );
 }
 
-function MetricRow({ label, current, prior, accent }: { label: string; current: number; prior: number | null; accent?: string }) {
+function MetricRow({ label, current, prior, accent, tooltip }: { label: string; current: number; prior: number | null; accent?: string; tooltip?: string }) {
   const d = dod(current, prior);
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3 border-b border-white/[0.03] last:border-0 group hover:bg-white/[0.01] px-2 -mx-2 rounded gap-1 sm:gap-0">
-      <span className="text-sm text-neutral-400 group-hover:text-neutral-300 transition-colors flex-1 truncate">{label}</span>
+      <span className="text-sm text-neutral-400 group-hover:text-neutral-300 transition-colors flex-1 truncate">
+        {tooltip ? <MetricTooltip term={tooltip}>{label}</MetricTooltip> : label}
+      </span>
       <div className="flex items-center gap-3 sm:gap-4 pl-0 sm:pl-4">
         <span className={`text-sm font-bold tabular-nums ${accent || "text-white"}`}>{fmt(current)}</span>
         {prior !== null && (
@@ -246,10 +249,10 @@ function Dashboard() {
             </div>
             <div className="grid grid-cols-2 gap-3 flex-shrink-0">
               {[
-                { label: "Listeners", value: liveListeners, prior: bp.spotifyMonthlyListeners.prior, color: "#1DB954", accent: "text-spotify" },
-                { label: "SNS", value: socialMedia.totalFootprint.current, prior: socialMedia.totalFootprint.prior, color: "#00F2EA", accent: "text-tiktok" },
-                { label: "Streams", value: bp.totalCrossPlatformStreams.current, prior: bp.totalCrossPlatformStreams.prior, color: "#FFFFFF", accent: "text-white" },
-                { label: "SPL", value: bp.spl.current, prior: null, color: "#FBBF24", accent: "text-amber-400", isSpl: true },
+                { label: "Listeners", value: liveListeners, prior: bp.spotifyMonthlyListeners.prior, color: "#1DB954", accent: "text-spotify", tooltip: "Monthly Listeners" },
+                { label: "SNS", value: socialMedia.totalFootprint.current, prior: socialMedia.totalFootprint.prior, color: "#00F2EA", accent: "text-tiktok", tooltip: "SNS Footprint" },
+                { label: "Streams", value: bp.totalCrossPlatformStreams.current, prior: bp.totalCrossPlatformStreams.prior, color: "#FFFFFF", accent: "text-white", tooltip: "Cross-Platform Streams" },
+                { label: "SPL", value: bp.spl.current, prior: null, color: "#FBBF24", accent: "text-amber-400", isSpl: true, tooltip: "SPL" },
               ].map(card => (
                 <div key={card.label} className="glass-hybe rounded-xl p-3 text-center min-w-[120px] relative overflow-hidden">
                   <div className="absolute bottom-0 right-0 opacity-40 pointer-events-none">
@@ -260,7 +263,9 @@ function Dashboard() {
                       color={card.color}
                     />
                   </div>
-                  <p className="text-[9px] text-neutral-500 uppercase tracking-wider relative z-10">{card.label}</p>
+                  <p className="text-[9px] text-neutral-500 uppercase tracking-wider relative z-10">
+                    {card.tooltip ? <MetricTooltip term={card.tooltip}>{card.label}</MetricTooltip> : card.label}
+                  </p>
                   <p className={`text-xl font-extrabold ${card.accent} relative z-10`}>
                     {card.isSpl
                       ? <CountUpValue value={card.value * 1000} formatFn={(n) => (n / 1000).toFixed(3)} />
@@ -347,15 +352,15 @@ function Dashboard() {
             <span className="w-20 text-right font-bold text-violet-400">2/9/26</span>
             <span className="w-16 text-right">2/4/26</span>
             <span className="w-16 text-right">Change</span>
-            <span className="w-16 text-right">DoD %</span>
+            <span className="w-16 text-right"><MetricTooltip term="DoD">DoD %</MetricTooltip></span>
           </div>
           <MetricRow label={bp.spotifyMonthlyListeners.label} current={liveListeners} prior={bp.spotifyMonthlyListeners.prior} accent="text-spotify" />
-          <MetricRow label="Spotify Popularity Index" current={livePopularity} prior={bp.spotifyPopularity.prior} />
+          <MetricRow label="Spotify Popularity Index" current={livePopularity} prior={bp.spotifyPopularity.prior} tooltip="Spotify Popularity Index" />
           {liveTrackStreams.map(t => (
             <MetricRow key={t.name} label={`Spotify Total Streams: ${t.name}`} current={t.spotifyStreams.current} prior={t.spotifyStreams.prior} accent="text-spotify" />
           ))}
           <div className="my-3 border-t border-white/[0.05]" />
-          <MetricRow label={bp.totalCrossPlatformStreams.label} current={bp.totalCrossPlatformStreams.current} prior={bp.totalCrossPlatformStreams.prior} />
+          <MetricRow label={bp.totalCrossPlatformStreams.label} current={bp.totalCrossPlatformStreams.current} prior={bp.totalCrossPlatformStreams.prior} tooltip="Cross-Platform Streams" />
           {liveYTVideos.map(v => (
             <MetricRow key={v.name} label={`YouTube Views: ${v.name}`} current={v.views.current} prior={v.views.prior} accent="text-ytred" />
           ))}
@@ -438,7 +443,7 @@ function Dashboard() {
                     <p className="text-lg font-extrabold text-white">{fmt(t.listeners)}</p>
                   </div>
                   <div>
-                    <p className="text-[9px] text-neutral-500 uppercase">Saves</p>
+                    <p className="text-[9px] text-neutral-500 uppercase"><MetricTooltip term="Saves">Saves</MetricTooltip></p>
                     <p className="text-lg font-extrabold text-violet-400">{fmt(t.saves)}</p>
                   </div>
                 </div>
@@ -499,11 +504,11 @@ function Dashboard() {
                     <span className="text-sm font-bold text-white">{fmt(t.views)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[10px] text-neutral-500">TikTok Creates</span>
+                    <span className="text-[10px] text-neutral-500"><MetricTooltip term="TikTok Creates">TikTok Creates</MetricTooltip></span>
                     <span className="text-sm font-bold text-tiktok">{t.tiktokCreates.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[10px] text-neutral-500">IG Creates</span>
+                    <span className="text-[10px] text-neutral-500"><MetricTooltip term="IG Creates">IG Creates</MetricTooltip></span>
                     <span className="text-sm font-bold text-pink-400">{t.igCreates.toLocaleString()}</span>
                   </div>
                 </div>
@@ -666,10 +671,12 @@ function Dashboard() {
             {[
               { label: "Total Mentions", value: livePR.totalMentions, accent: "text-violet-400" },
               { label: "Avg / Day", value: livePR.perDay, accent: "text-white" },
-              { label: "Unique Authors", value: livePR.uniqueAuthors, accent: "text-cyan-400" },
+              { label: "Unique Authors", value: livePR.uniqueAuthors, accent: "text-cyan-400", tooltip: "Unique Authors" },
             ].map(s => (
               <div key={s.label} className="bg-white/[0.02] rounded-xl p-3 border border-white/[0.04] text-center">
-                <p className="text-[9px] text-neutral-500 uppercase tracking-wider">{s.label}</p>
+                <p className="text-[9px] text-neutral-500 uppercase tracking-wider">
+                  {s.tooltip ? <MetricTooltip term={s.tooltip}>{s.label}</MetricTooltip> : s.label}
+                </p>
                 <p className={`text-xl font-extrabold mt-1 ${s.accent}`}><CountUpValue value={s.value} /></p>
               </div>
             ))}
@@ -791,7 +798,7 @@ function Dashboard() {
             {/* Gauge + Donut */}
             <div className="space-y-5">
               <div>
-                <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-2">Net Sentiment Score</p>
+                <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-2"><MetricTooltip term="Net Sentiment Score">Net Sentiment Score</MetricTooltip></p>
                 <SentimentGauge positive={liveSentiment.positive.pct} negative={liveSentiment.negative.pct} neutral={liveSentiment.neutral.pct} />
               </div>
               <div>
