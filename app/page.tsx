@@ -55,6 +55,7 @@ import TopTopics from "./components/TopTopics";
 import ReleaseTimeline from "./components/ReleaseTimeline";
 import SocialMediaCards from "./components/SocialMediaCards";
 import SkeletonLoader from "./components/SkeletonLoader";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 
 function fmt(n: number | null | undefined) {
   if (n == null || isNaN(n)) return "—";
@@ -1158,12 +1159,18 @@ function Dashboard() {
   );
 }
 
-export default function Home() {
+function Home() {
   return (
     <div suppressHydrationWarning>
-      <LiveDataProvider>
-        <Dashboard />
-      </LiveDataProvider>
+      <ErrorBoundary>
+        <LiveDataProvider>
+          <Dashboard />
+        </LiveDataProvider>
+      </ErrorBoundary>
     </div>
   );
 }
+
+// Disable SSR entirely to avoid hydration mismatch errors
+import dynamic from "next/dynamic";
+export default dynamic(() => Promise.resolve(Home), { ssr: false });
