@@ -156,6 +156,20 @@ function Dashboard() {
   });
   const liveYTSubscribers = youtube?.subscribers ?? socialMedia.platforms.find(p => p.platform === "YouTube")?.current ?? 471000;
 
+  // Overlay live SNS data from Chartmetric + YouTube
+  const liveSocialPlatforms = socialMedia.platforms.map(p => {
+    if (p.platform === "YouTube") return { ...p, current: liveYTSubscribers };
+    if (p.platform === "Instagram" && chartmetric?.instagramFollowers) return { ...p, current: chartmetric.instagramFollowers };
+    if (p.platform === "TikTok" && chartmetric?.tiktokFollowers) return { ...p, current: chartmetric.tiktokFollowers };
+    return p;
+  });
+  const liveSNSFootprint = liveSocialPlatforms.reduce((s, p) => s + p.current, 0);
+  const liveSocialMedia = {
+    ...socialMedia,
+    platforms: liveSocialPlatforms,
+    totalFootprint: { ...socialMedia.totalFootprint, current: liveSNSFootprint },
+  };
+
   return (
     <main className="min-h-screen">
       {/* Print-only header */}
@@ -187,10 +201,10 @@ function Dashboard() {
         },
         {
           label: "SNS",
-          value: fmt(socialMedia.totalFootprint.current),
+          value: fmt(liveSocialMedia.totalFootprint.current),
           color: "text-tiktok",
-          change: socialMedia.totalFootprint.prior ? dod(socialMedia.totalFootprint.current, socialMedia.totalFootprint.prior).pct : undefined,
-          positive: socialMedia.totalFootprint.prior ? dod(socialMedia.totalFootprint.current, socialMedia.totalFootprint.prior).positive : true,
+          change: liveSocialMedia.totalFootprint.prior ? dod(liveSocialMedia.totalFootprint.current, liveSocialMedia.totalFootprint.prior).pct : undefined,
+          positive: liveSocialMedia.totalFootprint.prior ? dod(liveSocialMedia.totalFootprint.current, liveSocialMedia.totalFootprint.prior).positive : true,
         },
         {
           label: "YT Subs",
@@ -235,12 +249,12 @@ function Dashboard() {
             listeners: liveListeners,
             listenersPrior: bp.spotifyMonthlyListeners.prior,
             totalStreams: bp.totalCrossPlatformStreams.current,
-            snsFootprint: socialMedia.totalFootprint.current,
-            snsFootprintPrior: socialMedia.totalFootprint.prior,
+            snsFootprint: liveSocialMedia.totalFootprint.current,
+            snsFootprintPrior: liveSocialMedia.totalFootprint.prior,
             tracks: liveTrackStreams.map(t => ({ name: t.name, streams: t.spotifyStreams.current })),
             ytVideos: liveYTVideos.map(v => ({ name: v.name, views: v.views.current })),
             ytSubscribers: liveYTSubscribers,
-            platforms: socialMedia.platforms.map(p => ({ platform: p.platform, current: p.current })),
+            platforms: liveSocialMedia.platforms.map(p => ({ platform: p.platform, current: p.current })),
             prMentions: livePR.totalMentions,
             prPerDay: livePR.perDay,
             sentimentPositive: liveSentiment.positive.pct,
@@ -259,9 +273,9 @@ function Dashboard() {
             ytVideos: liveYTVideos.map(v => ({ name: v.name, views: v.views.current, prior: v.views.prior })),
             ytSubscribers: liveYTSubscribers,
             dailyStreams: dailyStreams,
-            platforms: socialMedia.platforms.map(p => ({ platform: p.platform, current: p.current, prior: p.prior })),
-            snsFootprint: socialMedia.totalFootprint.current,
-            snsFootprintPrior: socialMedia.totalFootprint.prior,
+            platforms: liveSocialMedia.platforms.map(p => ({ platform: p.platform, current: p.current, prior: p.prior })),
+            snsFootprint: liveSocialMedia.totalFootprint.current,
+            snsFootprintPrior: liveSocialMedia.totalFootprint.prior,
             members: members.map(m => ({ name: m.name, handle: m.handle, followers: m.followers })),
             geoCountries,
             geoCities,
@@ -325,7 +339,7 @@ function Dashboard() {
             <div className="grid grid-cols-2 gap-3 flex-shrink-0">
               {[
                 { label: "Listeners", value: liveListeners, prior: bp.spotifyMonthlyListeners.prior, color: "#1DB954", accent: "text-spotify", tooltip: "Monthly Listeners" },
-                { label: "SNS", value: socialMedia.totalFootprint.current, prior: socialMedia.totalFootprint.prior, color: "#00F2EA", accent: "text-tiktok", tooltip: "SNS Footprint" },
+                { label: "SNS", value: liveSocialMedia.totalFootprint.current, prior: liveSocialMedia.totalFootprint.prior, color: "#00F2EA", accent: "text-tiktok", tooltip: "SNS Footprint" },
                 { label: "Streams", value: bp.totalCrossPlatformStreams.current, prior: bp.totalCrossPlatformStreams.prior, color: "#FFFFFF", accent: "text-white", tooltip: "Cross-Platform Streams" },
                 { label: "SPL", value: bp.spl.current, prior: null, color: "#FBBF24", accent: "text-amber-400", isSpl: true, tooltip: "SPL" },
               ].map(card => (
@@ -367,7 +381,7 @@ function Dashboard() {
             spotifyListeners={{ current: liveListeners, prior: bp.spotifyMonthlyListeners.prior }}
             tracks={liveTrackStreams.map(t => ({ name: t.name, current: t.spotifyStreams.current, prior: t.spotifyStreams.prior }))}
             ytVideos={liveYTVideos.map(v => ({ name: v.name, current: v.views.current, prior: v.views.prior }))}
-            snsTotal={{ current: socialMedia.totalFootprint.current, prior: socialMedia.totalFootprint.prior }}
+            snsTotal={{ current: liveSocialMedia.totalFootprint.current, prior: liveSocialMedia.totalFootprint.prior }}
             totalStreams={{ current: bp.totalCrossPlatformStreams.current, prior: bp.totalCrossPlatformStreams.prior }}
             dailyTopTrack={dailyStreams.length > 0 ? { name: dailyStreams[0].name, streams: dailyStreams[0].streams } : null}
             mentionVolume={livePR.totalMentions}
@@ -383,7 +397,7 @@ function Dashboard() {
             spotifyListeners={{ current: liveListeners, prior: bp.spotifyMonthlyListeners.prior }}
             tracks={liveTrackStreams.map(t => ({ name: t.name, current: t.spotifyStreams.current, prior: t.spotifyStreams.prior }))}
             ytSubscribers={liveYTSubscribers}
-            snsTotal={{ current: socialMedia.totalFootprint.current, prior: socialMedia.totalFootprint.prior }}
+            snsTotal={{ current: liveSocialMedia.totalFootprint.current, prior: liveSocialMedia.totalFootprint.prior }}
             totalStreams={{ current: bp.totalCrossPlatformStreams.current, prior: bp.totalCrossPlatformStreams.prior }}
             mentionVolume={livePR.totalMentions}
             sentimentPositive={liveSentiment.positive.pct}
@@ -404,7 +418,7 @@ function Dashboard() {
             const streamingScore = Math.min(100, Math.max(0, 50 + listenerGrowth * 8));
 
             // Social reach (SNS footprint vs 2M target)
-            const snsScore = Math.min(100, (socialMedia.totalFootprint.current / 2000000) * 100);
+            const snsScore = Math.min(100, (liveSocialMedia.totalFootprint.current / 2000000) * 100);
 
             // Content velocity (track growth avg)
             const trackGrowths = liveTrackStreams.filter(t => t.spotifyStreams.prior).map(t =>
@@ -424,7 +438,7 @@ function Dashboard() {
             const milestoneTargets = [
               { current: liveListeners, target: 500000 },
               { current: liveTrackStreams[0]?.spotifyStreams.current ?? 0, target: 10000000 },
-              { current: socialMedia.totalFootprint.current, target: 2000000 },
+              { current: liveSocialMedia.totalFootprint.current, target: 2000000 },
               { current: liveYTSubscribers, target: 500000 },
             ];
             const milestoneScore = Math.round(milestoneTargets.reduce((s, m) => s + Math.min(100, (m.current / m.target) * 100), 0) / milestoneTargets.length);
@@ -447,8 +461,8 @@ function Dashboard() {
             { label: "Spotify Monthly Listeners", current: liveListeners, target: 500000, prior: bp.spotifyMonthlyListeners.prior, priorDaysAgo: 5, icon: "🎧", color: "bg-gradient-to-r from-spotify to-emerald-400" },
             { label: "0% — 10M Streams", current: liveTrackStreams[0]?.spotifyStreams.current ?? 0, target: 10000000, prior: bp.tracks[0]?.spotifyStreams.prior, priorDaysAgo: 5, icon: "💿", color: "bg-gradient-to-r from-violet-500 to-purple-400" },
             { label: "KAWASAKI — 2M Streams", current: liveTrackStreams[2]?.spotifyStreams.current ?? 0, target: 2000000, prior: bp.tracks[2]?.spotifyStreams.prior, priorDaysAgo: 5, icon: "🏍️", color: "bg-gradient-to-r from-pink-500 to-rose-400" },
-            { label: "SNS Footprint — 2M", current: socialMedia.totalFootprint.current, target: 2000000, prior: socialMedia.totalFootprint.prior, priorDaysAgo: 5, icon: "📱", color: "bg-gradient-to-r from-tiktok to-cyan-400" },
-            { label: "YouTube Subscribers — 500K", current: liveYTSubscribers, target: 500000, prior: socialMedia.platforms.find(p => p.platform === "YouTube")?.prior ?? null, priorDaysAgo: 5, icon: "▶️", color: "bg-gradient-to-r from-red-500 to-red-400" },
+            { label: "SNS Footprint — 2M", current: liveSocialMedia.totalFootprint.current, target: 2000000, prior: liveSocialMedia.totalFootprint.prior, priorDaysAgo: 5, icon: "📱", color: "bg-gradient-to-r from-tiktok to-cyan-400" },
+            { label: "YouTube Subscribers — 500K", current: liveYTSubscribers, target: 500000, prior: liveSocialMedia.platforms.find(p => p.platform === "YouTube")?.prior ?? null, priorDaysAgo: 5, icon: "▶️", color: "bg-gradient-to-r from-red-500 to-red-400" },
             { label: "Cross-Platform Streams — 50M", current: bp.totalCrossPlatformStreams.current, target: 50000000, prior: bp.totalCrossPlatformStreams.prior, priorDaysAgo: 5, icon: "🌎", color: "bg-gradient-to-r from-amber-500 to-orange-400" },
           ]} />
         </AnimatedSection>
@@ -473,12 +487,12 @@ function Dashboard() {
                 pct: ((v.views.current - v.views.prior!) / v.views.prior!) * 100,
               };
             }),
-            ...socialMedia.platforms.filter(p => p.prior).map(p => ({
+            ...liveSocialMedia.platforms.filter(p => p.prior).map(p => ({
               label: p.platform,
               category: "sns" as const,
               pct: ((p.current - p.prior!) / p.prior!) * 100,
             })),
-            ...(socialMedia.totalFootprint.prior ? [{ label: "Total SNS", category: "sns" as const, pct: ((socialMedia.totalFootprint.current - socialMedia.totalFootprint.prior) / socialMedia.totalFootprint.prior) * 100 }] : []),
+            ...(liveSocialMedia.totalFootprint.prior ? [{ label: "Total SNS", category: "sns" as const, pct: ((liveSocialMedia.totalFootprint.current - liveSocialMedia.totalFootprint.prior) / liveSocialMedia.totalFootprint.prior) * 100 }] : []),
           ]} />
           </CollapsibleSection>
         </section>
@@ -619,12 +633,12 @@ function Dashboard() {
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
           <CollapsibleSection id="social-media" number="2" title="Social Media Performance" subtitle="SNS · As of 2/9/26" color="bg-gradient-to-br from-tiktok to-cyan-300">
-          <MetricRow label={socialMedia.totalFootprint.label} current={socialMedia.totalFootprint.current} prior={socialMedia.totalFootprint.prior} accent="text-tiktok" />
-          {socialMedia.platforms.map(p => (
+          <MetricRow label={liveSocialMedia.totalFootprint.label} current={liveSocialMedia.totalFootprint.current} prior={liveSocialMedia.totalFootprint.prior} accent="text-tiktok" />
+          {liveSocialMedia.platforms.map(p => (
             <MetricRow key={p.platform} label={`${p.platform} ${p.metric} (Total)`} current={p.current} prior={p.prior} accent={`text-[${p.color}]`} />
           ))}
           <div className="mt-4">
-            <SocialChart data={socialMedia.platforms.map(p => ({ platform: p.platform, followers: p.current, color: p.color }))} />
+            <SocialChart data={liveSocialMedia.platforms.map(p => ({ platform: p.platform, followers: p.current, color: p.color }))} />
           </div>
           </CollapsibleSection>
         </section>
