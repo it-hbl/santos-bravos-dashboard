@@ -45,6 +45,7 @@ import WowComparison from "./components/WowComparison";
 import MobileNav from "./components/MobileNav";
 import CommandPalette from "./components/CommandPalette";
 import TopTopics from "./components/TopTopics";
+import ReleaseTimeline from "./components/ReleaseTimeline";
 
 function fmt(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -373,6 +374,21 @@ function Dashboard() {
 
         {/* Data Freshness Warning */}
         <DataFreshness reportDate={reportDate} />
+
+        {/* Release Timeline */}
+        <div id="release-timeline" className="scroll-mt-16" />
+        <AnimatedSection>
+          <section className="glass-hybe rounded-2xl p-6">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center text-xs font-black text-white">📅</div>
+              <div>
+                <h2 className="text-sm font-bold text-white">Release Timeline</h2>
+                <p className="text-[10px] text-neutral-500">Content rollout since debut</p>
+              </div>
+            </div>
+            <ReleaseTimeline />
+          </section>
+        </AnimatedSection>
 
         {/* Key Highlights - Executive Summary */}
         <div id="highlights" className="scroll-mt-16" />
