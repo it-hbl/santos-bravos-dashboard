@@ -37,6 +37,7 @@ import TopInfluencers from "./components/TopInfluencers";
 import MetricTooltip from "./components/MetricTooltip";
 import StickyTicker from "./components/StickyTicker";
 import DataFreshness from "./components/DataFreshness";
+import AnalystNote from "./components/AnalystNote";
 import ExportCSV from "./components/ExportCSV";
 
 function fmt(n: number) {
@@ -364,6 +365,23 @@ function Dashboard() {
             mentionVolume={livePR.totalMentions}
             sentimentPositivePct={liveSentiment.positive.pct}
             topMarket={geoCountries[0]?.name || ""}
+          />
+        </AnimatedSection>
+
+        {/* Analyst Note */}
+        <AnimatedSection>
+          <AnalystNote
+            reportDate={reportDate}
+            spotifyListeners={{ current: liveListeners, prior: bp.spotifyMonthlyListeners.prior }}
+            tracks={liveTrackStreams.map(t => ({ name: t.name, current: t.spotifyStreams.current, prior: t.spotifyStreams.prior }))}
+            ytSubscribers={liveYTSubscribers}
+            snsTotal={{ current: socialMedia.totalFootprint.current, prior: socialMedia.totalFootprint.prior }}
+            totalStreams={{ current: bp.totalCrossPlatformStreams.current, prior: bp.totalCrossPlatformStreams.prior }}
+            mentionVolume={livePR.totalMentions}
+            sentimentPositive={liveSentiment.positive.pct}
+            sentimentNegative={liveSentiment.negative.pct}
+            topMarket={geoCountries[0]?.name || ""}
+            dailyTopTrack={dailyStreams.length > 0 ? { name: dailyStreams[0].name, streams: dailyStreams[0].streams } : null}
           />
         </AnimatedSection>
 
