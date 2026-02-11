@@ -469,11 +469,13 @@ function Dashboard() {
             </div>
             <div className="grid grid-cols-2 gap-3 flex-shrink-0">
               {[
-                { label: "Listeners", value: liveListeners, prior: bp.spotifyMonthlyListeners.prior, color: "#1DB954", accent: "text-spotify", tooltip: "Monthly Listeners" },
-                { label: "SNS", value: liveSocialMedia.totalFootprint.current, prior: liveSocialMedia.totalFootprint.prior, color: "#00F2EA", accent: "text-tiktok", tooltip: "SNS Footprint" },
-                { label: "Streams", value: bp.totalCrossPlatformStreams.current, prior: bp.totalCrossPlatformStreams.prior, color: "#FFFFFF", accent: "text-white", tooltip: "Cross-Platform Streams" },
-                { label: "SPL", value: bp.spl.current, prior: null, color: "#FBBF24", accent: "text-amber-400", isSpl: true, tooltip: "SPL" },
-              ].map(card => (
+                { label: "Listeners", value: liveListeners, prior: bp.spotifyMonthlyListeners.prior, color: "#1DB954", accent: "text-spotify", tooltip: "Monthly Listeners", target: 500000, targetLabel: "500K" },
+                { label: "SNS", value: liveSocialMedia.totalFootprint.current, prior: liveSocialMedia.totalFootprint.prior, color: "#00F2EA", accent: "text-tiktok", tooltip: "SNS Footprint", target: 2000000, targetLabel: "2M" },
+                { label: "Streams", value: bp.totalCrossPlatformStreams.current, prior: bp.totalCrossPlatformStreams.prior, color: "#FFFFFF", accent: "text-white", tooltip: "Cross-Platform Streams", target: 50000000, targetLabel: "50M" },
+                { label: "SPL", value: bp.spl.current, prior: null, color: "#FBBF24", accent: "text-amber-400", isSpl: true, tooltip: "SPL", target: null, targetLabel: null },
+              ].map(card => {
+                const targetPct = card.target ? Math.min(100, (card.value / card.target) * 100) : null;
+                return (
                 <div key={card.label} className="glass-hybe glass-hybe-card hero-card-enter rounded-xl p-3 text-center min-w-[120px] relative overflow-hidden cursor-default">
                   <div className="absolute bottom-0 right-0 opacity-40 pointer-events-none">
                     <Sparkline
@@ -496,8 +498,20 @@ function Dashboard() {
                       <DodBadge current={card.value} prior={card.prior} />
                     </div>
                   )}
+                  {targetPct !== null && (
+                    <div className="relative z-10 mt-1.5">
+                      <div className="w-full bg-white/[0.06] rounded-full h-1 overflow-hidden">
+                        <div
+                          className="h-full rounded-full transition-all duration-[1.5s] ease-out"
+                          style={{ width: `${targetPct}%`, backgroundColor: card.color, opacity: 0.7 }}
+                        />
+                      </div>
+                      <p className="text-[8px] text-neutral-600 mt-0.5">{targetPct.toFixed(0)}% → {card.targetLabel}</p>
+                    </div>
+                  )}
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </section>
