@@ -299,8 +299,10 @@ function Dashboard() {
           </div>
 
           <div className="flex flex-col md:flex-row items-center gap-8">
-            <Image src="/sb-avatar.jpg" alt="Santos Bravos" width={120} height={120}
-              className="rounded-2xl shadow-2xl shadow-violet-500/20 ring-2 ring-violet-500/20 flex-shrink-0" />
+            <div className="avatar-ring flex-shrink-0">
+              <Image src="/sb-avatar.jpg" alt="Santos Bravos" width={120} height={120}
+                className="rounded-2xl shadow-2xl shadow-violet-500/20 block" />
+            </div>
             <div className="text-center md:text-left space-y-2 flex-1">
               <div className="flex items-center gap-2 justify-center md:justify-start">
                 <svg viewBox="0 0 60 14" className="h-2.5 text-neutral-500" fill="currentColor">
