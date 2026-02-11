@@ -118,6 +118,18 @@ export const prMedia = {
     { phrase: "festivales de música", count: 125 },
     { phrase: "nuevo video", count: 125 },
   ],
+  topMentions: [
+    { handle: "@santos_bravos", count: 1842 },
+    { handle: "@ABORINGSTORY2", count: 456 },
+    { handle: "@hyikiara", count: 312 },
+    { handle: "@soykennethlavill", count: 287 },
+    { handle: "@hybelatinamerica", count: 264 },
+    { handle: "@alearamburu_oficial", count: 198 },
+    { handle: "@and.venn", count: 167 },
+    { handle: "@kauepenna", count: 143 },
+    { handle: "@gabiprpr", count: 112 },
+    { handle: "@SpotifyMexico", count: 89 },
+  ],
   topSources: [
     { name: "X (Twitter)", count: 3842, type: "social" },
     { name: "Instagram", count: 1105, type: "social" },

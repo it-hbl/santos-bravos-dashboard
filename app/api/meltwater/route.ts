@@ -45,13 +45,14 @@ const COUNTRY_NAMES: Record<string, string> = {
 export async function GET() {
   try {
     // Fetch analytics + keyphrases + hashtags + sources in parallel
-    const [analyticsRes, keyphrasesRes, hashtagsRes, sourcesRes, entitiesRes, sharedLinksRes] = await Promise.all([
+    const [analyticsRes, keyphrasesRes, hashtagsRes, sourcesRes, entitiesRes, sharedLinksRes, mentionsRes] = await Promise.all([
       mwGet(`/v3/analytics/${SEARCH_ID}`),
       mwGet(`/v3/analytics/${SEARCH_ID}/top_keyphrases`, { source: "twitter" }),
       mwGet(`/v3/analytics/${SEARCH_ID}/top_tags`, { source: "twitter" }),
       mwGet(`/v3/analytics/${SEARCH_ID}/top_sources`).catch(() => null),
       mwGet(`/v3/analytics/${SEARCH_ID}/top_entities`).catch(() => null),
       mwGet(`/v3/analytics/${SEARCH_ID}/top_shared_links`).catch(() => null),
+      mwGet(`/v3/analytics/${SEARCH_ID}/top_mentions`, { source: "twitter" }).catch(() => null),
     ]);
 
     const analytics = analyticsRes;
@@ -145,6 +146,18 @@ export async function GET() {
       count: l.count ?? l.shares ?? l.volume ?? 0,
     }));
 
+    // Top mentions (influencer handles)
+    const rawMentions = mentionsRes
+      ? (Array.isArray(mentionsRes) ? mentionsRes
+        : Array.isArray(mentionsRes?.top_mentions) ? mentionsRes.top_mentions
+        : Array.isArray(mentionsRes?.data) ? mentionsRes.data
+        : [])
+      : [];
+    const topMentions = rawMentions.slice(0, 10).map((m: any) => ({
+      handle: m.name || m.mention || m.handle || m.text || "Unknown",
+      count: m.count ?? m.volume ?? 0,
+    }));
+
     // Build period string
     const { start, end } = getDateRange();
     const startDate = new Date(start).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
@@ -163,7 +176,7 @@ export async function GET() {
     return NextResponse.json({
       live: true,
       data: {
-        prMedia: { period, totalMentions, perDay, uniqueAuthors, timeSeries, topCountries, topKeyphrases, topSources },
+        prMedia: { period, totalMentions, perDay, uniqueAuthors, timeSeries, topCountries, topKeyphrases, topSources, topMentions },
         fanSentiment: { period, positive, negative, neutral, topHashtags, topEntities, topSharedLinks, sentimentTimeline },
         fetchedAt: new Date().toISOString(),
       },

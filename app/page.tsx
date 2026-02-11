@@ -33,6 +33,7 @@ import Sparkline from "./components/Sparkline";
 import KeyboardShortcuts from "./components/KeyboardShortcuts";
 import GeoTreemap from "./components/GeoTreemap";
 import DailyComparisonChart from "./components/DailyComparisonChart";
+import TopInfluencers from "./components/TopInfluencers";
 
 function fmt(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -675,7 +676,7 @@ function Dashboard() {
           </div>
           <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-2">Daily Mention Volume</p>
           <MentionsChart data={livePR.timeSeries} />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mt-5">
             {/* Source Distribution Donut */}
             <div>
               <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-2">Source Distribution</p>
@@ -745,6 +746,8 @@ function Dashboard() {
                 ))}
               </div>
             </div>
+            {/* Top Mentions / Influencers */}
+            <TopInfluencers mentions={livePR.topMentions || []} />
           </div>
           </CollapsibleSection>
         </section>
