@@ -58,6 +58,33 @@ import SkeletonLoader from "./components/SkeletonLoader";
 import MediaVsAudience from "./components/MediaVsAudience";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 
+/** Extract short date like "2/9/26" from "February 9, 2026" or ISO date */
+function shortDate(dateStr: string): string {
+  if (!dateStr) return "—";
+  try {
+    // Try parsing as a readable date like "February 9, 2026"
+    const d = new Date(dateStr);
+    if (!isNaN(d.getTime())) {
+      return `${d.getMonth() + 1}/${d.getDate()}/${String(d.getFullYear()).slice(-2)}`;
+    }
+  } catch {}
+  return dateStr;
+}
+
+/** Extract just the day number from a date string */
+function dayNumber(dateStr: string): string {
+  try {
+    const d = new Date(dateStr);
+    if (!isNaN(d.getTime())) return String(d.getDate());
+  } catch {}
+  return "—";
+}
+
+/** Format date for section subtitles like "As of 2/9/26" */
+function sectionDate(dateStr: string): string {
+  return `As of ${shortDate(dateStr)}`;
+}
+
 function fmt(n: number | null | undefined) {
   if (n == null || isNaN(n)) return "—";
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -355,7 +382,7 @@ function Dashboard() {
           {/* Report Date Banner */}
           <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/[0.05]">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-blue-500 flex items-center justify-center text-sm font-black text-white">9</div>
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-blue-500 flex items-center justify-center text-sm font-black text-white">{dayNumber(reportDate)}</div>
               <div>
                 <p className="text-white font-bold text-sm">Daily Report — {reportDate}</p>
                 <p className="text-[10px] text-neutral-500">Compared vs prior report: {priorDate}</p>
@@ -574,8 +601,8 @@ function Dashboard() {
           <CollapsibleSection id="business" number="1" title="Business Performance Snapshot" subtitle="Spotify + YouTube" color="bg-spotify">
           <div className="mb-3 hidden sm:flex items-center gap-6 text-[9px] text-neutral-600 uppercase tracking-wider px-2 py-2 bg-white/[0.015] rounded-lg">
             <span className="flex-1">Metric</span>
-            <span className="w-20 text-right font-bold text-violet-400">2/9/26</span>
-            <span className="w-16 text-right">2/4/26</span>
+            <span className="w-20 text-right font-bold text-violet-400">{shortDate(reportDate)}</span>
+            <span className="w-16 text-right">{shortDate(priorDate)}</span>
             <span className="w-16 text-right">Change</span>
             <span className="w-16 text-right"><MetricTooltip term="DoD">DoD %</MetricTooltip></span>
           </div>
@@ -654,7 +681,7 @@ function Dashboard() {
         <div id="daily" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
-          <CollapsibleSection id="daily-snapshot" number="⚡" title="Spotify for Artists — Daily Snapshot" subtitle="Saturday, February 8, 2026 (24h)" color="bg-gradient-to-br from-spotify to-emerald-400">
+          <CollapsibleSection id="daily-snapshot" number="⚡" title="Spotify for Artists — Daily Snapshot" subtitle={`${reportDate} (24h)`} color="bg-gradient-to-br from-spotify to-emerald-400">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {dailyStreams.map(t => (
               <div key={t.name} className="bg-white/[0.02] rounded-xl p-4 border border-white/[0.04]">
@@ -702,7 +729,7 @@ function Dashboard() {
         <div id="social" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
-          <CollapsibleSection id="social-media" number="2" title="Social Media Performance" subtitle="SNS · As of 2/9/26" color="bg-gradient-to-br from-tiktok to-cyan-300">
+          <CollapsibleSection id="social-media" number="2" title="Social Media Performance" subtitle={`SNS · ${sectionDate(reportDate)}`} color="bg-gradient-to-br from-tiktok to-cyan-300">
           <SocialMediaCards
             platforms={liveSocialMedia.platforms}
             totalFootprint={liveSocialMedia.totalFootprint}
@@ -718,7 +745,7 @@ function Dashboard() {
         <div id="virality" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
-          <CollapsibleSection id="audio-virality" number="3" title="Audio Virality" subtitle="Cobrand · TT + IG · As of 2/9/26" color="bg-gradient-to-br from-purple-500 to-pink-500">
+          <CollapsibleSection id="audio-virality" number="3" title="Audio Virality" subtitle={`Cobrand · TT + IG · ${sectionDate(reportDate)}`} color="bg-gradient-to-br from-purple-500 to-pink-500">
           <MetricRow label={audioVirality.totalAudioViews.label} current={audioVirality.totalAudioViews.current} prior={audioVirality.totalAudioViews.prior} />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
             {audioVirality.tracks.map(t => (
@@ -768,7 +795,7 @@ function Dashboard() {
         <div id="members" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
-          <CollapsibleSection id="band-members" number="4" title="Band Member Followers" subtitle="Instagram · As of 2/9/26" color="bg-gradient-to-br from-pink-500 to-rose-400">
+          <CollapsibleSection id="band-members" number="4" title="Band Member Followers" subtitle={`Instagram · ${sectionDate(reportDate)}`} color="bg-gradient-to-br from-pink-500 to-rose-400">
           <StaggerChildren className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
             {members.map((m, i) => {
               const gradients = ["from-violet-600 to-blue-500", "from-cyan-500 to-blue-400", "from-pink-500 to-rose-400", "from-amber-500 to-orange-400", "from-emerald-500 to-teal-400"];
