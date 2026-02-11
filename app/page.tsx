@@ -46,6 +46,7 @@ import MobileNav from "./components/MobileNav";
 import CommandPalette from "./components/CommandPalette";
 import TopTopics from "./components/TopTopics";
 import ReleaseTimeline from "./components/ReleaseTimeline";
+import SocialMediaCards from "./components/SocialMediaCards";
 
 function fmt(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -649,10 +650,10 @@ function Dashboard() {
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
           <CollapsibleSection id="social-media" number="2" title="Social Media Performance" subtitle="SNS · As of 2/9/26" color="bg-gradient-to-br from-tiktok to-cyan-300">
-          <MetricRow label={liveSocialMedia.totalFootprint.label} current={liveSocialMedia.totalFootprint.current} prior={liveSocialMedia.totalFootprint.prior} accent="text-tiktok" />
-          {liveSocialMedia.platforms.map(p => (
-            <MetricRow key={p.platform} label={`${p.platform} ${p.metric} (Total)`} current={p.current} prior={p.prior} accent={`text-[${p.color}]`} />
-          ))}
+          <SocialMediaCards
+            platforms={liveSocialMedia.platforms}
+            totalFootprint={liveSocialMedia.totalFootprint}
+          />
           <div className="mt-4">
             <SocialChart data={liveSocialMedia.platforms.map(p => ({ platform: p.platform, followers: p.current, color: p.color }))} />
           </div>
