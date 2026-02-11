@@ -31,6 +31,7 @@ import DataSourcesStatus from "./components/DataSourcesStatus";
 import MilestonesTracker from "./components/MilestonesTracker";
 import Sparkline from "./components/Sparkline";
 import KeyboardShortcuts from "./components/KeyboardShortcuts";
+import GeoTreemap from "./components/GeoTreemap";
 
 function fmt(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -600,6 +601,12 @@ function Dashboard() {
               <p className="text-xl font-extrabold text-blue-400 mt-1">{fmt(geoCountries.reduce((s, c) => s + c.listeners, 0))}</p>
             </div>
           </div>
+          {/* Geographic Treemap */}
+          <div className="mb-6">
+            <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-3">Listener Distribution by Country</p>
+            <GeoTreemap data={geoCountries} />
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3">Top Countries</p>
