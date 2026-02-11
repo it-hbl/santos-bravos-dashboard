@@ -920,12 +920,13 @@ function Dashboard() {
               <TopTopics topics={(livePR as any).topTopics || []} />
             </div>
           )}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-6 mt-5">
+          {/* Row 1: Source Donut + Countries + Sources (3 cols) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-5">
             {/* Source Distribution Donut */}
-            <div>
-              <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-2">Source Distribution</p>
+            <div className="bg-white/[0.02] rounded-xl p-4 border border-white/[0.04]">
+              <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-3">Source Distribution</p>
               <SourceDonut sources={livePR.topSources} />
-              <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-2">
+              <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-3">
                 {livePR.topSources.slice(0, 5).map((s: any) => {
                   const colors: Record<string, string> = {
                     "X (Twitter)": "bg-[#1DA1F2]", "Twitter": "bg-[#1DA1F2]", "Instagram": "bg-[#E1306C]",
@@ -943,57 +944,76 @@ function Dashboard() {
               </div>
             </div>
             {/* Top Countries */}
-            <div>
-              <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3">Top Countries</p>
-              <div className="space-y-2">
-                {livePR.topCountries.map((c: any, i: number) => (
-                  <div key={c.code} className="flex items-center gap-3">
-                    <span className="text-[10px] text-neutral-600 w-4 text-right">{i + 1}</span>
-                    <span className="text-sm">{c.flag}</span>
-                    <span className="text-sm text-neutral-300 flex-1">{c.name}</span>
-                    <span className="text-sm font-bold tabular-nums text-white">{c.mentions?.toLocaleString() ?? "—"}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            {/* Top Sources (bars) */}
-            <div>
-              <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3">Top Sources</p>
-              <div className="space-y-2">
-                {livePR.topSources.slice(0, 6).map((s: any) => {
-                  const icons: Record<string, string> = { social: "🌐", news: "📰", blog: "✍️", other: "📄" };
+            <div className="bg-white/[0.02] rounded-xl p-4 border border-white/[0.04]">
+              <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3">🌍 Top Countries by Mentions</p>
+              <div className="space-y-2.5">
+                {livePR.topCountries.map((c: any, i: number) => {
+                  const maxMentions = livePR.topCountries[0]?.mentions || 1;
                   return (
-                    <div key={s.name} className="flex items-center gap-3">
-                      <span className="text-sm">{icons[s.type] || "📄"}</span>
-                      <span className="text-sm text-neutral-300 flex-1 truncate">{s.name}</span>
-                      <div className="w-16 bg-white/[0.04] rounded-full h-1.5 overflow-hidden">
-                        <div className="bg-indigo-500 h-full rounded-full" style={{ width: `${(s.count / (livePR.topSources[0]?.count || 1)) * 100}%` }} />
+                    <div key={c.code}>
+                      <div className="flex items-center gap-3 mb-1">
+                        <span className="text-[10px] text-neutral-600 w-4 text-right font-bold">{i + 1}</span>
+                        <span className="text-sm">{c.flag}</span>
+                        <span className="text-sm text-neutral-300 flex-1">{c.name}</span>
+                        <span className="text-sm font-bold tabular-nums text-white">{c.mentions?.toLocaleString() ?? "—"}</span>
                       </div>
-                      <span className="text-[10px] font-bold tabular-nums text-neutral-400 w-12 text-right">{s.count?.toLocaleString() ?? "—"}</span>
+                      <div className="ml-[44px] w-auto bg-white/[0.04] rounded-full h-1 overflow-hidden">
+                        <div className="bg-indigo-500/70 h-full rounded-full transition-all duration-700" style={{ width: `${(c.mentions / maxMentions) * 100}%` }} />
+                      </div>
                     </div>
                   );
                 })}
               </div>
             </div>
-            {/* Trending Keyphrases */}
-            <div>
-              <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3">Trending Keyphrases</p>
-              <div className="space-y-2">
-                {livePR.topKeyphrases.slice(0, 6).map((k: any) => (
-                  <div key={k.phrase} className="flex items-center gap-3">
-                    <span className="text-sm text-neutral-300 flex-1 truncate">{k.phrase}</span>
-                    <div className="w-16 bg-white/[0.04] rounded-full h-1.5 overflow-hidden">
-                      <div className="bg-violet-500 h-full rounded-full" style={{ width: `${(k.count / (livePR.topKeyphrases[0]?.count || 1)) * 100}%` }} />
+            {/* Top Sources (bars) */}
+            <div className="bg-white/[0.02] rounded-xl p-4 border border-white/[0.04]">
+              <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3">📰 Top Sources</p>
+              <div className="space-y-2.5">
+                {livePR.topSources.slice(0, 8).map((s: any) => {
+                  const icons: Record<string, string> = { social: "🌐", news: "📰", blog: "✍️", other: "📄" };
+                  return (
+                    <div key={s.name}>
+                      <div className="flex items-center gap-3 mb-1">
+                        <span className="text-sm">{icons[s.type] || "📄"}</span>
+                        <span className="text-sm text-neutral-300 flex-1 truncate">{s.name}</span>
+                        <span className="text-[10px] font-bold tabular-nums text-neutral-400">{s.count?.toLocaleString() ?? "—"}</span>
+                      </div>
+                      <div className="ml-[32px] w-auto bg-white/[0.04] rounded-full h-1 overflow-hidden">
+                        <div className="bg-indigo-500 h-full rounded-full transition-all duration-700" style={{ width: `${(s.count / (livePR.topSources[0]?.count || 1)) * 100}%` }} />
+                      </div>
                     </div>
-                    <span className="text-[10px] font-bold tabular-nums text-neutral-400 w-10 text-right">{k.count}</span>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+          {/* Row 2: Keyphrases + Influencers + Media vs Audience (3 cols) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+            {/* Trending Keyphrases */}
+            <div className="bg-white/[0.02] rounded-xl p-4 border border-white/[0.04]">
+              <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3">🔥 Trending Keyphrases</p>
+              <div className="space-y-2.5">
+                {livePR.topKeyphrases.slice(0, 8).map((k: any) => (
+                  <div key={k.phrase}>
+                    <div className="flex items-center gap-3 mb-1">
+                      <span className="text-sm text-neutral-300 flex-1 truncate">{k.phrase}</span>
+                      <span className="text-[10px] font-bold tabular-nums text-violet-400">{k.count}</span>
+                    </div>
+                    <div className="w-full bg-white/[0.04] rounded-full h-1 overflow-hidden">
+                      <div className="bg-violet-500 h-full rounded-full transition-all duration-700" style={{ width: `${(k.count / (livePR.topKeyphrases[0]?.count || 1)) * 100}%` }} />
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
             {/* Top Mentions / Influencers */}
-            <TopInfluencers mentions={livePR.topMentions || []} />
+            <div className="bg-white/[0.02] rounded-xl p-4 border border-white/[0.04]">
+              <TopInfluencers mentions={livePR.topMentions || []} />
+            </div>
             {/* Media vs Audience Geography */}
-            <MediaVsAudience mediaCountries={livePR.topCountries} listenerCountries={geoCountries.map(c => ({ country: (c as any).name || (c as any).country, listeners: c.listeners, flag: c.flag }))} />
+            <div className="bg-white/[0.02] rounded-xl p-4 border border-white/[0.04]">
+              <MediaVsAudience mediaCountries={livePR.topCountries} listenerCountries={geoCountries.map(c => ({ country: (c as any).name || (c as any).country, listeners: c.listeners, flag: c.flag }))} />
+            </div>
           </div>
           </CollapsibleSection>
         </section>
