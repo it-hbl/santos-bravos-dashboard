@@ -42,6 +42,7 @@ import ExportCSV from "./components/ExportCSV";
 import RegionalBreakdown from "./components/RegionalBreakdown";
 import PerformanceScore from "./components/PerformanceScore";
 import WowComparison from "./components/WowComparison";
+import MobileNav from "./components/MobileNav";
 
 function fmt(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -1058,6 +1059,9 @@ function Dashboard() {
         </footer>
       </div>
       <KeyboardShortcuts onRefresh={refresh} />
+      <MobileNav />
+      {/* Bottom padding for mobile nav */}
+      <div className="h-16 lg:hidden print:hidden" />
     </main>
   );
 }
