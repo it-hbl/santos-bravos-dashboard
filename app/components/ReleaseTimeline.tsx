@@ -61,13 +61,9 @@ const releases = [
 ];
 
 export default function ReleaseTimeline() {
-  const { youtube } = useLiveData();
-
-  // Get view counts from live data or fallback
+  // Get view counts from fallback data (live data now comes via Supabase date picker)
   const getViews = (videoName: string | null): number | null => {
     if (!videoName) return null;
-    const liveMatch = youtube?.videos?.find((v) => v.name === videoName);
-    if (liveMatch) return liveMatch.views;
     const fallbackMatch = businessPerformance.youtubeVideos.find((v) => v.name === videoName);
     if (fallbackMatch) return fallbackMatch.views.current;
     return null;

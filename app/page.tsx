@@ -189,52 +189,24 @@ function Dashboard() {
 
   const bp = businessPerformance;
   const o = artistOverview;
-  const { chartmetric, youtube, meltwater, isLive, refresh } = useLiveData();
+  const { refresh } = useLiveData();
 
-  // Overlay live Meltwater data when available
-  const livePR = meltwater?.prMedia ?? prMedia;
-  const liveSentiment = meltwater?.fanSentiment ?? fanSentiment;
+  // All data now comes from Supabase via date picker — no more live API overlays
+  const livePR = prMedia as any;
+  const liveSentiment = fanSentiment as any;
+  const liveListeners = bp.spotifyMonthlyListeners.current;
+  const liveFollowers = bp.spotifyFollowers?.current ?? 0;
+  const livePopularity = bp.spotifyPopularity.current;
+  const liveTrackStreams = bp.tracks;
 
-  // Overlay live data when available
-  const liveListeners = chartmetric?.spotifyMonthlyListeners ?? bp.spotifyMonthlyListeners.current;
-  const liveFollowers = chartmetric?.spotifyFollowers ?? bp.spotifyFollowers.current;
-  const livePopularity = chartmetric?.spotifyPopularity ?? bp.spotifyPopularity.current;
-  const liveTrackStreams = bp.tracks.map((t, i) => ({
-    ...t,
-    spotifyStreams: {
-      ...t.spotifyStreams,
-      current: chartmetric?.tracks?.[i]?.spotifyStreams ?? t.spotifyStreams.current,
-    },
+  // All data from Supabase — no live API overlays
+  const liveYTVideos = bp.youtubeVideos.map((v: any) => ({
+    ...v,
+    likes: v.likes ?? 0,
+    comments: v.comments ?? 0,
   }));
-
-  // Overlay live YouTube data when available
-  const liveYTVideos = bp.youtubeVideos.map((v) => {
-    const liveMatch = youtube?.videos?.find((lv) => lv.name === v.name);
-    return {
-      ...v,
-      views: {
-        ...v.views,
-        current: liveMatch?.views ?? v.views.current,
-      },
-      likes: liveMatch?.likes ?? 0,
-      comments: liveMatch?.comments ?? 0,
-    };
-  });
-  const liveYTSubscribers = youtube?.subscribers ?? socialMedia.platforms.find(p => p.platform === "YouTube")?.current ?? 471000;
-
-  // Overlay live SNS data from Chartmetric + YouTube
-  const liveSocialPlatforms = socialMedia.platforms.map(p => {
-    if (p.platform === "YouTube") return { ...p, current: liveYTSubscribers };
-    if (p.platform === "Instagram" && chartmetric?.instagramFollowers) return { ...p, current: chartmetric.instagramFollowers };
-    if (p.platform === "TikTok" && chartmetric?.tiktokFollowers) return { ...p, current: chartmetric.tiktokFollowers };
-    return p;
-  });
-  const liveSNSFootprint = liveSocialPlatforms.reduce((s, p) => s + p.current, 0);
-  const liveSocialMedia = {
-    ...socialMedia,
-    platforms: liveSocialPlatforms,
-    totalFootprint: { ...socialMedia.totalFootprint, current: liveSNSFootprint },
-  };
+  const liveSocialMedia = socialMedia;
+  const liveYTSubscribers = socialMedia.platforms.find(p => p.platform === "YouTube")?.current ?? 471000;
 
   return (
     <main className="min-h-screen">
@@ -408,7 +380,7 @@ function Dashboard() {
                 </svg>
                 <span className="text-[10px] text-neutral-500">LATIN AMERICA</span>
               </div>
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight sb-gradient">SANTOS BRAVOS</h1>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight sb-gradient sb-gradient-shimmer">SANTOS BRAVOS</h1>
               <p className="text-neutral-500 text-sm">{o.tagline}</p>
               <div className="flex gap-2 flex-wrap justify-center md:justify-start">
                 {["🎤 Latin Pop", "👥 5 Members", "💿 3 Releases", "🌎 LATAM + US"].map(tag => (
@@ -423,7 +395,7 @@ function Dashboard() {
                 { label: "Streams", value: bp.totalCrossPlatformStreams.current, prior: bp.totalCrossPlatformStreams.prior, color: "#FFFFFF", accent: "text-white", tooltip: "Cross-Platform Streams" },
                 { label: "SPL", value: bp.spl.current, prior: null, color: "#FBBF24", accent: "text-amber-400", isSpl: true, tooltip: "SPL" },
               ].map(card => (
-                <div key={card.label} className="glass-hybe glass-hybe-card rounded-xl p-3 text-center min-w-[120px] relative overflow-hidden cursor-default">
+                <div key={card.label} className="glass-hybe glass-hybe-card hero-card-enter rounded-xl p-3 text-center min-w-[120px] relative overflow-hidden cursor-default">
                   <div className="absolute bottom-0 right-0 opacity-40 pointer-events-none">
                     <Sparkline
                       data={trendPoints(card.prior, card.isSpl ? card.value * 1000 : card.value)}
@@ -835,7 +807,7 @@ function Dashboard() {
           </div>
           <MemberBuzz
             members={members.map(m => ({ name: m.name, followers: m.followers }))}
-            mentions={(liveSentiment.topEntities || []).filter(e => e.type === "person")}
+            mentions={(liveSentiment.topEntities || []).filter((e: any) => e.type === "person")}
           />
           </CollapsibleSection>
         </section>
@@ -952,13 +924,13 @@ function Dashboard() {
               <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-2">Source Distribution</p>
               <SourceDonut sources={livePR.topSources} />
               <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-2">
-                {livePR.topSources.slice(0, 5).map((s) => {
+                {livePR.topSources.slice(0, 5).map((s: any) => {
                   const colors: Record<string, string> = {
                     "X (Twitter)": "bg-[#1DA1F2]", "Twitter": "bg-[#1DA1F2]", "Instagram": "bg-[#E1306C]",
                     "TikTok": "bg-[#00F2EA]", "YouTube": "bg-[#FF0000]", "Reddit": "bg-[#FF4500]",
                     "News Sites": "bg-violet-400", "Blogs": "bg-amber-400", "Facebook": "bg-[#1877F2]",
                   };
-                  const totalCount = livePR.topSources.reduce((a, b) => a + b.count, 0);
+                  const totalCount = livePR.topSources.reduce((a: number, b: any) => a + b.count, 0);
                   return (
                     <div key={s.name} className="flex items-center gap-1.5">
                       <div className={`w-2 h-2 rounded-full ${colors[s.name] || "bg-indigo-400"}`} />
@@ -972,7 +944,7 @@ function Dashboard() {
             <div>
               <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3">Top Countries</p>
               <div className="space-y-2">
-                {livePR.topCountries.map((c, i) => (
+                {livePR.topCountries.map((c: any, i: number) => (
                   <div key={c.code} className="flex items-center gap-3">
                     <span className="text-[10px] text-neutral-600 w-4 text-right">{i + 1}</span>
                     <span className="text-sm">{c.flag}</span>
@@ -986,7 +958,7 @@ function Dashboard() {
             <div>
               <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3">Top Sources</p>
               <div className="space-y-2">
-                {livePR.topSources.slice(0, 6).map((s) => {
+                {livePR.topSources.slice(0, 6).map((s: any) => {
                   const icons: Record<string, string> = { social: "🌐", news: "📰", blog: "✍️", other: "📄" };
                   return (
                     <div key={s.name} className="flex items-center gap-3">
@@ -1005,7 +977,7 @@ function Dashboard() {
             <div>
               <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3">Trending Keyphrases</p>
               <div className="space-y-2">
-                {livePR.topKeyphrases.slice(0, 6).map((k) => (
+                {livePR.topKeyphrases.slice(0, 6).map((k: any) => (
                   <div key={k.phrase} className="flex items-center gap-3">
                     <span className="text-sm text-neutral-300 flex-1 truncate">{k.phrase}</span>
                     <div className="w-16 bg-white/[0.04] rounded-full h-1.5 overflow-hidden">
@@ -1086,7 +1058,7 @@ function Dashboard() {
             <div>
               <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3">Top Hashtags (X / Twitter)</p>
               <div className="space-y-2">
-                {liveSentiment.topHashtags.map((h) => (
+                {liveSentiment.topHashtags.map((h: any) => (
                   <div key={h.tag} className="flex items-center gap-3">
                     <span className="text-sm text-pink-400 flex-1 truncate">{h.tag}</span>
                     <div className="w-20 bg-white/[0.04] rounded-full h-1.5 overflow-hidden">
@@ -1102,7 +1074,7 @@ function Dashboard() {
             <div>
               <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3">Conversation Drivers</p>
               <div className="space-y-2">
-                {(liveSentiment.topEntities || []).slice(0, 8).map((e) => {
+                {(liveSentiment.topEntities || []).slice(0, 8).map((e: any) => {
                   const icons: Record<string, string> = { person: "👤", organization: "🏢", location: "📍", unknown: "💬" };
                   const maxCount = (liveSentiment.topEntities || [])[0]?.count || 1;
                   return (
@@ -1125,7 +1097,7 @@ function Dashboard() {
             <div className="mt-6 pt-5 border-t border-white/[0.05]">
               <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3">🔗 Most Shared Links</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {(liveSentiment.topSharedLinks || []).slice(0, 6).map((link, i) => {
+                {(liveSentiment.topSharedLinks || []).slice(0, 6).map((link: any, i: number) => {
                   let domain = "";
                   try { domain = new URL(link.url).hostname.replace("www.", ""); } catch { domain = link.url; }
                   const maxShares = (liveSentiment.topSharedLinks || [])[0]?.count || 1;
