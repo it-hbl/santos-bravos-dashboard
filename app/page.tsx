@@ -25,6 +25,7 @@ import CollapsibleSection from "./components/CollapsibleSection";
 import ScrollProgress from "./components/ScrollProgress";
 import CopySummary from "./components/CopySummary";
 import SentimentTimeline from "./components/SentimentTimeline";
+import AudienceFunnel from "./components/AudienceFunnel";
 
 function fmt(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -588,6 +589,13 @@ function Dashboard() {
               </div>
             ))}
           </div>
+          <AudienceFunnel
+            listeners={audienceStats.listeners}
+            streams={audienceStats.streams}
+            saves={audienceStats.saves}
+            playlistAdds={audienceStats.playlistAdds}
+            followers={audienceStats.followers}
+          />
           </CollapsibleSection>
         </section>
         </AnimatedSection>
