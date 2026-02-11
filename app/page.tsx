@@ -60,6 +60,7 @@ import MentionMomentum from "./components/MentionMomentum";
 import WeekdayHeatmap from "./components/WeekdayHeatmap";
 import HistoricalTrends from "./components/HistoricalTrends";
 import QuickShare from "./components/QuickShare";
+import EngagementDepth from "./components/EngagementDepth";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 
 /** Extract short date like "2/9/26" from "February 9, 2026" or ISO date */
@@ -822,6 +823,7 @@ function Dashboard() {
               </div>
             ))}
           </div>
+          <EngagementDepth tracks={dailyStreams} />
           <DailyComparisonChart tracks={dailyStreams} />
           </CollapsibleSection>
         </section>
