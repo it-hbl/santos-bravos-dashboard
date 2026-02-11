@@ -417,6 +417,43 @@ function Dashboard() {
                   <span key={tag} className="text-[10px] bg-white/[0.03] border border-white/[0.06] rounded-full px-3 py-1 text-neutral-500">{tag}</span>
                 ))}
               </div>
+              {/* Contextual info pills — latest release age + nearest milestone */}
+              <div className="flex gap-2 flex-wrap justify-center md:justify-start mt-1">
+                {(() => {
+                  const releases = [
+                    { name: "KAWASAKI", date: new Date("2026-02-07") },
+                    { name: "0% (PT)", date: new Date("2026-02-03") },
+                    { name: "0% MV", date: new Date("2026-01-31") },
+                    { name: "Debut", date: new Date("2026-01-24") },
+                  ];
+                  const now = new Date();
+                  const latest = releases[0];
+                  const daysSince = Math.floor((now.getTime() - latest.date.getTime()) / 86400000);
+                  return (
+                    <span className="text-[10px] bg-violet-500/10 border border-violet-500/20 rounded-full px-3 py-1 text-violet-400">
+                      🎵 {latest.name} — {daysSince}d ago
+                    </span>
+                  );
+                })()}
+                {(() => {
+                  const milestones = [
+                    { label: "500K YT Subs", current: liveYTSubscribers, target: 500000 },
+                    { label: "2M SNS", current: liveSocialMedia.totalFootprint.current, target: 2000000 },
+                    { label: "500K Listeners", current: liveListeners, target: 500000 },
+                    { label: "50M Streams", current: bp.totalCrossPlatformStreams.current, target: 50000000 },
+                  ];
+                  const nearest = milestones
+                    .filter(m => m.current < m.target)
+                    .sort((a, b) => (b.current / b.target) - (a.current / a.target))[0];
+                  if (!nearest) return null;
+                  const pct = ((nearest.current / nearest.target) * 100).toFixed(0);
+                  return (
+                    <span className="text-[10px] bg-emerald-500/10 border border-emerald-500/20 rounded-full px-3 py-1 text-emerald-400">
+                      🎯 {nearest.label} — {pct}%
+                    </span>
+                  );
+                })()}
+              </div>
             </div>
             <div className="grid grid-cols-2 gap-3 flex-shrink-0">
               {[
