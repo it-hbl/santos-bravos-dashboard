@@ -10,7 +10,7 @@ import {
   audienceStats as fallbackAudienceStats, artistOverview as fallbackArtistOverview,
 } from "./lib/data";
 import { getDashboardData, getAvailableDates } from "./lib/db";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import DatePicker from "./components/DatePicker";
 import StreamingCharts from "./components/StreamingCharts";
 import SocialChart from "./components/SocialChart";
@@ -164,9 +164,20 @@ function SectionHeader({ number, title, subtitle, color }: { number: string; tit
 }
 
 function Dashboard() {
-  const [selectedDate, setSelectedDate] = useState("2026-02-09");
+  // Read initial date from URL query param (?date=YYYY-MM-DD) or default
+  const getInitialDate = () => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const urlDate = params.get("date");
+      if (urlDate && /^\d{4}-\d{2}-\d{2}$/.test(urlDate)) return urlDate;
+    }
+    return "2026-02-09";
+  };
+
+  const [selectedDate, setSelectedDate] = useState(getInitialDate);
   const [availableDates, setAvailableDates] = useState<string[]>(["2026-02-09"]);
   const [dateLoading, setDateLoading] = useState(false);
+  const initialLoadDone = useRef(false);
 
   // Data state — defaults to fallback (hardcoded)
   const [reportDate, setReportDate] = useState(fallbackReportDate);
@@ -184,11 +195,32 @@ function Dashboard() {
   const [audienceStats, setAudienceStats] = useState(fallbackAudienceStats);
   const [artistOverview, setArtistOverview] = useState(fallbackArtistOverview);
 
-  // Fetch available dates on mount
+  // Sync selected date to URL without full page reload
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const url = new URL(window.location.href);
+    if (selectedDate && selectedDate !== "2026-02-09") {
+      url.searchParams.set("date", selectedDate);
+    } else {
+      url.searchParams.delete("date");
+    }
+    window.history.replaceState({}, "", url.toString());
+  }, [selectedDate]);
+
+  // Fetch available dates on mount, then load URL date if present
   useEffect(() => {
     getAvailableDates().then(dates => {
-      if (dates.length > 0) setAvailableDates(dates);
+      if (dates.length > 0) {
+        setAvailableDates(dates);
+        // If URL had a date param, load that date's data on mount
+        const urlDate = getInitialDate();
+        if (urlDate !== "2026-02-09" && dates.includes(urlDate) && !initialLoadDone.current) {
+          initialLoadDone.current = true;
+          handleDateChange(urlDate);
+        }
+      }
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Fetch data when date changes
