@@ -37,6 +37,7 @@ import TopInfluencers from "./components/TopInfluencers";
 import MetricTooltip from "./components/MetricTooltip";
 import StickyTicker from "./components/StickyTicker";
 import DataFreshness from "./components/DataFreshness";
+import ExportCSV from "./components/ExportCSV";
 
 function fmt(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -238,6 +239,33 @@ function Dashboard() {
             sentimentPositive: liveSentiment.positive.pct,
             sentimentNegative: liveSentiment.negative.pct,
             sentimentNeutral: liveSentiment.neutral.pct,
+          }} />
+          <ExportCSV data={{
+            reportDate,
+            listeners: liveListeners,
+            listenersPrior: bp.spotifyMonthlyListeners.prior,
+            spotifyFollowers: bp.spotifyFollowers.current ?? 97592,
+            spotifyPopularity: livePopularity,
+            totalStreams: bp.totalCrossPlatformStreams.current,
+            spl: bp.spl.current,
+            tracks: liveTrackStreams.map(t => ({ name: t.name, streams: t.spotifyStreams.current, prior: t.spotifyStreams.prior })),
+            ytVideos: liveYTVideos.map(v => ({ name: v.name, views: v.views.current, prior: v.views.prior })),
+            ytSubscribers: liveYTSubscribers,
+            dailyStreams: dailyStreams,
+            platforms: socialMedia.platforms.map(p => ({ platform: p.platform, current: p.current, prior: p.prior })),
+            snsFootprint: socialMedia.totalFootprint.current,
+            snsFootprintPrior: socialMedia.totalFootprint.prior,
+            members: members.map(m => ({ name: m.name, handle: m.handle, followers: m.followers })),
+            geoCountries,
+            geoCities,
+            audienceStats,
+            prMentions: livePR.totalMentions,
+            prPerDay: livePR.perDay,
+            uniqueAuthors: livePR.uniqueAuthors,
+            sentimentPositive: liveSentiment.positive.pct,
+            sentimentNegative: liveSentiment.negative.pct,
+            sentimentNeutral: liveSentiment.neutral.pct,
+            topHashtags: liveSentiment.topHashtags,
           }} />
           <LiveBadge />
         </div>
