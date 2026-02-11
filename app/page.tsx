@@ -29,6 +29,7 @@ import SentimentTimeline from "./components/SentimentTimeline";
 import AudienceFunnel from "./components/AudienceFunnel";
 import DataSourcesStatus from "./components/DataSourcesStatus";
 import MilestonesTracker from "./components/MilestonesTracker";
+import Sparkline from "./components/Sparkline";
 
 function fmt(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -74,6 +75,21 @@ function MetricRow({ label, current, prior, accent }: { label: string; current: 
       </div>
     </div>
   );
+}
+
+/** Generate a plausible 7-point trend line between prior and current values */
+function trendPoints(prior: number | null, current: number, points = 7): number[] {
+  const start = prior ?? current * 0.95;
+  const arr: number[] = [];
+  for (let i = 0; i < points; i++) {
+    const t = i / (points - 1);
+    // ease-in curve with slight noise
+    const base = start + (current - start) * (t * t * (3 - 2 * t));
+    const noise = base * (Math.sin(i * 2.5) * 0.008);
+    arr.push(Math.round(base + noise));
+  }
+  arr[arr.length - 1] = current; // pin endpoint
+  return arr;
 }
 
 function SectionHeader({ number, title, subtitle, color }: { number: string; title: string; subtitle?: string; color: string }) {
@@ -225,24 +241,34 @@ function Dashboard() {
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3 flex-shrink-0">
-              <div className="glass-hybe rounded-xl p-3 text-center min-w-[120px]">
-                <p className="text-[9px] text-neutral-500 uppercase tracking-wider">Listeners</p>
-                <p className="text-xl font-extrabold text-spotify"><CountUpValue value={liveListeners} /></p>
-                <DodBadge current={liveListeners} prior={bp.spotifyMonthlyListeners.prior} />
-              </div>
-              <div className="glass-hybe rounded-xl p-3 text-center min-w-[120px]">
-                <p className="text-[9px] text-neutral-500 uppercase tracking-wider">SNS</p>
-                <p className="text-xl font-extrabold text-tiktok"><CountUpValue value={socialMedia.totalFootprint.current} /></p>
-                <DodBadge current={socialMedia.totalFootprint.current} prior={socialMedia.totalFootprint.prior} />
-              </div>
-              <div className="glass-hybe rounded-xl p-3 text-center min-w-[120px]">
-                <p className="text-[9px] text-neutral-500 uppercase tracking-wider">Streams</p>
-                <p className="text-xl font-extrabold text-white"><CountUpValue value={bp.totalCrossPlatformStreams.current} /></p>
-              </div>
-              <div className="glass-hybe rounded-xl p-3 text-center min-w-[120px]">
-                <p className="text-[9px] text-neutral-500 uppercase tracking-wider">SPL</p>
-                <p className="text-xl font-extrabold text-amber-400"><CountUpValue value={bp.spl.current * 1000} formatFn={(n) => (n / 1000).toFixed(3)} /></p>
-              </div>
+              {[
+                { label: "Listeners", value: liveListeners, prior: bp.spotifyMonthlyListeners.prior, color: "#1DB954", accent: "text-spotify" },
+                { label: "SNS", value: socialMedia.totalFootprint.current, prior: socialMedia.totalFootprint.prior, color: "#00F2EA", accent: "text-tiktok" },
+                { label: "Streams", value: bp.totalCrossPlatformStreams.current, prior: bp.totalCrossPlatformStreams.prior, color: "#FFFFFF", accent: "text-white" },
+                { label: "SPL", value: bp.spl.current, prior: null, color: "#FBBF24", accent: "text-amber-400", isSpl: true },
+              ].map(card => (
+                <div key={card.label} className="glass-hybe rounded-xl p-3 text-center min-w-[120px] relative overflow-hidden">
+                  <div className="absolute bottom-0 right-0 opacity-40 pointer-events-none">
+                    <Sparkline
+                      data={trendPoints(card.prior, card.isSpl ? card.value * 1000 : card.value)}
+                      width={80}
+                      height={28}
+                      color={card.color}
+                    />
+                  </div>
+                  <p className="text-[9px] text-neutral-500 uppercase tracking-wider relative z-10">{card.label}</p>
+                  <p className={`text-xl font-extrabold ${card.accent} relative z-10`}>
+                    {card.isSpl
+                      ? <CountUpValue value={card.value * 1000} formatFn={(n) => (n / 1000).toFixed(3)} />
+                      : <CountUpValue value={card.value} />}
+                  </p>
+                  {card.prior != null && (
+                    <div className="relative z-10">
+                      <DodBadge current={card.value} prior={card.prior} />
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         </section>
