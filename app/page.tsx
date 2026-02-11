@@ -35,6 +35,7 @@ import GeoTreemap from "./components/GeoTreemap";
 import DailyComparisonChart from "./components/DailyComparisonChart";
 import TopInfluencers from "./components/TopInfluencers";
 import MetricTooltip from "./components/MetricTooltip";
+import StickyTicker from "./components/StickyTicker";
 
 function fmt(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -162,6 +163,42 @@ function Dashboard() {
         </div>
       </div>
       <ScrollProgress />
+      <StickyTicker metrics={[
+        {
+          label: "Listeners",
+          value: fmt(liveListeners),
+          color: "text-spotify",
+          change: bp.spotifyMonthlyListeners.prior ? dod(liveListeners, bp.spotifyMonthlyListeners.prior).pct : undefined,
+          positive: bp.spotifyMonthlyListeners.prior ? dod(liveListeners, bp.spotifyMonthlyListeners.prior).positive : true,
+        },
+        {
+          label: "Streams",
+          value: fmt(bp.totalCrossPlatformStreams.current),
+          color: "text-white",
+        },
+        {
+          label: "SNS",
+          value: fmt(socialMedia.totalFootprint.current),
+          color: "text-tiktok",
+          change: socialMedia.totalFootprint.prior ? dod(socialMedia.totalFootprint.current, socialMedia.totalFootprint.prior).pct : undefined,
+          positive: socialMedia.totalFootprint.prior ? dod(socialMedia.totalFootprint.current, socialMedia.totalFootprint.prior).positive : true,
+        },
+        {
+          label: "YT Subs",
+          value: fmt(liveYTSubscribers),
+          color: "text-ytred",
+        },
+        {
+          label: "Mentions",
+          value: fmt(livePR.totalMentions),
+          color: "text-violet-400",
+        },
+        {
+          label: "Sentiment",
+          value: `+${(liveSentiment.positive.pct - liveSentiment.negative.pct).toFixed(0)}`,
+          color: liveSentiment.positive.pct > liveSentiment.negative.pct ? "text-emerald-400" : "text-red-400",
+        },
+      ]} />
       {/* Nav */}
       <nav className="sticky top-0 z-50 glass border-b border-white/5 px-3 sm:px-6 py-3 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 sm:gap-4 min-w-0">
