@@ -52,6 +52,34 @@ body {
   background: radial-gradient(ellipse at 50% 0%, rgba(124, 58, 237, 0.15), transparent 60%),
               radial-gradient(ellipse at 80% 50%, rgba(6, 182, 212, 0.08), transparent 50%),
               radial-gradient(ellipse at 20% 80%, rgba(236, 72, 153, 0.06), transparent 50%);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-bg::before {
+  content: '';
+  position: absolute;
+  inset: -50%;
+  background: conic-gradient(
+    from 0deg at 50% 50%,
+    rgba(124, 58, 237, 0.06) 0deg,
+    rgba(6, 182, 212, 0.04) 120deg,
+    rgba(236, 72, 153, 0.05) 240deg,
+    rgba(124, 58, 237, 0.06) 360deg
+  );
+  animation: heroRotate 20s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero-bg > * {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes heroRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .border-glow-purple {
@@ -87,6 +115,10 @@ body {
 
   .hero-bg {
     background: #f9fafb !important;
+  }
+
+  .hero-bg::before {
+    display: none !important;
   }
 
   /* Force dark text everywhere */
