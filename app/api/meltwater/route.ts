@@ -16,6 +16,17 @@ function getDateRange() {
   };
 }
 
+// Rolling 14-day window for WoW comparison
+function get14DayRange() {
+  const end = new Date();
+  const start = new Date();
+  start.setDate(start.getDate() - 14);
+  return {
+    start: start.toISOString().split("T")[0] + "T00:00:00",
+    end: end.toISOString().split("T")[0] + "T23:59:59",
+  };
+}
+
 async function mwGet(path: string, params: Record<string, string> = {}) {
   const { start, end } = getDateRange();
   const qs = new URLSearchParams({ start, end, tz: "America/Mexico_City", ...params });
@@ -45,7 +56,9 @@ const COUNTRY_NAMES: Record<string, string> = {
 export async function GET() {
   try {
     // Fetch analytics + keyphrases + hashtags + sources in parallel
-    const [analyticsRes, keyphrasesRes, hashtagsRes, sourcesRes, entitiesRes, sharedLinksRes, mentionsRes] = await Promise.all([
+    // Also fetch 14-day analytics for WoW comparison
+    const { start: start14, end: end14 } = get14DayRange();
+    const [analyticsRes, keyphrasesRes, hashtagsRes, sourcesRes, entitiesRes, sharedLinksRes, mentionsRes, analytics14Res] = await Promise.all([
       mwGet(`/v3/analytics/${SEARCH_ID}`),
       mwGet(`/v3/analytics/${SEARCH_ID}/top_keyphrases`, { source: "twitter" }),
       mwGet(`/v3/analytics/${SEARCH_ID}/top_tags`, { source: "twitter" }),
@@ -53,6 +66,9 @@ export async function GET() {
       mwGet(`/v3/analytics/${SEARCH_ID}/top_entities`).catch(() => null),
       mwGet(`/v3/analytics/${SEARCH_ID}/top_shared_links`).catch(() => null),
       mwGet(`/v3/analytics/${SEARCH_ID}/top_mentions`, { source: "twitter" }).catch(() => null),
+      fetch(`${BASE}/v3/analytics/${SEARCH_ID}?start=${start14}&end=${end14}&tz=America/Mexico_City`, {
+        headers: { apikey: MW_TOKEN, Accept: "application/json" },
+      }).then(r => r.ok ? r.json() : null).catch(() => null),
     ]);
 
     const analytics = analyticsRes;
@@ -158,6 +174,32 @@ export async function GET() {
       count: m.count ?? m.volume ?? 0,
     }));
 
+    // Compute Week-over-Week comparison from 14-day data
+    let wow: { thisWeek: number; lastWeek: number; change: number; changePct: number; thisWeekSeries: { day: string; mentions: number }[]; lastWeekSeries: { day: string; mentions: number }[] } | null = null;
+    if (analytics14Res) {
+      const ts14 = (analytics14Res.time_series || []).map((d: any) => ({
+        date: new Date(d.date || d.timestamp),
+        mentions: d.count ?? d.volume ?? 0,
+      }));
+      // Sort by date ascending
+      ts14.sort((a: any, b: any) => a.date.getTime() - b.date.getTime());
+      const midpoint = Math.ceil(ts14.length / 2);
+      const lastWeekDays = ts14.slice(0, midpoint);
+      const thisWeekDays = ts14.slice(midpoint);
+      const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      const lwTotal = lastWeekDays.reduce((s: number, d: any) => s + d.mentions, 0);
+      const twTotal = thisWeekDays.reduce((s: number, d: any) => s + d.mentions, 0);
+      const changePct = lwTotal > 0 ? ((twTotal - lwTotal) / lwTotal) * 100 : 0;
+      wow = {
+        thisWeek: twTotal,
+        lastWeek: lwTotal,
+        change: twTotal - lwTotal,
+        changePct: parseFloat(changePct.toFixed(1)),
+        thisWeekSeries: thisWeekDays.map((d: any) => ({ day: dayNames[d.date.getDay()], mentions: d.mentions })),
+        lastWeekSeries: lastWeekDays.map((d: any) => ({ day: dayNames[d.date.getDay()], mentions: d.mentions })),
+      };
+    }
+
     // Build period string
     const { start, end } = getDateRange();
     const startDate = new Date(start).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
@@ -176,7 +218,7 @@ export async function GET() {
     return NextResponse.json({
       live: true,
       data: {
-        prMedia: { period, totalMentions, perDay, uniqueAuthors, timeSeries, topCountries, topKeyphrases, topSources, topMentions },
+        prMedia: { period, totalMentions, perDay, uniqueAuthors, timeSeries, topCountries, topKeyphrases, topSources, topMentions, wow },
         fanSentiment: { period, positive, negative, neutral, topHashtags, topEntities, topSharedLinks, sentimentTimeline },
         fetchedAt: new Date().toISOString(),
       },

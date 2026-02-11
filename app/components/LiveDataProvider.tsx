@@ -30,6 +30,7 @@ interface LiveMeltwaterData {
     topKeyphrases: { phrase: string; count: number }[];
     topSources: { name: string; count: number; type: string }[];
     topMentions?: { handle: string; count: number }[];
+    wow?: { thisWeek: number; lastWeek: number; change: number; changePct: number; thisWeekSeries: { day: string; mentions: number }[]; lastWeekSeries: { day: string; mentions: number }[] } | null;
   };
   fanSentiment: {
     period: string;

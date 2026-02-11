@@ -140,6 +140,30 @@ export const prMedia = {
     { name: "Blogs", count: 67, type: "blog" },
     { name: "Facebook", count: 33, type: "social" },
   ],
+  wow: {
+    thisWeek: 6046,
+    lastWeek: 7823,
+    change: -1777,
+    changePct: -22.7,
+    thisWeekSeries: [
+      { day: "Mon", mentions: 1717 },
+      { day: "Tue", mentions: 935 },
+      { day: "Wed", mentions: 895 },
+      { day: "Thu", mentions: 797 },
+      { day: "Fri", mentions: 687 },
+      { day: "Sat", mentions: 609 },
+      { day: "Sun", mentions: 406 },
+    ],
+    lastWeekSeries: [
+      { day: "Mon", mentions: 2134 },
+      { day: "Tue", mentions: 1456 },
+      { day: "Wed", mentions: 1203 },
+      { day: "Thu", mentions: 1087 },
+      { day: "Fri", mentions: 892 },
+      { day: "Sat", mentions: 643 },
+      { day: "Sun", mentions: 408 },
+    ],
+  },
 };
 
 // === SECTION 7: Fan Sentiment (Meltwater) ===
