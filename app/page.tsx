@@ -1,10 +1,17 @@
 "use client";
 
 import {
-  reportDate, priorDate, businessPerformance, dailyStreams, socialMedia,
-  audioVirality, members, totalMemberFollowers, geoCountries, geoCities,
-  prMedia, fanSentiment, audienceStats, artistOverview,
+  reportDate as fallbackReportDate, priorDate as fallbackPriorDate,
+  businessPerformance as fallbackBP, dailyStreams as fallbackDailyStreams,
+  socialMedia as fallbackSocialMedia, audioVirality as fallbackAudioVirality,
+  members as fallbackMembers, totalMemberFollowers as fallbackTotalMemberFollowers,
+  geoCountries as fallbackGeoCountries, geoCities as fallbackGeoCities,
+  prMedia as fallbackPrMedia, fanSentiment as fallbackFanSentiment,
+  audienceStats as fallbackAudienceStats, artistOverview as fallbackArtistOverview,
 } from "./lib/data";
+import { getDashboardData, getAvailableDates } from "./lib/db";
+import { useState, useEffect, useCallback } from "react";
+import DatePicker from "./components/DatePicker";
 import StreamingCharts from "./components/StreamingCharts";
 import SocialChart from "./components/SocialChart";
 import GeoChart, { GeoProgressBars } from "./components/GeoChart";
@@ -124,6 +131,60 @@ function SectionHeader({ number, title, subtitle, color }: { number: string; tit
 }
 
 function Dashboard() {
+  const [selectedDate, setSelectedDate] = useState("2026-02-09");
+  const [availableDates, setAvailableDates] = useState<string[]>(["2026-02-09"]);
+  const [dateLoading, setDateLoading] = useState(false);
+
+  // Data state — defaults to fallback (hardcoded)
+  const [reportDate, setReportDate] = useState(fallbackReportDate);
+  const [priorDate, setPriorDate] = useState(fallbackPriorDate);
+  const [businessPerformance, setBusinessPerformance] = useState(fallbackBP);
+  const [dailyStreams, setDailyStreams] = useState(fallbackDailyStreams);
+  const [socialMedia, setSocialMedia] = useState(fallbackSocialMedia);
+  const [audioVirality, setAudioVirality] = useState(fallbackAudioVirality);
+  const [members, setMembers] = useState(fallbackMembers);
+  const [totalMemberFollowers, setTotalMemberFollowers] = useState(fallbackTotalMemberFollowers);
+  const [geoCountries, setGeoCountries] = useState(fallbackGeoCountries);
+  const [geoCities, setGeoCities] = useState(fallbackGeoCities);
+  const [prMedia, setPrMedia] = useState(fallbackPrMedia);
+  const [fanSentiment, setFanSentiment] = useState(fallbackFanSentiment);
+  const [audienceStats, setAudienceStats] = useState(fallbackAudienceStats);
+  const [artistOverview, setArtistOverview] = useState(fallbackArtistOverview);
+
+  // Fetch available dates on mount
+  useEffect(() => {
+    getAvailableDates().then(dates => {
+      if (dates.length > 0) setAvailableDates(dates);
+    });
+  }, []);
+
+  // Fetch data when date changes
+  const handleDateChange = useCallback(async (date: string) => {
+    setSelectedDate(date);
+    setDateLoading(true);
+    try {
+      const data = await getDashboardData(date);
+      setReportDate(data.reportDate);
+      setPriorDate(data.priorDate);
+      setBusinessPerformance(data.businessPerformance);
+      setDailyStreams(data.dailyStreams);
+      setSocialMedia(data.socialMedia);
+      setAudioVirality(data.audioVirality);
+      setMembers(data.members);
+      setTotalMemberFollowers(data.totalMemberFollowers);
+      setGeoCountries(data.geoCountries);
+      setGeoCities(data.geoCities);
+      setPrMedia(data.prMedia as any);
+      setFanSentiment(data.fanSentiment as any);
+      setAudienceStats(data.audienceStats);
+      setArtistOverview(data.artistOverview);
+    } catch (err) {
+      console.error('Failed to fetch data for date:', date, err);
+    } finally {
+      setDateLoading(false);
+    }
+  }, []);
+
   const bp = businessPerformance;
   const o = artistOverview;
   const { chartmetric, youtube, meltwater, isLive, refresh } = useLiveData();
@@ -236,9 +297,12 @@ function Dashboard() {
           <span className="text-[10px] font-bold text-violet-400 uppercase tracking-[0.15em] hidden md:inline">Artist Intelligence</span>
         </div>
         <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-          <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg px-2 sm:px-3 py-1.5">
-            <span className="text-[10px] text-white font-bold uppercase tracking-wider">📅 <span className="hidden sm:inline">Report: </span>2/9/2026</span>
-          </div>
+          <DatePicker
+            selectedDate={selectedDate}
+            availableDates={availableDates}
+            onDateChange={handleDateChange}
+            loading={dateLoading}
+          />
           <button
             onClick={() => window.print()}
             className="bg-white/[0.04] border border-white/[0.06] rounded-lg px-2 sm:px-3 py-1.5 hover:bg-white/[0.08] transition-colors"
