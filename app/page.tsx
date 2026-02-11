@@ -36,6 +36,7 @@ import DailyComparisonChart from "./components/DailyComparisonChart";
 import TopInfluencers from "./components/TopInfluencers";
 import MetricTooltip from "./components/MetricTooltip";
 import StickyTicker from "./components/StickyTicker";
+import DataFreshness from "./components/DataFreshness";
 
 function fmt(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -318,6 +319,9 @@ function Dashboard() {
             </div>
           </div>
         </section>
+
+        {/* Data Freshness Warning */}
+        <DataFreshness reportDate={reportDate} />
 
         {/* Key Highlights - Executive Summary */}
         <div id="highlights" className="scroll-mt-16" />
