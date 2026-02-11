@@ -14,7 +14,7 @@ interface Platform {
 function fmt(n: number): string {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
   if (n >= 1_000) return (n / 1_000).toFixed(1) + "K";
-  return n.toLocaleString();
+  return (n == null || isNaN(n)) ? "—" : n.toLocaleString();
 }
 
 function MiniSparkline({ prior, current, color }: { prior: number; current: number; color: string }) {

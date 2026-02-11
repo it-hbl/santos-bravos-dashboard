@@ -56,10 +56,11 @@ import ReleaseTimeline from "./components/ReleaseTimeline";
 import SocialMediaCards from "./components/SocialMediaCards";
 import SkeletonLoader from "./components/SkeletonLoader";
 
-function fmt(n: number) {
+function fmt(n: number | null | undefined) {
+  if (n == null || isNaN(n)) return "—";
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
   if (n >= 1_000) return (n / 1_000).toFixed(1) + "K";
-  return n.toLocaleString();
+  return n?.toLocaleString() ?? "—";
 }
 
 function dod(current: number, prior: number | null) {
@@ -756,11 +757,11 @@ function Dashboard() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-[10px] text-neutral-500"><MetricTooltip term="TikTok Creates">TikTok Creates</MetricTooltip></span>
-                    <span className="text-sm font-bold text-tiktok">{t.tiktokCreates.toLocaleString()}</span>
+                    <span className="text-sm font-bold text-tiktok">{t.tiktokCreates?.toLocaleString() ?? "—"}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-[10px] text-neutral-500"><MetricTooltip term="IG Creates">IG Creates</MetricTooltip></span>
-                    <span className="text-sm font-bold text-pink-400">{t.igCreates.toLocaleString()}</span>
+                    <span className="text-sm font-bold text-pink-400">{t.igCreates?.toLocaleString() ?? "—"}</span>
                   </div>
                 </div>
               </div>
@@ -976,7 +977,7 @@ function Dashboard() {
                     <span className="text-[10px] text-neutral-600 w-4 text-right">{i + 1}</span>
                     <span className="text-sm">{c.flag}</span>
                     <span className="text-sm text-neutral-300 flex-1">{c.name}</span>
-                    <span className="text-sm font-bold tabular-nums text-white">{c.mentions.toLocaleString()}</span>
+                    <span className="text-sm font-bold tabular-nums text-white">{c.mentions?.toLocaleString() ?? "—"}</span>
                   </div>
                 ))}
               </div>
@@ -994,7 +995,7 @@ function Dashboard() {
                       <div className="w-16 bg-white/[0.04] rounded-full h-1.5 overflow-hidden">
                         <div className="bg-indigo-500 h-full rounded-full" style={{ width: `${(s.count / (livePR.topSources[0]?.count || 1)) * 100}%` }} />
                       </div>
-                      <span className="text-[10px] font-bold tabular-nums text-neutral-400 w-12 text-right">{s.count.toLocaleString()}</span>
+                      <span className="text-[10px] font-bold tabular-nums text-neutral-400 w-12 text-right">{s.count?.toLocaleString() ?? "—"}</span>
                     </div>
                   );
                 })}
@@ -1040,7 +1041,7 @@ function Dashboard() {
                   <span className="text-[10px] text-neutral-500 uppercase tracking-wider">{s.emoji} {s.label}</span>
                   <span className={`text-xs font-bold ${s.color}`}>{s.pct}%</span>
                 </div>
-                <p className={`text-xl font-extrabold ${s.color} tabular-nums`}>{s.count.toLocaleString()}</p>
+                <p className={`text-xl font-extrabold ${s.color} tabular-nums`}>{s.count?.toLocaleString() ?? "—"}</p>
                 <div className={`w-full ${s.barBg} rounded-full h-1.5 mt-2 overflow-hidden`}>
                   <div className={`h-full ${s.bg} rounded-full transition-all duration-1000`} style={{ width: `${s.pct}%` }} />
                 </div>
@@ -1111,7 +1112,7 @@ function Dashboard() {
                       <div className="w-16 bg-white/[0.04] rounded-full h-1.5 overflow-hidden">
                         <div className="bg-rose-500 h-full rounded-full" style={{ width: `${(e.count / maxCount) * 100}%` }} />
                       </div>
-                      <span className="text-[10px] font-bold tabular-nums text-neutral-400 w-12 text-right">{e.count.toLocaleString()}</span>
+                      <span className="text-[10px] font-bold tabular-nums text-neutral-400 w-12 text-right">{e.count?.toLocaleString() ?? "—"}</span>
                     </div>
                   );
                 })}
@@ -1144,7 +1145,7 @@ function Dashboard() {
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-[9px] text-neutral-600 truncate max-w-[60%]">{domain}</span>
-                        <span className="text-[10px] font-bold text-rose-400 tabular-nums">{link.count.toLocaleString()} shares</span>
+                        <span className="text-[10px] font-bold text-rose-400 tabular-nums">{link.count?.toLocaleString() ?? "—"} shares</span>
                       </div>
                       <div className="w-full bg-white/[0.04] rounded-full h-1 mt-2 overflow-hidden">
                         <div className="bg-rose-500/60 h-full rounded-full transition-all duration-700" style={{ width: `${(link.count / maxShares) * 100}%` }} />
@@ -1187,8 +1188,10 @@ function Dashboard() {
 
 export default function Home() {
   return (
-    <LiveDataProvider>
-      <Dashboard />
-    </LiveDataProvider>
+    <div suppressHydrationWarning>
+      <LiveDataProvider>
+        <Dashboard />
+      </LiveDataProvider>
+    </div>
   );
 }
