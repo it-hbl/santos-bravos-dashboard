@@ -27,6 +27,7 @@ import ScrollProgress from "./components/ScrollProgress";
 import CopySummary from "./components/CopySummary";
 import SentimentTimeline from "./components/SentimentTimeline";
 import AudienceFunnel from "./components/AudienceFunnel";
+import DataSourcesStatus from "./components/DataSourcesStatus";
 
 function fmt(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -847,6 +848,9 @@ function Dashboard() {
           </div>
           <p className="text-neutral-700 text-[10px] uppercase tracking-[0.3em]">Artist Intelligence Platform · {reportDate}</p>
           <p className="text-neutral-800 text-[10px]">Chartmetric · Spotify for Artists · YouTube Data API · Cobrand · Weverse · Instagram · Meltwater</p>
+          <div className="mt-4">
+            <DataSourcesStatus />
+          </div>
         </footer>
       </div>
     </main>
