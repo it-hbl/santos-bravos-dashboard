@@ -58,6 +58,7 @@ import SkeletonLoader from "./components/SkeletonLoader";
 import MediaVsAudience from "./components/MediaVsAudience";
 import MentionMomentum from "./components/MentionMomentum";
 import HistoricalTrends from "./components/HistoricalTrends";
+import QuickShare from "./components/QuickShare";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 
 /** Extract short date like "2/9/26" from "February 9, 2026" or ISO date */
@@ -408,6 +409,16 @@ function Dashboard() {
             sentimentNegative: liveSentiment.negative.pct,
             sentimentNeutral: liveSentiment.neutral.pct,
             topHashtags: liveSentiment.topHashtags,
+          }} />
+          <QuickShare data={{
+            reportDate,
+            listeners: liveListeners,
+            totalStreams: bp.totalCrossPlatformStreams.current,
+            snsFootprint: liveSocialMedia.totalFootprint.current,
+            ytSubscribers: liveYTSubscribers,
+            prMentions: livePR.totalMentions,
+            sentimentNet: liveSentiment.positive.pct - liveSentiment.negative.pct,
+            selectedDate,
           }} />
           <LiveBadge />
         </div>
