@@ -40,6 +40,7 @@ import DataFreshness from "./components/DataFreshness";
 import AnalystNote from "./components/AnalystNote";
 import ExportCSV from "./components/ExportCSV";
 import RegionalBreakdown from "./components/RegionalBreakdown";
+import PerformanceScore from "./components/PerformanceScore";
 
 function fmt(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -384,6 +385,53 @@ function Dashboard() {
             topMarket={geoCountries[0]?.name || ""}
             dailyTopTrack={dailyStreams.length > 0 ? { name: dailyStreams[0].name, streams: dailyStreams[0].streams } : null}
           />
+        </AnimatedSection>
+
+        {/* Performance Score */}
+        <div id="score" className="scroll-mt-16" />
+        <AnimatedSection>
+          <PerformanceScore metrics={(() => {
+            // Streaming growth (listener growth %)
+            const listenerGrowth = bp.spotifyMonthlyListeners.prior
+              ? ((liveListeners - bp.spotifyMonthlyListeners.prior) / bp.spotifyMonthlyListeners.prior) * 100
+              : 0;
+            const streamingScore = Math.min(100, Math.max(0, 50 + listenerGrowth * 8));
+
+            // Social reach (SNS footprint vs 2M target)
+            const snsScore = Math.min(100, (socialMedia.totalFootprint.current / 2000000) * 100);
+
+            // Content velocity (track growth avg)
+            const trackGrowths = liveTrackStreams.filter(t => t.spotifyStreams.prior).map(t =>
+              ((t.spotifyStreams.current - t.spotifyStreams.prior!) / t.spotifyStreams.prior!) * 100
+            );
+            const avgTrackGrowth = trackGrowths.length > 0 ? trackGrowths.reduce((a, b) => a + b, 0) / trackGrowths.length : 0;
+            const contentScore = Math.min(100, Math.max(0, 40 + avgTrackGrowth * 4));
+
+            // Media presence (mentions volume — 1000/day = 100 score)
+            const mediaScore = Math.min(100, (livePR.perDay / 1000) * 100);
+
+            // Sentiment health (net sentiment mapped: -100→0, 0→50, +100→100)
+            const netSentiment = liveSentiment.positive.pct - liveSentiment.negative.pct;
+            const sentimentScore = Math.min(100, Math.max(0, 50 + netSentiment));
+
+            // Milestone progress (avg of all milestones)
+            const milestoneTargets = [
+              { current: liveListeners, target: 500000 },
+              { current: liveTrackStreams[0]?.spotifyStreams.current ?? 0, target: 10000000 },
+              { current: socialMedia.totalFootprint.current, target: 2000000 },
+              { current: liveYTSubscribers, target: 500000 },
+            ];
+            const milestoneScore = Math.round(milestoneTargets.reduce((s, m) => s + Math.min(100, (m.current / m.target) * 100), 0) / milestoneTargets.length);
+
+            return [
+              { label: "Streaming Growth", score: Math.round(streamingScore), weight: 25, color: "bg-emerald-500" },
+              { label: "Social Reach", score: Math.round(snsScore), weight: 20, color: "bg-cyan-500" },
+              { label: "Content Velocity", score: Math.round(contentScore), weight: 20, color: "bg-violet-500" },
+              { label: "Media Presence", score: Math.round(mediaScore), weight: 15, color: "bg-pink-500" },
+              { label: "Sentiment Health", score: Math.round(sentimentScore), weight: 10, color: "bg-amber-500" },
+              { label: "Milestone Progress", score: milestoneScore, weight: 10, color: "bg-indigo-500" },
+            ];
+          })()} />
         </AnimatedSection>
 
         {/* Milestones & Targets */}

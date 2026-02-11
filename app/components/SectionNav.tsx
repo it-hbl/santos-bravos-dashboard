@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 const SECTIONS = [
   { id: "hero", label: "Overview", icon: "🏠", short: "Top" },
   { id: "highlights", label: "Key Highlights", icon: "⚡", short: "Highlights" },
+  { id: "score", label: "Performance Score", icon: "⚡", short: "Score" },
   { id: "milestones", label: "Milestones", icon: "🎯", short: "Goals" },
   { id: "velocity", label: "Growth Velocity", icon: "📊", short: "Growth" },
   { id: "business", label: "Business Performance", icon: "1", short: "Business" },
