@@ -604,6 +604,18 @@ function Dashboard() {
                 { label: "SPL", value: bp.spl.current, prior: null, color: "#FBBF24", accent: "text-amber-400", isSpl: true, tooltip: "SPL", target: null, targetLabel: null },
               ].map(card => {
                 const targetPct = card.target ? Math.min(100, (card.value / card.target) * 100) : null;
+                // Compute daily velocity between prior and current report dates
+                const daysBetween = (() => {
+                  try {
+                    const cur = new Date(reportDate);
+                    const pri = new Date(priorDate);
+                    if (isNaN(cur.getTime()) || isNaN(pri.getTime())) return 5;
+                    return Math.max(1, Math.round((cur.getTime() - pri.getTime()) / 86400000));
+                  } catch { return 5; }
+                })();
+                const dailyRate = card.prior != null && !card.isSpl
+                  ? Math.round((card.value - card.prior) / daysBetween)
+                  : null;
                 return (
                 <GlowCard key={card.label} className="glass-hybe glass-hybe-card hero-card-enter rounded-xl p-3 text-center min-w-[120px] cursor-default" glowColor={`${card.color}20`} glowSize={200}>
                   <div className="absolute bottom-0 right-0 opacity-40 pointer-events-none">
@@ -623,8 +635,13 @@ function Dashboard() {
                       : <CountUpValue value={card.value} />}
                   </p>
                   {card.prior != null && (
-                    <div className="relative z-10">
+                    <div className="relative z-10 flex items-center justify-center gap-1.5">
                       <DodBadge current={card.value} prior={card.prior} />
+                      {dailyRate !== null && dailyRate !== 0 && (
+                        <span className="text-[9px] text-neutral-500 tabular-nums">
+                          {dailyRate > 0 ? "+" : ""}{fmt(dailyRate)}/d
+                        </span>
+                      )}
                     </div>
                   )}
                   {targetPct !== null && (
