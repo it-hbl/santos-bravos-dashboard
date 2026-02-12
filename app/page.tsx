@@ -377,6 +377,8 @@ function Dashboard() {
           sectionId: "sentiment",
         },
       ]} />
+      {/* Skip to content — keyboard accessibility */}
+      <a href="#main-content" className="skip-to-content">Skip to dashboard content</a>
       {/* Nav */}
       <nav className="sticky top-0 z-50 glass border-b border-white/5 px-3 sm:px-6 py-3 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 sm:gap-4 min-w-0">
@@ -507,7 +509,7 @@ function Dashboard() {
         <div className={dateLoading ? "hidden" : "space-y-10"}>
 
         {/* Hero */}
-        <section id="hero" className="hero-bg rounded-3xl p-5 sm:p-8 md:p-10 scroll-mt-16">
+        <section id="hero" tabIndex={-1} className="hero-bg rounded-3xl p-5 sm:p-8 md:p-10 scroll-mt-16"><span id="main-content" />
           {/* Report Date Banner */}
           <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/[0.05]">
             <div className="flex items-center gap-3">
