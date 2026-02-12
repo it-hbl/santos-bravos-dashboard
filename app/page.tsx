@@ -85,6 +85,7 @@ const MarketPenetration = dynamic(() => import("./components/MarketPenetration")
 const SpotifyEmbed = dynamic(() => import("./components/SpotifyEmbed"), { ssr: false });
 const NotableChanges = dynamic(() => import("./components/NotableChanges"), { ssr: false });
 const WeeklyWins = dynamic(() => import("./components/WeeklyWins"), { ssr: false });
+const RiskRadar = dynamic(() => import("./components/RiskRadar"), { ssr: false });
 const ComparisonTable = dynamic(() => import("./components/ComparisonTable"), { ssr: false });
 
 /** Extract short date like "2/9/26" from "February 9, 2026" or ISO date */
@@ -814,6 +815,29 @@ function Dashboard() {
             mentions={livePR.totalMentions}
             sentiment={{ positive: liveSentiment.positive.pct, negative: liveSentiment.negative.pct }}
             audienceStats={{ streamsPerListener: audienceStats.streamsPerListener, saves: audienceStats.saves, streams: audienceStats.streams }}
+          />
+        </AnimatedSection>
+        </SectionErrorBoundary>
+
+        {/* Risk Radar */}
+        <SectionErrorBoundary sectionName="Risk Radar">
+        <AnimatedSection>
+          <RiskRadar
+            listeners={{ current: liveListeners, prior: bp.spotifyMonthlyListeners.prior }}
+            tracks={liveTrackStreams.map(t => ({ name: t.name, current: t.spotifyStreams.current, prior: t.spotifyStreams.prior }))}
+            ytViews={liveYTVideos.map(v => ({ name: v.name, current: v.views.current, prior: v.views.prior }))}
+            snsFootprint={{ current: liveSocialMedia.totalFootprint.current, prior: liveSocialMedia.totalFootprint.prior }}
+            sentiment={{ positive: liveSentiment.positive.pct, negative: liveSentiment.negative.pct, neutral: liveSentiment.neutral.pct }}
+            geoConcentration={(() => {
+              const totalListeners = geoCountries.reduce((s, c) => s + c.listeners, 0) || 1;
+              const sorted = [...geoCountries].sort((a, b) => b.listeners - a.listeners);
+              return {
+                top1Pct: (sorted[0]?.listeners || 0) / totalListeners * 100,
+                top3Pct: sorted.slice(0, 3).reduce((s, c) => s + c.listeners, 0) / totalListeners * 100,
+              };
+            })()}
+            mentions={livePR.wow ? { current: livePR.totalMentions, wowChangePct: livePR.wow.changePct } : undefined}
+            dailyStreams={dailyStreams.map(t => ({ name: t.name, streams: t.streams, listeners: t.listeners }))}
           />
         </AnimatedSection>
         </SectionErrorBoundary>
