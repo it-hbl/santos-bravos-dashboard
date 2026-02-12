@@ -17,6 +17,7 @@ import DatePicker from "./components/DatePicker";
 import { AnimatedSection, CountUpValue, StaggerChildren, StaggerItem } from "./components/AnimatedSection";
 import Image from "next/image";
 import { LiveDataProvider, LiveBadge, useLiveData } from "./components/LiveDataProvider";
+import UserMenu from "./components/UserMenu";
 import CollapsibleSection from "./components/CollapsibleSection";
 import ScrollProgress from "./components/ScrollProgress";
 import Sparkline from "./components/Sparkline";
@@ -29,7 +30,7 @@ import TopMoverBadge, { Mover } from "./components/TopMoverBadge";
 import { ErrorBoundary, SectionErrorBoundary } from "./components/ErrorBoundary";
 import GlowCard from "./components/GlowCard";
 import useSectionHash from "./components/useSectionHash";
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 // Dynamic imports — lazy-loaded below-fold components for faster initial page load
@@ -456,6 +457,7 @@ function Dashboard() {
             selectedDate,
           }} />
           <LiveBadge />
+          <UserMenu />
         </div>
       </nav>
 
