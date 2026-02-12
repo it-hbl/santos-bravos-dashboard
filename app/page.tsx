@@ -68,6 +68,7 @@ const WowComparison = dynamic(() => import("./components/WowComparison"), { ssr:
 const MobileNav = dynamic(() => import("./components/MobileNav"), { ssr: false });
 const CommandPalette = dynamic(() => import("./components/CommandPalette"), { ssr: false });
 const TopTopics = dynamic(() => import("./components/TopTopics"), { ssr: false });
+const ExecutiveOneLiner = dynamic(() => import("./components/ExecutiveOneLiner"), { ssr: false });
 const ReleaseTimeline = dynamic(() => import("./components/ReleaseTimeline"), { ssr: false });
 const SocialMediaCards = dynamic(() => import("./components/SocialMediaCards"), { ssr: false });
 const MediaVsAudience = dynamic(() => import("./components/MediaVsAudience"), { ssr: false });
@@ -534,6 +535,24 @@ function Dashboard() {
               <p className="text-[9px] text-neutral-600 mt-0.5">Auto-updated via API pipeline</p>
             </div>
           </div>
+
+          {/* Executive One-Liner TL;DR */}
+          <ExecutiveOneLiner
+            reportDate={reportDate}
+            listeners={liveListeners}
+            listenersPrior={bp.spotifyMonthlyListeners.prior}
+            totalStreams={bp.totalCrossPlatformStreams.current}
+            totalStreamsPrior={bp.totalCrossPlatformStreams.prior}
+            snsFootprint={liveSocialMedia.totalFootprint.current}
+            snsFootprintPrior={liveSocialMedia.totalFootprint.prior}
+            ytSubscribers={liveYTSubscribers}
+            mentionVolume={livePR.totalMentions}
+            sentimentPositive={liveSentiment.positive.pct}
+            sentimentNegative={liveSentiment.negative.pct}
+            tracks={liveTrackStreams.map(t => ({ name: t.name, current: t.spotifyStreams.current, prior: t.spotifyStreams.prior }))}
+            ytVideos={liveYTVideos.map(v => ({ name: v.name, current: v.views.current, prior: v.views.prior }))}
+            dailyTopTrack={dailyStreams.length > 0 ? { name: dailyStreams[0].name, streams: dailyStreams[0].streams } : null}
+          />
 
           <div className="flex flex-col md:flex-row items-center gap-8">
             <div className="avatar-ring flex-shrink-0">
