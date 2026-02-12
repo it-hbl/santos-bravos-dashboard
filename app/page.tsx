@@ -59,6 +59,7 @@ import MediaVsAudience from "./components/MediaVsAudience";
 import MentionMomentum from "./components/MentionMomentum";
 import WeekdayHeatmap from "./components/WeekdayHeatmap";
 import HistoricalTrends from "./components/HistoricalTrends";
+import TrackHistory from "./components/TrackHistory";
 import QuickShare from "./components/QuickShare";
 import EngagementDepth from "./components/EngagementDepth";
 import { ErrorBoundary } from "./components/ErrorBoundary";
@@ -710,6 +711,9 @@ function Dashboard() {
         <section className="glass-hybe rounded-2xl p-6">
           <CollapsibleSection id="historical-trends" number="📈" title="Historical Trends" subtitle="All Report Dates" color="bg-gradient-to-br from-emerald-500 to-cyan-400">
             <HistoricalTrends />
+            <div className="mt-6 pt-5 border-t border-white/[0.05]">
+              <TrackHistory />
+            </div>
           </CollapsibleSection>
         </section>
         </AnimatedSection>
