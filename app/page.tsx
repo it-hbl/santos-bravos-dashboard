@@ -1086,6 +1086,7 @@ function Dashboard() {
               const igUrl = `https://instagram.com/${m.handle.replace("@", "")}/`;
               return (
                 <StaggerItem key={m.handle}>
+                  <GlowCard className="rounded-xl" glowColor={`${["#8B5CF620", "#06B6D420", "#EC489920", "#F59E0B20", "#10B98120"][i]}`} glowSize={180}>
                   <a
                     href={igUrl}
                     target="_blank"
@@ -1108,6 +1109,7 @@ function Dashboard() {
                       <p className="text-[9px] text-neutral-600 mt-1">{sharePct.toFixed(1)}% of total</p>
                     </div>
                   </a>
+                  </GlowCard>
                 </StaggerItem>
               );
             })}
@@ -1405,7 +1407,7 @@ function Dashboard() {
                   <span className="text-[10px] text-neutral-500 uppercase tracking-wider">{s.emoji} {s.label}</span>
                   <span className={`text-xs font-bold ${s.color}`}>{s.pct}%</span>
                 </div>
-                <p className={`text-xl font-extrabold ${s.color} tabular-nums`}>{s.count?.toLocaleString() ?? "—"}</p>
+                <p className={`text-xl font-extrabold ${s.color} tabular-nums`}>{s.count != null ? <CountUpValue value={s.count} /> : "—"}</p>
                 <div className={`w-full ${s.barBg} rounded-full h-1.5 mt-2 overflow-hidden`}>
                   <div className={`h-full ${s.bg} rounded-full transition-all duration-1000`} style={{ width: `${s.pct}%` }} />
                 </div>
