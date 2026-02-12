@@ -66,6 +66,7 @@ import EngagementDepth from "./components/EngagementDepth";
 import BackToTop from "./components/BackToTop";
 import { ErrorBoundary, SectionErrorBoundary } from "./components/ErrorBoundary";
 import StreamProjections from "./components/StreamProjections";
+import ContentEfficiency from "./components/ContentEfficiency";
 
 /** Extract short date like "2/9/26" from "February 9, 2026" or ISO date */
 function shortDate(dateStr: string): string {
@@ -882,6 +883,10 @@ function Dashboard() {
             spotifyTracks={bp.tracks.map(t => ({ name: t.name, streams: t.spotifyStreams.current }))}
             youtubeVideos={liveYTVideos.map(v => ({ name: v.name.split(":")[0].replace("YouTube Views", "").trim() || v.name, views: v.views.current }))}
             dailyStreams={dailyStreams.map(d => ({ name: d.name, streams: d.streams }))}
+          />
+          <ContentEfficiency
+            tracks={liveTrackStreams.map(t => ({ name: t.name, streams: t.spotifyStreams.current }))}
+            reportDate={reportDate}
           />
           <PlatformDistribution
             spotifyStreams={liveTrackStreams.reduce((s, t) => s + t.spotifyStreams.current, 0)}
