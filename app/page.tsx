@@ -72,6 +72,7 @@ const EngagementDepth = dynamic(() => import("./components/EngagementDepth"), { 
 const StreamProjections = dynamic(() => import("./components/StreamProjections"), { ssr: false });
 const ContentEfficiency = dynamic(() => import("./components/ContentEfficiency"), { ssr: false });
 const AudienceHealth = dynamic(() => import("./components/AudienceHealth"), { ssr: false });
+const ReachDiversity = dynamic(() => import("./components/ReachDiversity"), { ssr: false });
 
 /** Extract short date like "2/9/26" from "February 9, 2026" or ISO date */
 function shortDate(dateStr: string): string {
@@ -1063,9 +1064,14 @@ function Dashboard() {
               <p className="text-xl font-extrabold text-blue-400 mt-1">{fmt(geoCountries.reduce((s, c) => s + c.listeners, 0))}</p>
             </div>
           </div>
-          {/* Regional Breakdown */}
-          <div className="mb-6">
-            <RegionalBreakdown data={geoCountries} />
+          {/* Reach Diversity Index + Regional Breakdown */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            <div className="lg:col-span-1">
+              <ReachDiversity data={geoCountries} />
+            </div>
+            <div className="lg:col-span-2">
+              <RegionalBreakdown data={geoCountries} />
+            </div>
           </div>
           {/* Geographic Treemap */}
           <div className="mb-6">
