@@ -78,6 +78,7 @@ const ReachDiversity = dynamic(() => import("./components/ReachDiversity"), { ss
 const MarketPenetration = dynamic(() => import("./components/MarketPenetration"), { ssr: false });
 const SpotifyEmbed = dynamic(() => import("./components/SpotifyEmbed"), { ssr: false });
 const NotableChanges = dynamic(() => import("./components/NotableChanges"), { ssr: false });
+const WeeklyWins = dynamic(() => import("./components/WeeklyWins"), { ssr: false });
 
 /** Extract short date like "2/9/26" from "February 9, 2026" or ISO date */
 function shortDate(dateStr: string): string {
@@ -653,6 +654,24 @@ function Dashboard() {
             sentimentNegative={liveSentiment.negative.pct}
             topMarket={geoCountries[0]?.name || ""}
             dailyTopTrack={dailyStreams.length > 0 ? { name: dailyStreams[0].name, streams: dailyStreams[0].streams } : null}
+          />
+        </AnimatedSection>
+        </SectionErrorBoundary>
+
+        {/* Weekly Wins */}
+        <SectionErrorBoundary sectionName="Weekly Wins">
+        <AnimatedSection>
+          <WeeklyWins
+            listeners={{ current: liveListeners, prior: bp.spotifyMonthlyListeners.prior }}
+            followers={liveFollowers}
+            tracks={liveTrackStreams.map(t => ({ name: t.name, current: t.spotifyStreams.current, prior: t.spotifyStreams.prior }))}
+            ytViews={liveYTVideos.map(v => ({ name: v.name, current: v.views.current, prior: v.views.prior }))}
+            ytSubscribers={liveYTSubscribers}
+            snsFootprint={{ current: liveSocialMedia.totalFootprint.current, prior: liveSocialMedia.totalFootprint.prior }}
+            totalStreams={bp.totalCrossPlatformStreams.current}
+            mentions={livePR.totalMentions}
+            sentiment={{ positive: liveSentiment.positive.pct, negative: liveSentiment.negative.pct }}
+            audienceStats={{ streamsPerListener: audienceStats.streamsPerListener, saves: audienceStats.saves, streams: audienceStats.streams }}
           />
         </AnimatedSection>
         </SectionErrorBoundary>
