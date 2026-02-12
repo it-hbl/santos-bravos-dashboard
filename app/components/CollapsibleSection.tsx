@@ -4,6 +4,25 @@ import { useState, useEffect, ReactNode, useCallback } from "react";
 
 const STORAGE_KEY = "sb-collapsed-sections";
 
+/** Dispatch a global expand-all or collapse-all event */
+export function toggleAllSections(expand: boolean) {
+  window.dispatchEvent(new CustomEvent("sb-toggle-all", { detail: { expand } }));
+  // Also update localStorage
+  if (expand) {
+    localStorage.removeItem(STORAGE_KEY);
+  }
+}
+
+/** Check if all sections are currently expanded (no collapsed keys in storage) */
+export function areAllExpanded(): boolean {
+  try {
+    const state = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+    return Object.keys(state).length === 0;
+  } catch {
+    return true;
+  }
+}
+
 function getCollapsed(): Record<string, boolean> {
   if (typeof window === "undefined") return {};
   try {
@@ -46,6 +65,20 @@ export default function CollapsibleSection({
   useEffect(() => {
     const saved = getCollapsed();
     if (id in saved) setOpen(!saved[id]);
+  }, [id]);
+
+  // Listen for global expand/collapse all events
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const expand = (e as CustomEvent).detail?.expand;
+      setOpen(expand);
+      if (!expand) {
+        setCollapsed(id, true);
+      }
+      // localStorage cleared by toggleAllSections for expand
+    };
+    window.addEventListener("sb-toggle-all", handler);
+    return () => window.removeEventListener("sb-toggle-all", handler);
   }, [id]);
 
   const toggle = useCallback(() => {

@@ -21,6 +21,7 @@ const ACTION_SHORTCUTS: { key: string; label: string; action: string }[] = [
   { key: "m", label: "Milestones", action: "milestones" },
   { key: "r", label: "Refresh Data", action: "refresh" },
   { key: "p", label: "Print / PDF", action: "print" },
+  { key: "e", label: "Expand / Collapse All", action: "toggle-sections" },
   { key: "?", label: "Toggle Shortcuts", action: "help" },
 ];
 
@@ -69,6 +70,11 @@ export default function KeyboardShortcuts({ onRefresh }: KeyboardShortcutsProps)
       } else if (key === "p") {
         e.preventDefault();
         window.print();
+      } else if (key === "e") {
+        e.preventDefault();
+        // Toggle expand/collapse all sections
+        const { toggleAllSections, areAllExpanded } = require("./CollapsibleSection");
+        toggleAllSections(!areAllExpanded());
       }
     },
     [showHelp, onRefresh]
