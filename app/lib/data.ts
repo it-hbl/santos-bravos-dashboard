@@ -194,6 +194,17 @@ export const prMedia = {
   { city: "Madrid", country: "ES", count: 22, flag: "🇪🇸" },
 ];
 
+// @ts-ignore — accessed via prMedia.topLanguages
+(prMedia as any).topLanguages = [
+  { code: "es", name: "Spanish", flag: "🇪🇸", count: 3627, pct: 60.0 },
+  { code: "en", name: "English", flag: "🇬🇧", count: 1209, pct: 20.0 },
+  { code: "pt", name: "Portuguese", flag: "🇧🇷", count: 544, pct: 9.0 },
+  { code: "ja", name: "Japanese", flag: "🇯🇵", count: 302, pct: 5.0 },
+  { code: "ko", name: "Korean", flag: "🇰🇷", count: 181, pct: 3.0 },
+  { code: "fr", name: "French", flag: "🇫🇷", count: 121, pct: 2.0 },
+  { code: "id", name: "Indonesian", flag: "🇮🇩", count: 60, pct: 1.0 },
+];
+
 // === SECTION 7: Fan Sentiment (Meltwater) ===
 export const fanSentiment = {
   period: "Feb 3 – Feb 9, 2026",

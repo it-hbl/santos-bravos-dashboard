@@ -1389,8 +1389,8 @@ function Dashboard() {
               </div>
             </div>
           </div>
-          {/* Row 2: Cities + Keyphrases + Influencers + Media vs Audience (4 cols on xl, 2 on md) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mt-4">
+          {/* Row 2: Cities + Languages + Keyphrases + Influencers + Media vs Audience (5 cols on xl, 2 on md) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-6 mt-4">
             {/* Top Cities by Mentions */}
             {((livePR as any).topCities || []).length > 0 && (
               <div className="bg-white/[0.02] rounded-xl p-4 border border-white/[0.04]">
@@ -1408,6 +1408,30 @@ function Dashboard() {
                         </div>
                         <div className="ml-[36px] w-auto bg-white/[0.04] rounded-full h-1 overflow-hidden">
                           <div className="bg-rose-500/70 h-full rounded-full transition-all duration-700" style={{ width: `${(c.count / maxCount) * 100}%` }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+            {/* Top Languages */}
+            {((livePR as any).topLanguages || []).length > 0 && (
+              <div className="bg-white/[0.02] rounded-xl p-4 border border-white/[0.04]">
+                <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3">🗣️ Top Languages</p>
+                <div className="space-y-2.5">
+                  {((livePR as any).topLanguages || []).slice(0, 7).map((l: any, i: number) => {
+                    const maxCount = ((livePR as any).topLanguages || [])[0]?.count || 1;
+                    return (
+                      <div key={l.code}>
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-xs">{l.flag}</span>
+                          <span className="text-sm text-neutral-300 flex-1">{l.name}</span>
+                          <span className="text-[10px] text-neutral-500 tabular-nums">{l.pct}%</span>
+                          <span className="text-[10px] font-bold tabular-nums text-amber-400">{l.count?.toLocaleString() ?? "—"}</span>
+                        </div>
+                        <div className="ml-[28px] w-auto bg-white/[0.04] rounded-full h-1 overflow-hidden">
+                          <div className="bg-amber-500/70 h-full rounded-full transition-all duration-700" style={{ width: `${(l.count / maxCount) * 100}%` }} />
                         </div>
                       </div>
                     );

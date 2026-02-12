@@ -100,6 +100,31 @@ export async function GET() {
       flag: FLAG_MAP[c.code || c.country_code || ""] || "🌍",
     }));
 
+    // Top languages (from main analytics response)
+    const LANG_NAMES: Record<string, string> = {
+      es: "Spanish", en: "English", pt: "Portuguese", ja: "Japanese", ko: "Korean",
+      fr: "French", de: "German", it: "Italian", id: "Indonesian", tl: "Tagalog",
+      ar: "Arabic", hi: "Hindi", zh: "Chinese", tr: "Turkish", th: "Thai",
+      ru: "Russian", nl: "Dutch", pl: "Polish", sv: "Swedish", vi: "Vietnamese",
+    };
+    const LANG_FLAGS: Record<string, string> = {
+      es: "🇪🇸", en: "🇬🇧", pt: "🇧🇷", ja: "🇯🇵", ko: "🇰🇷",
+      fr: "🇫🇷", de: "🇩🇪", it: "🇮🇹", id: "🇮🇩", tl: "🇵🇭",
+      ar: "🇸🇦", hi: "🇮🇳", zh: "🇨🇳", tr: "🇹🇷", th: "🇹🇭",
+      ru: "🇷🇺", nl: "🇳🇱", pl: "🇵🇱", sv: "🇸🇪", vi: "🇻🇳",
+    };
+    const topLanguages = (analytics.top_languages || []).slice(0, 8).map((l: any) => {
+      const code = l.code || l.language_code || l.language || "";
+      const count = l.count ?? l.volume ?? 0;
+      return {
+        code,
+        name: LANG_NAMES[code] || l.name || code || "Unknown",
+        flag: LANG_FLAGS[code] || "🌐",
+        count,
+        pct: parseFloat((count / (totalMentions || 1) * 100).toFixed(1)),
+      };
+    });
+
     // Top keyphrases — handle various response shapes
     const rawPhrases = Array.isArray(keyphrasesRes) ? keyphrasesRes
       : Array.isArray(keyphrasesRes?.top_keyphrases) ? keyphrasesRes.top_keyphrases
@@ -246,7 +271,7 @@ export async function GET() {
     return NextResponse.json({
       live: true,
       data: {
-        prMedia: { period, totalMentions, perDay, uniqueAuthors, timeSeries, topCountries, topKeyphrases, topSources, topMentions, topTopics, topCities, wow },
+        prMedia: { period, totalMentions, perDay, uniqueAuthors, timeSeries, topCountries, topKeyphrases, topSources, topMentions, topTopics, topCities, topLanguages, wow },
         fanSentiment: { period, positive, negative, neutral, topHashtags, topEntities, topSharedLinks, sentimentTimeline },
         fetchedAt: new Date().toISOString(),
       },
