@@ -63,7 +63,7 @@ import TrackHistory from "./components/TrackHistory";
 import QuickShare from "./components/QuickShare";
 import EngagementDepth from "./components/EngagementDepth";
 import BackToTop from "./components/BackToTop";
-import { ErrorBoundary } from "./components/ErrorBoundary";
+import { ErrorBoundary, SectionErrorBoundary } from "./components/ErrorBoundary";
 import StreamProjections from "./components/StreamProjections";
 
 /** Extract short date like "2/9/26" from "February 9, 2026" or ISO date */
@@ -570,6 +570,7 @@ function Dashboard() {
 
         {/* Release Timeline */}
         <div id="release-timeline" className="scroll-mt-16" />
+        <SectionErrorBoundary sectionName="Release Timeline">
         <AnimatedSection>
           <section className="glass-hybe rounded-2xl p-6">
             <div className="flex items-center gap-3 mb-5">
@@ -582,9 +583,11 @@ function Dashboard() {
             <ReleaseTimeline />
           </section>
         </AnimatedSection>
+        </SectionErrorBoundary>
 
         {/* Key Highlights - Executive Summary */}
         <div id="highlights" className="scroll-mt-16" />
+        <SectionErrorBoundary sectionName="Key Highlights">
         <AnimatedSection>
           <KeyHighlights
             spotifyListeners={{ current: liveListeners, prior: bp.spotifyMonthlyListeners.prior }}
@@ -598,8 +601,10 @@ function Dashboard() {
             topMarket={geoCountries[0]?.name || ""}
           />
         </AnimatedSection>
+        </SectionErrorBoundary>
 
         {/* Analyst Note */}
+        <SectionErrorBoundary sectionName="Analyst Note">
         <AnimatedSection>
           <AnalystNote
             reportDate={reportDate}
@@ -615,9 +620,11 @@ function Dashboard() {
             dailyTopTrack={dailyStreams.length > 0 ? { name: dailyStreams[0].name, streams: dailyStreams[0].streams } : null}
           />
         </AnimatedSection>
+        </SectionErrorBoundary>
 
         {/* Performance Score */}
         <div id="score" className="scroll-mt-16" />
+        <SectionErrorBoundary sectionName="Performance Score">
         <AnimatedSection>
           <PerformanceScore metrics={(() => {
             // Streaming growth (listener growth %)
@@ -662,9 +669,11 @@ function Dashboard() {
             ];
           })()} />
         </AnimatedSection>
+        </SectionErrorBoundary>
 
         {/* Milestones & Targets */}
         <div id="milestones" className="scroll-mt-16" />
+        <SectionErrorBoundary sectionName="Milestones">
         <AnimatedSection>
           <MilestonesTracker milestones={[
             { label: "Spotify Monthly Listeners", current: liveListeners, target: 500000, prior: bp.spotifyMonthlyListeners.prior, priorDaysAgo: 5, icon: "🎧", color: "bg-gradient-to-r from-spotify to-emerald-400" },
@@ -675,9 +684,11 @@ function Dashboard() {
             { label: "Cross-Platform Streams — 50M", current: bp.totalCrossPlatformStreams.current, target: 50000000, prior: bp.totalCrossPlatformStreams.prior, priorDaysAgo: 5, icon: "🌎", color: "bg-gradient-to-r from-amber-500 to-orange-400" },
           ]} />
         </AnimatedSection>
+        </SectionErrorBoundary>
 
         {/* Growth Velocity */}
         <div id="velocity" className="scroll-mt-16" />
+        <SectionErrorBoundary sectionName="Growth Velocity">
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-5 sm:p-6">
           <CollapsibleSection id="velocity" number="📊" title="Growth Velocity" subtitle="Period-over-Period %" color="bg-gradient-to-br from-cyan-500 to-blue-500">
@@ -706,9 +717,11 @@ function Dashboard() {
           </CollapsibleSection>
         </section>
         </AnimatedSection>
+        </SectionErrorBoundary>
 
         {/* Historical Trends — multi-date line chart from Supabase */}
         <div id="historical" className="scroll-mt-16" />
+        <SectionErrorBoundary sectionName="Historical Trends">
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
           <CollapsibleSection id="historical-trends" number="📈" title="Historical Trends" subtitle="All Report Dates" color="bg-gradient-to-br from-emerald-500 to-cyan-400">
@@ -719,9 +732,11 @@ function Dashboard() {
           </CollapsibleSection>
         </section>
         </AnimatedSection>
+        </SectionErrorBoundary>
 
         {/* Section 1: Business Performance */}
         <div id="business" className="scroll-mt-16" />
+        <SectionErrorBoundary sectionName="Business Performance">
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
           <CollapsibleSection id="business" number="1" title="Business Performance Snapshot" subtitle="Spotify + YouTube" color="bg-spotify" trend={trendListeners} collapsedSummary={`${fmt(liveListeners)} listeners · ${fmt(liveFollowers)} followers · ${liveTrackStreams.length} tracks · ${fmt(bp.totalCrossPlatformStreams.current)} total streams · ${liveYTVideos.length} videos`}>
@@ -802,8 +817,10 @@ function Dashboard() {
           </CollapsibleSection>
         </section>
         </AnimatedSection>
+        </SectionErrorBoundary>
 
         {/* Stream Velocity & Projections */}
+        <SectionErrorBoundary sectionName="Stream Projections">
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
           <CollapsibleSection id="stream-projections" number="🚀" title="Stream Velocity & Projections" subtitle="Run rates → milestones" color="bg-gradient-to-br from-emerald-500 to-cyan-500">
@@ -819,9 +836,11 @@ function Dashboard() {
           </CollapsibleSection>
         </section>
         </AnimatedSection>
+        </SectionErrorBoundary>
 
         {/* Daily Streams (SFA) */}
         <div id="daily" className="scroll-mt-16" />
+        <SectionErrorBoundary sectionName="Daily Snapshot">
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
           <CollapsibleSection id="daily-snapshot" number="⚡" title="Spotify for Artists — Daily Snapshot" subtitle={`${reportDate} (24h)`} color="bg-gradient-to-br from-spotify to-emerald-400" collapsedSummary={dailyStreams.length > 0 ? `${dailyStreams.map(t => `${t.name} ${fmt(t.streams)}`).join(' · ')} daily streams` : undefined}>
@@ -851,9 +870,11 @@ function Dashboard() {
           </CollapsibleSection>
         </section>
         </AnimatedSection>
+        </SectionErrorBoundary>
 
         {/* Charts */}
         <div id="charts" className="scroll-mt-16" />
+        <SectionErrorBoundary sectionName="Streaming Charts">
         <AnimatedSection>
         <section className="space-y-4">
           <StreamingCharts
@@ -868,9 +889,11 @@ function Dashboard() {
           />
         </section>
         </AnimatedSection>
+        </SectionErrorBoundary>
 
         {/* Section 2: Social Media */}
         <div id="social" className="scroll-mt-16" />
+        <SectionErrorBoundary sectionName="Social Media">
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
           <CollapsibleSection id="social-media" number="2" title="Social Media Performance" subtitle={`SNS · ${sectionDate(reportDate)}`} color="bg-gradient-to-br from-tiktok to-cyan-300" trend={trendSNS} collapsedSummary={`${fmt(liveSocialMedia.totalFootprint.current)} total · ${liveSocialMedia.platforms.map(p => `${p.platform} ${fmt(p.current)}`).join(' · ')}`}>
@@ -884,9 +907,11 @@ function Dashboard() {
           </CollapsibleSection>
         </section>
         </AnimatedSection>
+        </SectionErrorBoundary>
 
         {/* Section 3: Audio Virality */}
         <div id="virality" className="scroll-mt-16" />
+        <SectionErrorBoundary sectionName="Audio Virality">
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
           <CollapsibleSection id="audio-virality" number="3" title="Audio Virality" subtitle={`Cobrand · TT + IG · ${sectionDate(reportDate)}`} color="bg-gradient-to-br from-purple-500 to-pink-500" collapsedSummary={`${fmt(audioVirality.totalAudioViews.current)} audio views · ${audioVirality.tracks.length} tracks · ${fmt(audioVirality.tracks.reduce((s, t) => s + (t.tiktokCreates ?? 0), 0))} TT creates`}>
@@ -919,9 +944,11 @@ function Dashboard() {
           </CollapsibleSection>
         </section>
         </AnimatedSection>
+        </SectionErrorBoundary>
 
         {/* Track Performance Radar */}
         <div id="track-radar" className="scroll-mt-16" />
+        <SectionErrorBoundary sectionName="Track Comparison">
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
           <CollapsibleSection id="track-comparison" number="🎯" title="Track Performance Comparison" subtitle="Cross-Dimensional Radar" color="bg-gradient-to-br from-emerald-500 to-cyan-500">
@@ -934,9 +961,11 @@ function Dashboard() {
           </CollapsibleSection>
         </section>
         </AnimatedSection>
+        </SectionErrorBoundary>
 
         {/* Section 4: Band Member Followers */}
         <div id="members" className="scroll-mt-16" />
+        <SectionErrorBoundary sectionName="Band Members">
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
           <CollapsibleSection id="band-members" number="4" title="Band Member Followers" subtitle={`Instagram · ${sectionDate(reportDate)}`} color="bg-gradient-to-br from-pink-500 to-rose-400" collapsedSummary={`${fmt(totalMemberFollowers.current)} total · ${members[0]?.name} ${fmt(members[0]?.followers)} · ${members.length} members`}>
@@ -985,9 +1014,11 @@ function Dashboard() {
           </CollapsibleSection>
         </section>
         </AnimatedSection>
+        </SectionErrorBoundary>
 
         {/* Section 5: Geo Signals */}
         <div id="geo" className="scroll-mt-16" />
+        <SectionErrorBoundary sectionName="Geo Signals">
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
           <CollapsibleSection id="geo-signals" number="5" title="Geo Signals" subtitle="Spotify · Jan 12 – Feb 8, 2026 (28 Days)" color="bg-gradient-to-br from-blue-500 to-indigo-400" collapsedSummary={`${geoCountries.length}+ countries · #1 ${geoCountries[0]?.flag} ${geoCountries[0]?.name} (${fmt(geoCountries[0]?.listeners)}) · ${geoCities.length} top cities`}>
@@ -1029,9 +1060,11 @@ function Dashboard() {
           </CollapsibleSection>
         </section>
         </AnimatedSection>
+        </SectionErrorBoundary>
 
         {/* Audience Deep Dive */}
         <div id="audience" className="scroll-mt-16" />
+        <SectionErrorBoundary sectionName="Audience">
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
           <CollapsibleSection id="audience-dive" number="📊" title="Audience Deep Dive" subtitle={`Spotify for Artists · ${audienceStats.period}`} color="bg-gradient-to-br from-amber-500 to-orange-400" collapsedSummary={`${fmt(audienceStats.listeners)} listeners · ${fmt(audienceStats.streams)} streams · ${audienceStats.streamsPerListener.toFixed(1)} SPL · ${fmt(audienceStats.saves)} saves`}>
@@ -1062,9 +1095,11 @@ function Dashboard() {
           </CollapsibleSection>
         </section>
         </AnimatedSection>
+        </SectionErrorBoundary>
 
         {/* Section 6: PR & Media */}
         <div id="pr" className="scroll-mt-16" />
+        <SectionErrorBoundary sectionName="PR & Media">
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
           <CollapsibleSection id="pr-media" number="6" title="PR & Media Exposure" subtitle={`Meltwater · ${livePR.period}`} color="bg-gradient-to-br from-violet-500 to-indigo-400" trend={livePR.wow ? { value: `${Math.abs(livePR.wow.changePct)}% WoW`, positive: livePR.wow.changePct >= 0 } : null} collapsedSummary={`${fmt(livePR.totalMentions)} mentions · ${fmt(livePR.perDay)}/day · ${fmt(livePR.uniqueAuthors)} authors · ${livePR.topSources?.[0]?.name ?? ''} leads`}>
@@ -1199,9 +1234,11 @@ function Dashboard() {
           </CollapsibleSection>
         </section>
         </AnimatedSection>
+        </SectionErrorBoundary>
 
         {/* Section 7: Fan Sentiment */}
         <div id="sentiment" className="scroll-mt-16" />
+        <SectionErrorBoundary sectionName="Fan Sentiment">
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
           <CollapsibleSection id="fan-sentiment" number="7" title="Fan Sentiment & Conversation" subtitle={`Meltwater · ${liveSentiment.period}`} color="bg-gradient-to-br from-rose-500 to-pink-400" trend={trendSentiment} collapsedSummary={`${liveSentiment.positive.pct}% positive · ${liveSentiment.neutral.pct}% neutral · ${liveSentiment.negative.pct}% negative · Net +${(liveSentiment.positive.pct - liveSentiment.negative.pct).toFixed(0)}`}>
@@ -1336,6 +1373,7 @@ function Dashboard() {
           </CollapsibleSection>
         </section>
         </AnimatedSection>
+        </SectionErrorBoundary>
 
         {/* Footer */}
         <footer className="text-center py-10 border-t border-white/[0.03] space-y-2">
