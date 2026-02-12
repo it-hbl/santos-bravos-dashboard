@@ -64,6 +64,7 @@ import QuickShare from "./components/QuickShare";
 import EngagementDepth from "./components/EngagementDepth";
 import BackToTop from "./components/BackToTop";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import StreamProjections from "./components/StreamProjections";
 
 /** Extract short date like "2/9/26" from "February 9, 2026" or ISO date */
 function shortDate(dateStr: string): string {
@@ -798,6 +799,23 @@ function Dashboard() {
 
           <div className="my-3 border-t border-white/[0.05]" />
           <MetricRow label={bp.spl.label} current={bp.spl.current} prior={null} accent="text-amber-400" />
+          </CollapsibleSection>
+        </section>
+        </AnimatedSection>
+
+        {/* Stream Velocity & Projections */}
+        <AnimatedSection>
+        <section className="glass-hybe rounded-2xl p-6">
+          <CollapsibleSection id="stream-projections" number="🚀" title="Stream Velocity & Projections" subtitle="Run rates → milestones" color="bg-gradient-to-br from-emerald-500 to-cyan-500">
+            <StreamProjections
+              tracks={liveTrackStreams.map(t => ({
+                name: t.name,
+                currentStreams: t.spotifyStreams.current,
+                priorStreams: t.spotifyStreams.prior,
+                periodDays: 5,
+              }))}
+              dailyStreams={dailyStreams.map(d => ({ name: d.name, streams: d.streams }))}
+            />
           </CollapsibleSection>
         </section>
         </AnimatedSection>
