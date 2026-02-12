@@ -76,6 +76,7 @@ const AudienceHealth = dynamic(() => import("./components/AudienceHealth"), { ss
 const ReachDiversity = dynamic(() => import("./components/ReachDiversity"), { ssr: false });
 const MarketPenetration = dynamic(() => import("./components/MarketPenetration"), { ssr: false });
 const SpotifyEmbed = dynamic(() => import("./components/SpotifyEmbed"), { ssr: false });
+const NotableChanges = dynamic(() => import("./components/NotableChanges"), { ssr: false });
 
 /** Extract short date like "2/9/26" from "February 9, 2026" or ISO date */
 function shortDate(dateStr: string): string {
@@ -618,6 +619,21 @@ function Dashboard() {
             sentimentPositivePct={liveSentiment.positive.pct}
             topMarket={geoCountries[0]?.name || ""}
           />
+        </AnimatedSection>
+        </SectionErrorBoundary>
+
+        {/* Notable Changes */}
+        <SectionErrorBoundary sectionName="Notable Changes">
+        <AnimatedSection>
+          <NotableChanges changes={[
+            ...(bp.spotifyMonthlyListeners.prior ? [{ metric: "Spotify Listeners", current: liveListeners, prior: bp.spotifyMonthlyListeners.prior, pctChange: ((liveListeners - bp.spotifyMonthlyListeners.prior) / bp.spotifyMonthlyListeners.prior) * 100, category: "streaming" as const, sectionId: "business" }] : []),
+            ...(bp.spotifyFollowers?.prior ? [{ metric: "Spotify Followers", current: liveFollowers, prior: bp.spotifyFollowers.prior, pctChange: ((liveFollowers - bp.spotifyFollowers.prior) / bp.spotifyFollowers.prior) * 100, category: "streaming" as const, sectionId: "business" }] : []),
+            ...liveTrackStreams.filter(t => t.spotifyStreams.prior).map(t => ({ metric: `${t.name} Streams`, current: t.spotifyStreams.current, prior: t.spotifyStreams.prior!, pctChange: ((t.spotifyStreams.current - t.spotifyStreams.prior!) / t.spotifyStreams.prior!) * 100, category: "streaming" as const, sectionId: "charts" })),
+            ...liveYTVideos.filter(v => v.views.prior).map(v => ({ metric: `${v.name.replace(/ (Performance Video|Official MV|Lyric Video|Debut Visualizer)/, "")} YT`, current: v.views.current, prior: v.views.prior!, pctChange: ((v.views.current - v.views.prior!) / v.views.prior!) * 100, category: "youtube" as const, sectionId: "business" })),
+            ...liveSocialMedia.platforms.filter(p => p.prior).map(p => ({ metric: `${p.platform} Followers`, current: p.current, prior: p.prior!, pctChange: ((p.current - p.prior!) / p.prior!) * 100, category: "social" as const, sectionId: "social" })),
+            ...(liveSocialMedia.totalFootprint.prior ? [{ metric: "Total SNS Footprint", current: liveSocialMedia.totalFootprint.current, prior: liveSocialMedia.totalFootprint.prior, pctChange: ((liveSocialMedia.totalFootprint.current - liveSocialMedia.totalFootprint.prior) / liveSocialMedia.totalFootprint.prior) * 100, category: "social" as const, sectionId: "social" }] : []),
+            ...(audioVirality.totalAudioViews.prior ? [{ metric: "Audio Views", current: audioVirality.totalAudioViews.current, prior: audioVirality.totalAudioViews.prior, pctChange: ((audioVirality.totalAudioViews.current - audioVirality.totalAudioViews.prior) / audioVirality.totalAudioViews.prior) * 100, category: "virality" as const, sectionId: "virality" }] : []),
+          ]} threshold={3} />
         </AnimatedSection>
         </SectionErrorBoundary>
 
