@@ -381,6 +381,15 @@ body {
   }
 }
 
+@keyframes loadingBar {
+  0% { transform: translateX(-100%); }
+  50% { transform: translateX(0%); }
+  100% { transform: translateX(200%); }
+}
+.animate-loading-bar {
+  animation: loadingBar 1.5s ease-in-out infinite;
+}
+
 /* Safe area for mobile bottom nav (notched devices) */
 .safe-area-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0px);
