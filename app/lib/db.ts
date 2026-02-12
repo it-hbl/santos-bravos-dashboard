@@ -70,6 +70,18 @@ export async function getDashboardData(date: string): Promise<DashboardData> {
     const d = new Date(date + 'T12:00:00');
     const reportDateStr = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
+    // Find actual prior date (previous available date in DB)
+    const { data: allDates } = await supabase
+      .from('daily_reports')
+      .select('report_date')
+      .lt('report_date', date)
+      .order('report_date', { ascending: false })
+      .limit(1);
+    const priorDateRaw = allDates?.[0]?.report_date;
+    const priorDateStr = priorDateRaw
+      ? new Date(priorDateRaw + 'T12:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+      : '';
+
     // Build businessPerformance
     const trackList = (tracks || []).map((t: any) => ({
       name: t.track_name,
@@ -136,7 +148,7 @@ export async function getDashboardData(date: string): Promise<DashboardData> {
 
     return {
       reportDate: reportDateStr,
-      priorDate: report.spotify_monthly_listeners_prior ? 'Prior Report' : '',
+      priorDate: priorDateStr || (report.spotify_monthly_listeners_prior ? 'Prior Report' : ''),
       businessPerformance: {
         spotifyMonthlyListeners: { current: report.spotify_monthly_listeners, prior: report.spotify_monthly_listeners_prior, label: "Spotify Monthly Listeners (Global)" },
         spotifyPopularity: { current: report.spotify_popularity, prior: report.spotify_popularity_prior, label: "Spotify Popularity Index" },
