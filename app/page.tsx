@@ -21,6 +21,7 @@ import { AnimatedSection, CountUpValue, StaggerChildren, StaggerItem } from "./c
 import Image from "next/image";
 import { LiveDataProvider, LiveBadge, useLiveData } from "./components/LiveDataProvider";
 import ViralityChart from "./components/ViralityChart";
+import ViralityRatio from "./components/ViralityRatio";
 import SourceDonut from "./components/SourceDonut";
 import KeyHighlights from "./components/KeyHighlights";
 import GrowthVelocity from "./components/GrowthVelocity";
@@ -940,6 +941,14 @@ function Dashboard() {
           <div className="mt-5">
             <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-2">Platform Creates Comparison</p>
             <ViralityChart tracks={audioVirality.tracks} />
+          </div>
+          <div className="mt-5">
+            <ViralityRatio tracks={audioVirality.tracks.map((t, i) => ({
+              name: t.name,
+              tiktokCreates: t.tiktokCreates ?? 0,
+              igCreates: t.igCreates ?? 0,
+              spotifyStreams: liveTrackStreams[i]?.spotifyStreams.current ?? 0,
+            }))} />
           </div>
           </CollapsibleSection>
         </section>
