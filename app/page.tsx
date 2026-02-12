@@ -71,6 +71,7 @@ const QuickShare = dynamic(() => import("./components/QuickShare"), { ssr: false
 const EngagementDepth = dynamic(() => import("./components/EngagementDepth"), { ssr: false });
 const StreamProjections = dynamic(() => import("./components/StreamProjections"), { ssr: false });
 const ContentEfficiency = dynamic(() => import("./components/ContentEfficiency"), { ssr: false });
+const ReleasePacing = dynamic(() => import("./components/ReleasePacing"), { ssr: false });
 const AudienceHealth = dynamic(() => import("./components/AudienceHealth"), { ssr: false });
 const ReachDiversity = dynamic(() => import("./components/ReachDiversity"), { ssr: false });
 
@@ -906,6 +907,19 @@ function Dashboard() {
             youtubeViews={liveYTVideos.reduce((s, v) => s + v.views.current, 0)}
             tiktokAudioViews={audioVirality.totalAudioViews.current}
           />
+          <section className="glass-hybe rounded-2xl p-6">
+            <CollapsibleSection id="release-pacing" number="🏁" title="Release Pacing Comparison" subtitle="Streams from Day 0" color="bg-gradient-to-br from-amber-500 to-pink-500">
+              <p className="text-[10px] text-neutral-500 mb-4">How fast each track accumulated Spotify streams since its release date. Steeper curves = faster growth.</p>
+              <ReleasePacing
+                tracks={[
+                  { name: "0%", releaseDate: "2026-01-24", currentStreams: liveTrackStreams[0]?.spotifyStreams.current ?? 0, dailyRate: dailyStreams[0]?.streams ?? 0 },
+                  { name: "0% (Portuguese Version)", releaseDate: "2026-02-03", currentStreams: liveTrackStreams[1]?.spotifyStreams.current ?? 0, dailyRate: dailyStreams[2]?.streams ?? 0 },
+                  { name: "KAWASAKI", releaseDate: "2026-02-07", currentStreams: liveTrackStreams[2]?.spotifyStreams.current ?? 0, dailyRate: dailyStreams[1]?.streams ?? 0 },
+                ]}
+                reportDate={reportDate}
+              />
+            </CollapsibleSection>
+          </section>
         </section>
         </AnimatedSection>
         </SectionErrorBoundary>
