@@ -319,16 +319,19 @@ function Dashboard() {
           color: "text-spotify",
           change: bp.spotifyMonthlyListeners.prior ? dod(liveListeners, bp.spotifyMonthlyListeners.prior).pct : undefined,
           positive: bp.spotifyMonthlyListeners.prior ? dod(liveListeners, bp.spotifyMonthlyListeners.prior).positive : true,
+          sectionId: "business",
         },
         {
           label: "Followers",
           value: fmt(liveFollowers),
           color: "text-spotify",
+          sectionId: "business",
         },
         {
           label: "Streams",
           value: fmt(bp.totalCrossPlatformStreams.current),
           color: "text-white",
+          sectionId: "charts",
         },
         {
           label: "SNS",
@@ -336,21 +339,25 @@ function Dashboard() {
           color: "text-tiktok",
           change: liveSocialMedia.totalFootprint.prior ? dod(liveSocialMedia.totalFootprint.current, liveSocialMedia.totalFootprint.prior).pct : undefined,
           positive: liveSocialMedia.totalFootprint.prior ? dod(liveSocialMedia.totalFootprint.current, liveSocialMedia.totalFootprint.prior).positive : true,
+          sectionId: "social",
         },
         {
           label: "YT Subs",
           value: fmt(liveYTSubscribers),
           color: "text-ytred",
+          sectionId: "social",
         },
         {
           label: "Mentions",
           value: fmt(livePR.totalMentions),
           color: "text-violet-400",
+          sectionId: "pr",
         },
         {
           label: "Sentiment",
           value: `+${(liveSentiment.positive.pct - liveSentiment.negative.pct).toFixed(0)}`,
           color: liveSentiment.positive.pct > liveSentiment.negative.pct ? "text-emerald-400" : "text-red-400",
+          sectionId: "sentiment",
         },
       ]} />
       {/* Nav */}
