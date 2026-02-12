@@ -79,6 +79,7 @@ const MarketPenetration = dynamic(() => import("./components/MarketPenetration")
 const SpotifyEmbed = dynamic(() => import("./components/SpotifyEmbed"), { ssr: false });
 const NotableChanges = dynamic(() => import("./components/NotableChanges"), { ssr: false });
 const WeeklyWins = dynamic(() => import("./components/WeeklyWins"), { ssr: false });
+const ComparisonTable = dynamic(() => import("./components/ComparisonTable"), { ssr: false });
 
 /** Extract short date like "2/9/26" from "February 9, 2026" or ISO date */
 function shortDate(dateStr: string): string {
@@ -636,6 +637,32 @@ function Dashboard() {
             ...(liveSocialMedia.totalFootprint.prior ? [{ metric: "Total SNS Footprint", current: liveSocialMedia.totalFootprint.current, prior: liveSocialMedia.totalFootprint.prior, pctChange: ((liveSocialMedia.totalFootprint.current - liveSocialMedia.totalFootprint.prior) / liveSocialMedia.totalFootprint.prior) * 100, category: "social" as const, sectionId: "social" }] : []),
             ...(audioVirality.totalAudioViews.prior ? [{ metric: "Audio Views", current: audioVirality.totalAudioViews.current, prior: audioVirality.totalAudioViews.prior, pctChange: ((audioVirality.totalAudioViews.current - audioVirality.totalAudioViews.prior) / audioVirality.totalAudioViews.prior) * 100, category: "virality" as const, sectionId: "virality" }] : []),
           ]} threshold={3} />
+        </AnimatedSection>
+        </SectionErrorBoundary>
+
+        {/* All Metrics Comparison Table */}
+        <div id="comparison" className="scroll-mt-16" />
+        <SectionErrorBoundary sectionName="Comparison Table">
+        <AnimatedSection>
+        <section className="glass-hybe rounded-2xl p-6">
+          <CollapsibleSection id="comparison-table" number="📋" title="All Metrics at a Glance" subtitle="Sortable · Filterable" color="bg-gradient-to-br from-slate-500 to-zinc-500">
+          <p className="text-[10px] text-neutral-500 mb-4">Every tracked metric in one table. Click column headers to sort. Filter by category.</p>
+          <ComparisonTable rows={[
+            ...(bp.spotifyMonthlyListeners.prior != null ? [{ metric: "Spotify Monthly Listeners", category: "spotify", current: liveListeners, prior: bp.spotifyMonthlyListeners.prior, change: liveListeners - bp.spotifyMonthlyListeners.prior, changePct: ((liveListeners - bp.spotifyMonthlyListeners.prior) / bp.spotifyMonthlyListeners.prior) * 100 }] : [{ metric: "Spotify Monthly Listeners", category: "spotify", current: liveListeners, prior: null, change: null, changePct: null }]),
+            ...(bp.spotifyFollowers?.prior != null ? [{ metric: "Spotify Followers", category: "spotify", current: liveFollowers, prior: bp.spotifyFollowers.prior, change: liveFollowers - bp.spotifyFollowers.prior, changePct: ((liveFollowers - bp.spotifyFollowers.prior) / bp.spotifyFollowers.prior) * 100 }] : [{ metric: "Spotify Followers", category: "spotify", current: liveFollowers, prior: null, change: null, changePct: null }]),
+            { metric: "Spotify Popularity", category: "spotify", current: livePopularity, prior: bp.spotifyPopularity.prior, change: bp.spotifyPopularity.prior != null ? livePopularity - bp.spotifyPopularity.prior : null, changePct: bp.spotifyPopularity.prior ? ((livePopularity - bp.spotifyPopularity.prior) / bp.spotifyPopularity.prior) * 100 : null },
+            ...liveTrackStreams.map(t => ({ metric: `${t.name} — Spotify Streams`, category: "spotify", current: t.spotifyStreams.current, prior: t.spotifyStreams.prior, change: t.spotifyStreams.prior != null ? t.spotifyStreams.current - t.spotifyStreams.prior : null, changePct: t.spotifyStreams.prior ? ((t.spotifyStreams.current - t.spotifyStreams.prior) / t.spotifyStreams.prior) * 100 : null })),
+            { metric: "Cross-Platform Streams", category: "spotify", current: bp.totalCrossPlatformStreams.current, prior: bp.totalCrossPlatformStreams.prior, change: bp.totalCrossPlatformStreams.prior != null ? bp.totalCrossPlatformStreams.current - bp.totalCrossPlatformStreams.prior : null, changePct: bp.totalCrossPlatformStreams.prior ? ((bp.totalCrossPlatformStreams.current - bp.totalCrossPlatformStreams.prior) / bp.totalCrossPlatformStreams.prior) * 100 : null },
+            ...liveYTVideos.map(v => ({ metric: `${v.name.replace(/ (Performance Video|Official MV|Lyric Video|Debut Visualizer)/, "")} — YT Views`, category: "youtube", current: v.views.current, prior: v.views.prior, change: v.views.prior != null ? v.views.current - v.views.prior : null, changePct: v.views.prior ? ((v.views.current - v.views.prior) / v.views.prior) * 100 : null })),
+            ...liveSocialMedia.platforms.map(p => ({ metric: `${p.platform} Followers`, category: "social", current: p.current, prior: p.prior, change: p.prior != null ? p.current - p.prior : null, changePct: p.prior ? ((p.current - p.prior) / p.prior) * 100 : null })),
+            { metric: "Total SNS Footprint", category: "social", current: liveSocialMedia.totalFootprint.current, prior: liveSocialMedia.totalFootprint.prior, change: liveSocialMedia.totalFootprint.prior != null ? liveSocialMedia.totalFootprint.current - liveSocialMedia.totalFootprint.prior : null, changePct: liveSocialMedia.totalFootprint.prior ? ((liveSocialMedia.totalFootprint.current - liveSocialMedia.totalFootprint.prior) / liveSocialMedia.totalFootprint.prior) * 100 : null },
+            { metric: "Total Audio Views", category: "virality", current: audioVirality.totalAudioViews.current, prior: audioVirality.totalAudioViews.prior, change: audioVirality.totalAudioViews.prior != null ? audioVirality.totalAudioViews.current - audioVirality.totalAudioViews.prior : null, changePct: audioVirality.totalAudioViews.prior ? ((audioVirality.totalAudioViews.current - audioVirality.totalAudioViews.prior) / audioVirality.totalAudioViews.prior) * 100 : null },
+            { metric: "Total Member IG Followers", category: "social", current: totalMemberFollowers.current, prior: totalMemberFollowers.prior, change: totalMemberFollowers.prior != null ? totalMemberFollowers.current - totalMemberFollowers.prior : null, changePct: totalMemberFollowers.prior ? ((totalMemberFollowers.current - totalMemberFollowers.prior) / totalMemberFollowers.prior) * 100 : null },
+            { metric: "PR Mentions (7d)", category: "media", current: livePR.totalMentions, prior: null, change: null, changePct: livePR.wow?.changePct ?? null },
+            { metric: "Unique PR Authors", category: "media", current: livePR.uniqueAuthors, prior: null, change: null, changePct: null },
+          ]} />
+          </CollapsibleSection>
+        </section>
         </AnimatedSection>
         </SectionErrorBoundary>
 
