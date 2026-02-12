@@ -679,6 +679,8 @@ function Dashboard() {
             mentionVolume={livePR.totalMentions}
             sentimentPositivePct={liveSentiment.positive.pct}
             topMarket={geoCountries[0]?.name || ""}
+            reportDate={reportDate}
+            priorDate={priorDate}
           />
         </AnimatedSection>
         </SectionErrorBoundary>

@@ -27,6 +27,8 @@ interface HighlightsProps {
   mentionVolume: number;
   sentimentPositivePct: number;
   topMarket: string;
+  reportDate?: string;
+  priorDate?: string;
 }
 
 export default function KeyHighlights({
@@ -39,7 +41,11 @@ export default function KeyHighlights({
   mentionVolume,
   sentimentPositivePct,
   topMarket,
+  reportDate,
+  priorDate,
 }: HighlightsProps) {
+  // Short date label for comparison context
+  const vsLabel = priorDate ? ` (vs ${priorDate})` : "";
   const highlights: Highlight[] = [];
 
   // Spotify listeners growth
@@ -47,7 +53,7 @@ export default function KeyHighlights({
   if (listenerPct !== null) {
     highlights.push({
       emoji: listenerPct >= 0 ? "📈" : "📉",
-      text: `Spotify Monthly Listeners ${listenerPct >= 0 ? "up" : "down"} ${Math.abs(listenerPct).toFixed(1)}% to ${fmt(spotifyListeners.current)}`,
+      text: `Spotify Monthly Listeners ${listenerPct >= 0 ? "up" : "down"} ${Math.abs(listenerPct).toFixed(1)}% to ${fmt(spotifyListeners.current)}${vsLabel}`,
       type: listenerPct >= 0 ? "positive" : "negative",
     });
   }
@@ -62,7 +68,7 @@ export default function KeyHighlights({
     const shortName = top.name.replace(/ (Performance Video|Official MV|Lyric Video|Debut Visualizer)/, "").trim();
     highlights.push({
       emoji: "🎬",
-      text: `${shortName} YouTube views ${top.pct! >= 0 ? "surged" : "dropped"} ${Math.abs(top.pct!).toFixed(1)}% (${fmt(top.current)} total)`,
+      text: `${shortName} YouTube views ${top.pct! >= 0 ? "surged" : "dropped"} ${Math.abs(top.pct!).toFixed(1)}% (${fmt(top.current)} total)${vsLabel}`,
       type: top.pct! >= 5 ? "positive" : top.pct! < 0 ? "negative" : "neutral",
     });
   }
@@ -76,7 +82,7 @@ export default function KeyHighlights({
     const top = trackChanges[0];
     highlights.push({
       emoji: "🎵",
-      text: `"${top.name}" streams grew ${Math.abs(top.pct!).toFixed(1)}% — fastest growing track`,
+      text: `"${top.name}" streams grew ${Math.abs(top.pct!).toFixed(1)}% — fastest growing track${vsLabel}`,
       type: top.pct! >= 0 ? "positive" : "negative",
     });
   }
@@ -86,7 +92,7 @@ export default function KeyHighlights({
   if (snsPct !== null) {
     highlights.push({
       emoji: "🌐",
-      text: `Total SNS footprint at ${fmt(snsTotal.current)} (+${fmt(snsTotal.current - (snsTotal.prior || 0))} this period)`,
+      text: `Total SNS footprint at ${fmt(snsTotal.current)} (+${fmt(snsTotal.current - (snsTotal.prior || 0))}${vsLabel})`,
       type: snsPct >= 0 ? "positive" : "negative",
     });
   }
