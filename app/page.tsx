@@ -30,6 +30,7 @@ import TopMoverBadge, { Mover } from "./components/TopMoverBadge";
 import { ErrorBoundary, SectionErrorBoundary } from "./components/ErrorBoundary";
 import GlowCard from "./components/GlowCard";
 import useSectionHash from "./components/useSectionHash";
+import { useFocusMode, FocusOverlay } from "./components/FocusMode";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -195,6 +196,9 @@ function Dashboard() {
   // Sync URL hash with visible section for deep linking
   useSectionHash();
 
+  // Focus mode — presentation view for individual sections
+  const focus = useFocusMode();
+
   // Read initial date from URL query param (?date=YYYY-MM-DD) or default
   const getInitialDate = () => {
     if (typeof window !== "undefined") {
@@ -316,6 +320,8 @@ function Dashboard() {
 
   return (
     <main className="min-h-screen">
+      {/* Focus mode overlay */}
+      <FocusOverlay active={focus.active} sectionId={focus.sectionId} title={focus.title} onExit={focus.exit} />
       {/* Print-only header */}
       <div className="print-header hidden" style={{ display: 'none' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #7C3AED', paddingBottom: '8px', marginBottom: '16px' }}>

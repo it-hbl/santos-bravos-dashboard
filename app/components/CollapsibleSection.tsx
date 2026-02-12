@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, ReactNode, useCallback } from "react";
+import { focusSection } from "./FocusMode";
 
 const STORAGE_KEY = "sb-collapsed-sections";
 
@@ -106,6 +107,17 @@ export default function CollapsibleSection({
           </h2>
         </div>
         <div className="flex items-center gap-3">
+          {/* Focus mode button */}
+          <button
+            onClick={(e) => { e.stopPropagation(); focusSection(id, title); }}
+            className="w-6 h-6 rounded-md bg-white/[0.03] hover:bg-violet-500/20 border border-transparent hover:border-violet-500/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200"
+            title="Focus mode — isolate this section (presentation view)"
+            aria-label={`Focus on ${title}`}
+          >
+            <svg className="w-3 h-3 text-neutral-500 hover:text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5" />
+            </svg>
+          </button>
           {/* Trend badge — visible when collapsed */}
           {trend && !open && (
             <span
