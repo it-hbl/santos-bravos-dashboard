@@ -74,6 +74,7 @@ const ContentEfficiency = dynamic(() => import("./components/ContentEfficiency")
 const ReleasePacing = dynamic(() => import("./components/ReleasePacing"), { ssr: false });
 const AudienceHealth = dynamic(() => import("./components/AudienceHealth"), { ssr: false });
 const ReachDiversity = dynamic(() => import("./components/ReachDiversity"), { ssr: false });
+const MarketPenetration = dynamic(() => import("./components/MarketPenetration"), { ssr: false });
 const SpotifyEmbed = dynamic(() => import("./components/SpotifyEmbed"), { ssr: false });
 
 /** Extract short date like "2/9/26" from "February 9, 2026" or ISO date */
@@ -1090,6 +1091,10 @@ function Dashboard() {
             <div className="lg:col-span-2">
               <RegionalBreakdown data={geoCountries} />
             </div>
+          </div>
+          {/* Market Penetration Index */}
+          <div className="mb-6">
+            <MarketPenetration countries={geoCountries} />
           </div>
           {/* Geographic Treemap */}
           <div className="mb-6">
