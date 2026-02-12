@@ -74,6 +74,7 @@ const ContentEfficiency = dynamic(() => import("./components/ContentEfficiency")
 const ReleasePacing = dynamic(() => import("./components/ReleasePacing"), { ssr: false });
 const AudienceHealth = dynamic(() => import("./components/AudienceHealth"), { ssr: false });
 const ReachDiversity = dynamic(() => import("./components/ReachDiversity"), { ssr: false });
+const SpotifyEmbed = dynamic(() => import("./components/SpotifyEmbed"), { ssr: false });
 
 /** Extract short date like "2/9/26" from "February 9, 2026" or ISO date */
 function shortDate(dateStr: string): string {
@@ -898,6 +899,9 @@ function Dashboard() {
             youtubeVideos={liveYTVideos.map(v => ({ name: v.name.split(":")[0].replace("YouTube Views", "").trim() || v.name, views: v.views.current }))}
             dailyStreams={dailyStreams.map(d => ({ name: d.name, streams: d.streams }))}
           />
+          <section className="glass-hybe rounded-2xl p-6">
+            <SpotifyEmbed />
+          </section>
           <ContentEfficiency
             tracks={liveTrackStreams.map(t => ({ name: t.name, streams: t.spotifyStreams.current }))}
             reportDate={reportDate}
