@@ -24,6 +24,7 @@ import StickyTicker from "./components/StickyTicker";
 import DataFreshness from "./components/DataFreshness";
 import SkeletonLoader from "./components/SkeletonLoader";
 import BackToTop from "./components/BackToTop";
+import TopMoverBadge, { Mover } from "./components/TopMoverBadge";
 import { ErrorBoundary, SectionErrorBoundary } from "./components/ErrorBoundary";
 import GlowCard from "./components/GlowCard";
 import { useSession, signOut } from "next-auth/react";
@@ -595,6 +596,36 @@ function Dashboard() {
                   </a>
                 ))}
               </div>
+              {/* Top Mover rotating badge */}
+              {(() => {
+                const candidates: Mover[] = [];
+                if (bp.spotifyMonthlyListeners.prior) {
+                  const pct = ((liveListeners - bp.spotifyMonthlyListeners.prior) / bp.spotifyMonthlyListeners.prior) * 100;
+                  candidates.push({ label: "Spotify Listeners", pct, emoji: "🟢" });
+                }
+                liveTrackStreams.forEach(t => {
+                  if (t.spotifyStreams.prior) {
+                    const pct = ((t.spotifyStreams.current - t.spotifyStreams.prior) / t.spotifyStreams.prior) * 100;
+                    candidates.push({ label: t.name, pct, emoji: "🎵" });
+                  }
+                });
+                liveYTVideos.forEach(v => {
+                  if (v.views.prior) {
+                    const pct = ((v.views.current - v.views.prior) / v.views.prior) * 100;
+                    candidates.push({ label: v.name.replace(/ (Performance Video|Official MV|Lyric Video|Debut Visualizer)/, ""), pct, emoji: "▶️" });
+                  }
+                });
+                if (liveSocialMedia.totalFootprint.prior) {
+                  const pct = ((liveSocialMedia.totalFootprint.current - liveSocialMedia.totalFootprint.prior) / liveSocialMedia.totalFootprint.prior) * 100;
+                  candidates.push({ label: "SNS Footprint", pct, emoji: "📱" });
+                }
+                const topMovers = candidates.sort((a, b) => Math.abs(b.pct) - Math.abs(a.pct)).slice(0, 4);
+                return topMovers.length > 0 ? (
+                  <div className="flex justify-center md:justify-start mt-2">
+                    <TopMoverBadge movers={topMovers} />
+                  </div>
+                ) : null;
+              })()}
             </div>
             <div className="grid grid-cols-2 gap-3 flex-shrink-0">
               {[
