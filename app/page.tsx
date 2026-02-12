@@ -574,6 +574,27 @@ function Dashboard() {
                   );
                 })()}
               </div>
+              {/* Social platform quick links */}
+              <div className="flex gap-1.5 flex-wrap justify-center md:justify-start mt-2">
+                {[
+                  { label: "Spotify", href: "https://open.spotify.com/artist/24Vjp1gvnNuNSWJOvFMZ6G", icon: "🟢", bg: "bg-[#1DB954]/10 border-[#1DB954]/20 text-[#1DB954] hover:bg-[#1DB954]/20" },
+                  { label: "YouTube", href: "https://youtube.com/channel/UChKJaUFTKfw5O8JtQmF4Q6g", icon: "▶️", bg: "bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20" },
+                  { label: "TikTok", href: "https://tiktok.com/@santos_bravos", icon: "🎵", bg: "bg-cyan-400/10 border-cyan-400/20 text-cyan-400 hover:bg-cyan-400/20" },
+                  { label: "Instagram", href: "https://instagram.com/santos_bravos", icon: "📸", bg: "bg-pink-500/10 border-pink-500/20 text-pink-400 hover:bg-pink-500/20" },
+                  { label: "Weverse", href: "https://weverse.io/santosbravos", icon: "💚", bg: "bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20" },
+                ].map(link => (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`text-[10px] font-medium border rounded-full px-2.5 py-1 transition-all inline-flex items-center gap-1 ${link.bg}`}
+                  >
+                    <span className="text-xs leading-none">{link.icon}</span>
+                    <span>{link.label}</span>
+                  </a>
+                ))}
+              </div>
             </div>
             <div className="grid grid-cols-2 gap-3 flex-shrink-0">
               {[
