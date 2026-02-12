@@ -1,6 +1,6 @@
 "use client";
 
-import { useLiveData } from "./LiveDataProvider";
+import { RELEASES } from "../lib/data";
 import { businessPerformance } from "../lib/data";
 
 function fmt(n: number) {
@@ -9,24 +9,26 @@ function fmt(n: number) {
   return (n == null || isNaN(n)) ? "—" : n.toLocaleString();
 }
 
-const releases = [
-  {
-    date: "Jan 24, 2026",
-    title: "Santos Bravos Debut",
+const RELEASE_META: Record<string, {
+  subtitle: string;
+  color: string;
+  dotColor: string;
+  borderColor: string;
+  glowColor: string;
+  ytId: string | null;
+  videoName: string | null;
+}> = {
+  debut: {
     subtitle: "Group Announcement",
-    icon: "🌟",
     color: "from-violet-500 to-purple-600",
     dotColor: "bg-violet-500",
     borderColor: "hover:border-violet-500/30",
     glowColor: "group-hover:shadow-violet-500/10",
-    ytId: null as string | null,
-    videoName: null as string | null,
+    ytId: null,
+    videoName: null,
   },
-  {
-    date: "Jan 31, 2026",
-    title: "0% — Official MV",
+  "0pct": {
     subtitle: "Debut Single Release",
-    icon: "🎵",
     color: "from-emerald-500 to-green-600",
     dotColor: "bg-emerald-500",
     borderColor: "hover:border-emerald-500/30",
@@ -34,11 +36,8 @@ const releases = [
     ytId: "ogmUm0xh8-w",
     videoName: "0% Official MV",
   },
-  {
-    date: "Feb 3, 2026",
-    title: "0% — Portuguese Version",
+  "0pct-pt": {
     subtitle: "Lyric Video + Market Expansion",
-    icon: "🇧🇷",
     color: "from-cyan-500 to-blue-600",
     dotColor: "bg-cyan-500",
     borderColor: "hover:border-cyan-500/30",
@@ -46,11 +45,8 @@ const releases = [
     ytId: "_9tvZ5qoH_I",
     videoName: "0% Portuguese Lyric",
   },
-  {
-    date: "Feb 7, 2026",
-    title: "KAWASAKI",
+  kawasaki: {
     subtitle: "Performance Video",
-    icon: "🏍️",
     color: "from-pink-500 to-rose-600",
     dotColor: "bg-pink-500",
     borderColor: "hover:border-pink-500/30",
@@ -58,10 +54,16 @@ const releases = [
     ytId: "Cmy8CsYIUL0",
     videoName: "KAWASAKI Performance",
   },
-];
+};
+
+const releases = RELEASES.map((r) => {
+  const meta = RELEASE_META[r.id];
+  const d = new Date(r.date + "T12:00:00");
+  const dateLabel = d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  return { ...r, ...meta, dateLabel };
+});
 
 export default function ReleaseTimeline() {
-  // Get view counts from fallback data (live data now comes via Supabase date picker)
   const getViews = (videoName: string | null): number | null => {
     if (!videoName) return null;
     const fallbackMatch = businessPerformance.youtubeVideos.find((v) => v.name === videoName);
@@ -79,7 +81,7 @@ export default function ReleaseTimeline() {
           const views = getViews(r.videoName);
           return (
             <div
-              key={r.title}
+              key={r.id}
               className="relative group"
               style={{ animationDelay: `${i * 150}ms` }}
             >
@@ -100,11 +102,10 @@ export default function ReleaseTimeline() {
                   >
                     <img
                       src={`https://img.youtube.com/vi/${r.ytId}/mqdefault.jpg`}
-                      alt={r.title}
+                      alt={r.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       loading="lazy"
                     />
-                    {/* Play button overlay */}
                     <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/10 transition-colors duration-300">
                       <div className="w-10 h-10 rounded-full bg-red-600/90 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
                         <svg className="w-4 h-4 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24">
@@ -112,7 +113,6 @@ export default function ReleaseTimeline() {
                         </svg>
                       </div>
                     </div>
-                    {/* View count badge */}
                     {views && (
                       <div className="absolute bottom-1.5 right-1.5 bg-black/70 backdrop-blur-sm text-[10px] text-white font-semibold px-2 py-0.5 rounded-md tabular-nums">
                         ▶ {fmt(views)}
@@ -123,13 +123,13 @@ export default function ReleaseTimeline() {
 
                 <div className="p-4">
                   <div className="flex items-start gap-3">
-                    <span className="text-xl shrink-0">{r.icon}</span>
+                    <span className="text-xl shrink-0">{r.emoji}</span>
                     <div className="min-w-0">
                       <p className="text-[10px] text-neutral-500 uppercase tracking-wider font-medium">
-                        {r.date}
+                        {r.dateLabel}
                       </p>
                       <p className="text-sm font-bold text-white mt-0.5 truncate">
-                        {r.title}
+                        {r.name}
                       </p>
                       <p className="text-[11px] text-neutral-400 mt-0.5">
                         {r.subtitle}
@@ -137,7 +137,6 @@ export default function ReleaseTimeline() {
                     </div>
                   </div>
 
-                  {/* Days since release */}
                   <div className="mt-3 pt-2 border-t border-white/[0.04]">
                     <DaysSince dateStr={r.date} />
                   </div>
@@ -152,7 +151,7 @@ export default function ReleaseTimeline() {
 }
 
 function DaysSince({ dateStr }: { dateStr: string }) {
-  const releaseDate = new Date(dateStr + ", 12:00:00");
+  const releaseDate = new Date(dateStr + "T12:00:00");
   const now = new Date();
   const days = Math.floor((now.getTime() - releaseDate.getTime()) / (1000 * 60 * 60 * 24));
 

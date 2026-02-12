@@ -1,6 +1,29 @@
 // Centralized data — swap these for live API calls later
 // All data as of Feb 9, 2026. Prior day = Feb 4, 2026 (last report)
 
+// === RELEASE DATES (single source of truth) ===
+export const RELEASES = [
+  { id: "debut",   name: "Santos Bravos Debut",       trackName: null,                        date: "2026-01-24", color: "#a78bfa", emoji: "🌟" },
+  { id: "0pct",    name: "0% Official MV",             trackName: "0%",                        date: "2026-01-31", color: "#22c55e", emoji: "🎬" },
+  { id: "0pct-pt", name: "0% (Portuguese Version)",    trackName: "0% (Portuguese Version)",   date: "2026-02-03", color: "#06b6d4", emoji: "🌎" },
+  { id: "kawasaki",name: "KAWASAKI",                    trackName: "KAWASAKI",                  date: "2026-02-07", color: "#ec4899", emoji: "🏍️" },
+] as const;
+
+/** Get release date for a track by name */
+export function getTrackReleaseDate(trackName: string): string | null {
+  const r = RELEASES.find(r => r.trackName === trackName);
+  return r ? r.date : null;
+}
+
+/** Days since release for a track (relative to a reference date) */
+export function daysSinceRelease(trackName: string, refDate: string | Date = new Date()): number {
+  const releaseDate = getTrackReleaseDate(trackName);
+  if (!releaseDate) return 0;
+  const ref = typeof refDate === "string" ? new Date(refDate + "T12:00:00") : refDate;
+  const rel = new Date(releaseDate + "T12:00:00");
+  return Math.max(0, Math.round((ref.getTime() - rel.getTime()) / 86400000));
+}
+
 export const reportDate = "February 9, 2026";
 export const priorDate = "February 4, 2026";
 

@@ -1,5 +1,7 @@
 "use client";
 
+import { RELEASES, daysSinceRelease } from "../lib/data";
+
 interface Track {
   name: string;
   totalStreams: number;
@@ -14,22 +16,23 @@ function fmt(n: number) {
   return n.toLocaleString();
 }
 
-function daysSince(dateStr: string, reportDate?: string): number {
-  const release = new Date(dateStr + "T12:00:00");
-  const now = reportDate ? new Date(reportDate + "T12:00:00") : new Date();
-  return Math.max(1, Math.floor((now.getTime() - release.getTime()) / 86400000));
-}
-
 interface Props {
   tracks: { name: string; streams: number }[];
   reportDate?: string;
 }
 
-const TRACK_META: Record<string, { releaseDate: string; color: string; emoji: string; label: string }> = {
-  "0%": { releaseDate: "2026-01-31", color: "#22c55e", emoji: "🟢", label: "0%" },
-  "0% (Portuguese Version)": { releaseDate: "2026-02-03", color: "#06b6d4", emoji: "🔵", label: "0% PT" },
-  "KAWASAKI": { releaseDate: "2026-02-07", color: "#ec4899", emoji: "🩷", label: "KAWASAKI" },
-};
+// Build TRACK_META from centralized RELEASES
+const TRACK_META: Record<string, { releaseDate: string; color: string; emoji: string; label: string }> = Object.fromEntries(
+  RELEASES.filter(r => r.trackName).map(r => [
+    r.trackName!,
+    {
+      releaseDate: r.date,
+      color: r.color,
+      emoji: r.emoji,
+      label: r.trackName === "0% (Portuguese Version)" ? "0% PT" : r.trackName!,
+    },
+  ])
+);
 
 export default function ContentEfficiency({ tracks, reportDate }: Props) {
   // Parse reportDate from "February 9, 2026" to ISO
@@ -47,7 +50,9 @@ export default function ContentEfficiency({ tracks, reportDate }: Props) {
     .map((t) => {
       const meta = TRACK_META[t.name];
       if (!meta) return null;
-      const days = daysSince(meta.releaseDate, isoReport);
+      const release = new Date(meta.releaseDate + "T12:00:00");
+      const ref = isoReport ? new Date(isoReport + "T12:00:00") : new Date();
+      const days = Math.max(1, Math.floor((ref.getTime() - release.getTime()) / 86400000));
       const streamsPerDay = t.streams / days;
       return {
         name: t.name,

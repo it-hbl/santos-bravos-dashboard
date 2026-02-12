@@ -8,6 +8,7 @@ import {
   geoCountries as fallbackGeoCountries, geoCities as fallbackGeoCities,
   prMedia as fallbackPrMedia, fanSentiment as fallbackFanSentiment,
   audienceStats as fallbackAudienceStats, artistOverview as fallbackArtistOverview,
+  RELEASES, getTrackReleaseDate,
 } from "./lib/data";
 import { getDashboardData, getAvailableDates } from "./lib/db";
 import { useState, useEffect, useCallback, useRef } from "react";
@@ -545,12 +546,10 @@ function Dashboard() {
               {/* Contextual info pills — latest release age + nearest milestone */}
               <div className="flex gap-2 flex-wrap justify-center md:justify-start mt-1">
                 {(() => {
-                  const releases = [
-                    { name: "KAWASAKI", date: new Date("2026-02-07") },
-                    { name: "0% (PT)", date: new Date("2026-02-03") },
-                    { name: "0% MV", date: new Date("2026-01-31") },
-                    { name: "Debut", date: new Date("2026-01-24") },
-                  ];
+                  const releases = RELEASES.slice().reverse().map(r => ({
+                    name: r.trackName ? (r.trackName === "0% (Portuguese Version)" ? "0% (PT)" : r.trackName) : r.name.split(" ").pop()!,
+                    date: new Date(r.date + "T12:00:00"),
+                  }));
                   const now = new Date();
                   const latest = releases[0];
                   const daysSince = Math.floor((now.getTime() - latest.date.getTime()) / 86400000);
@@ -1092,9 +1091,9 @@ function Dashboard() {
               <p className="text-[10px] text-neutral-500 mb-4">How fast each track accumulated Spotify streams since its release date. Steeper curves = faster growth.</p>
               <ReleasePacing
                 tracks={[
-                  { name: "0%", releaseDate: "2026-01-24", currentStreams: liveTrackStreams[0]?.spotifyStreams.current ?? 0, dailyRate: dailyStreams[0]?.streams ?? 0 },
-                  { name: "0% (Portuguese Version)", releaseDate: "2026-02-03", currentStreams: liveTrackStreams[1]?.spotifyStreams.current ?? 0, dailyRate: dailyStreams[2]?.streams ?? 0 },
-                  { name: "KAWASAKI", releaseDate: "2026-02-07", currentStreams: liveTrackStreams[2]?.spotifyStreams.current ?? 0, dailyRate: dailyStreams[1]?.streams ?? 0 },
+                  { name: "0%", releaseDate: getTrackReleaseDate("0%") || "2026-01-31", currentStreams: liveTrackStreams[0]?.spotifyStreams.current ?? 0, dailyRate: dailyStreams[0]?.streams ?? 0 },
+                  { name: "0% (Portuguese Version)", releaseDate: getTrackReleaseDate("0% (Portuguese Version)") || "2026-02-03", currentStreams: liveTrackStreams[1]?.spotifyStreams.current ?? 0, dailyRate: dailyStreams[2]?.streams ?? 0 },
+                  { name: "KAWASAKI", releaseDate: getTrackReleaseDate("KAWASAKI") || "2026-02-07", currentStreams: liveTrackStreams[2]?.spotifyStreams.current ?? 0, dailyRate: dailyStreams[1]?.streams ?? 0 },
                 ]}
                 reportDate={reportDate}
               />
