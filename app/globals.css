@@ -342,6 +342,45 @@ body {
   }
 }
 
+/* ─── Reduced Motion Accessibility ─── */
+@media (prefers-reduced-motion: reduce) {
+  /* Disable all CSS animations and transitions globally */
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Kill specific heavy animations */
+  .hero-bg::before,
+  .avatar-ring::before {
+    animation: none !important;
+  }
+
+  .glass-hybe-card::after {
+    display: none !important;
+  }
+
+  .sb-gradient-shimmer {
+    animation: none !important;
+    background-size: 100% 100% !important;
+  }
+
+  .hero-card-enter {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* Sparklines: show final state immediately */
+  svg path[style*="stroke-dashoffset"],
+  svg circle[style*="animation"] {
+    animation: none !important;
+    stroke-dashoffset: 0 !important;
+  }
+}
+
 /* Safe area for mobile bottom nav (notched devices) */
 .safe-area-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0px);

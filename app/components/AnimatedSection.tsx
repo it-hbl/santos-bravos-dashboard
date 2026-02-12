@@ -1,7 +1,21 @@
 "use client";
 
 import { motion, useInView, useSpring, useTransform, MotionValue } from "framer-motion";
-import { ReactNode, useRef, useEffect, useState } from "react";
+import { ReactNode, useRef, useEffect, useState, useSyncExternalStore } from "react";
+
+/** Returns true when the user prefers reduced motion. SSR-safe. */
+export function usePrefersReducedMotion(): boolean {
+  return useSyncExternalStore(
+    (cb) => {
+      if (typeof window === "undefined") return () => {};
+      const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
+      mql.addEventListener("change", cb);
+      return () => mql.removeEventListener("change", cb);
+    },
+    () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+    () => false, // server snapshot
+  );
+}
 
 export function AnimatedSection({
   children,
@@ -12,12 +26,13 @@ export function AnimatedSection({
   className?: string;
   delay?: number;
 }) {
+  const reduced = usePrefersReducedMotion();
   return (
     <motion.div
-      initial={{ opacity: 0, y: 28 }}
+      initial={reduced ? false : { opacity: 0, y: 28 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.55, ease: [0.25, 0.1, 0.25, 1], delay }}
+      transition={reduced ? { duration: 0 } : { duration: 0.55, ease: [0.25, 0.1, 0.25, 1], delay }}
       className={className}
     >
       {children}
@@ -33,15 +48,20 @@ function fmtNumber(n: number | null | undefined): string {
 }
 
 export function CountUpValue({ value, formatFn }: { value: number; formatFn?: (n: number) => string }) {
+  const reduced = usePrefersReducedMotion();
   const ref = useRef<HTMLSpanElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-40px" });
-  const spring = useSpring(0, { duration: 1200, bounce: 0 });
+  const spring = useSpring(0, { duration: reduced ? 0 : 1200, bounce: 0 });
   const display = useTransform(spring, (v) => (formatFn || fmtNumber)(Math.round(v)));
-  const [text, setText] = useState((formatFn || fmtNumber)(0));
+  const [text, setText] = useState((formatFn || fmtNumber)(reduced ? value : 0));
 
   useEffect(() => {
-    if (isInView) spring.set(value);
-  }, [isInView, value, spring]);
+    if (reduced) {
+      setText((formatFn || fmtNumber)(value));
+    } else if (isInView) {
+      spring.set(value);
+    }
+  }, [isInView, value, spring, reduced, formatFn]);
 
   useEffect(() => {
     const unsub = display.on("change", (v) => setText(v));
@@ -52,14 +72,15 @@ export function CountUpValue({ value, formatFn }: { value: number; formatFn?: (n
 }
 
 export function StaggerChildren({ children, className = "" }: { children: ReactNode; className?: string }) {
+  const reduced = usePrefersReducedMotion();
   return (
     <motion.div
-      initial="hidden"
+      initial={reduced ? "visible" : "hidden"}
       whileInView="visible"
       viewport={{ once: true, margin: "-60px" }}
       variants={{
         hidden: {},
-        visible: { transition: { staggerChildren: 0.08 } },
+        visible: { transition: { staggerChildren: reduced ? 0 : 0.08 } },
       }}
       className={className}
     >
@@ -69,9 +90,13 @@ export function StaggerChildren({ children, className = "" }: { children: ReactN
 }
 
 export function StaggerItem({ children, className = "" }: { children: ReactNode; className?: string }) {
+  const reduced = usePrefersReducedMotion();
   return (
     <motion.div
-      variants={{
+      variants={reduced ? {
+        hidden: { opacity: 1, y: 0, scale: 1 },
+        visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0 } },
+      } : {
         hidden: { opacity: 0, y: 16, scale: 0.97 },
         visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease: [0.25, 0.1, 0.25, 1] } },
       }}
