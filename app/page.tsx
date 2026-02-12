@@ -724,7 +724,7 @@ function Dashboard() {
         <div id="business" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
-          <CollapsibleSection id="business" number="1" title="Business Performance Snapshot" subtitle="Spotify + YouTube" color="bg-spotify" trend={trendListeners}>
+          <CollapsibleSection id="business" number="1" title="Business Performance Snapshot" subtitle="Spotify + YouTube" color="bg-spotify" trend={trendListeners} collapsedSummary={`${fmt(liveListeners)} listeners · ${fmt(liveFollowers)} followers · ${liveTrackStreams.length} tracks · ${fmt(bp.totalCrossPlatformStreams.current)} total streams · ${liveYTVideos.length} videos`}>
           <div className="mb-3 hidden sm:flex items-center gap-6 text-[9px] text-neutral-600 uppercase tracking-wider px-2 py-2 bg-white/[0.015] rounded-lg">
             <span className="flex-1">Metric</span>
             <span className="w-20 text-right font-bold text-violet-400">{shortDate(reportDate)}</span>
@@ -824,7 +824,7 @@ function Dashboard() {
         <div id="daily" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
-          <CollapsibleSection id="daily-snapshot" number="⚡" title="Spotify for Artists — Daily Snapshot" subtitle={`${reportDate} (24h)`} color="bg-gradient-to-br from-spotify to-emerald-400">
+          <CollapsibleSection id="daily-snapshot" number="⚡" title="Spotify for Artists — Daily Snapshot" subtitle={`${reportDate} (24h)`} color="bg-gradient-to-br from-spotify to-emerald-400" collapsedSummary={dailyStreams.length > 0 ? `${dailyStreams.map(t => `${t.name} ${fmt(t.streams)}`).join(' · ')} daily streams` : undefined}>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {dailyStreams.map(t => (
               <div key={t.name} className="bg-white/[0.02] rounded-xl p-4 border border-white/[0.04]">
@@ -873,7 +873,7 @@ function Dashboard() {
         <div id="social" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
-          <CollapsibleSection id="social-media" number="2" title="Social Media Performance" subtitle={`SNS · ${sectionDate(reportDate)}`} color="bg-gradient-to-br from-tiktok to-cyan-300" trend={trendSNS}>
+          <CollapsibleSection id="social-media" number="2" title="Social Media Performance" subtitle={`SNS · ${sectionDate(reportDate)}`} color="bg-gradient-to-br from-tiktok to-cyan-300" trend={trendSNS} collapsedSummary={`${fmt(liveSocialMedia.totalFootprint.current)} total · ${liveSocialMedia.platforms.map(p => `${p.platform} ${fmt(p.current)}`).join(' · ')}`}>
           <SocialMediaCards
             platforms={liveSocialMedia.platforms}
             totalFootprint={liveSocialMedia.totalFootprint}
@@ -889,7 +889,7 @@ function Dashboard() {
         <div id="virality" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
-          <CollapsibleSection id="audio-virality" number="3" title="Audio Virality" subtitle={`Cobrand · TT + IG · ${sectionDate(reportDate)}`} color="bg-gradient-to-br from-purple-500 to-pink-500">
+          <CollapsibleSection id="audio-virality" number="3" title="Audio Virality" subtitle={`Cobrand · TT + IG · ${sectionDate(reportDate)}`} color="bg-gradient-to-br from-purple-500 to-pink-500" collapsedSummary={`${fmt(audioVirality.totalAudioViews.current)} audio views · ${audioVirality.tracks.length} tracks · ${fmt(audioVirality.tracks.reduce((s, t) => s + (t.tiktokCreates ?? 0), 0))} TT creates`}>
           <MetricRow label={audioVirality.totalAudioViews.label} current={audioVirality.totalAudioViews.current} prior={audioVirality.totalAudioViews.prior} />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
             {audioVirality.tracks.map(t => (
@@ -939,7 +939,7 @@ function Dashboard() {
         <div id="members" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
-          <CollapsibleSection id="band-members" number="4" title="Band Member Followers" subtitle={`Instagram · ${sectionDate(reportDate)}`} color="bg-gradient-to-br from-pink-500 to-rose-400">
+          <CollapsibleSection id="band-members" number="4" title="Band Member Followers" subtitle={`Instagram · ${sectionDate(reportDate)}`} color="bg-gradient-to-br from-pink-500 to-rose-400" collapsedSummary={`${fmt(totalMemberFollowers.current)} total · ${members[0]?.name} ${fmt(members[0]?.followers)} · ${members.length} members`}>
           <StaggerChildren className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
             {members.map((m, i) => {
               const gradients = ["from-violet-600 to-blue-500", "from-cyan-500 to-blue-400", "from-pink-500 to-rose-400", "from-amber-500 to-orange-400", "from-emerald-500 to-teal-400"];
@@ -990,7 +990,7 @@ function Dashboard() {
         <div id="geo" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
-          <CollapsibleSection id="geo-signals" number="5" title="Geo Signals" subtitle="Spotify · Jan 12 – Feb 8, 2026 (28 Days)" color="bg-gradient-to-br from-blue-500 to-indigo-400">
+          <CollapsibleSection id="geo-signals" number="5" title="Geo Signals" subtitle="Spotify · Jan 12 – Feb 8, 2026 (28 Days)" color="bg-gradient-to-br from-blue-500 to-indigo-400" collapsedSummary={`${geoCountries.length}+ countries · #1 ${geoCountries[0]?.flag} ${geoCountries[0]?.name} (${fmt(geoCountries[0]?.listeners)}) · ${geoCities.length} top cities`}>
           {/* Summary cards */}
           <div className="grid grid-cols-3 gap-3 mb-6">
             <div className="bg-white/[0.02] rounded-xl p-3 border border-white/[0.04] text-center">
@@ -1034,7 +1034,7 @@ function Dashboard() {
         <div id="audience" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
-          <CollapsibleSection id="audience-dive" number="📊" title="Audience Deep Dive" subtitle={`Spotify for Artists · ${audienceStats.period}`} color="bg-gradient-to-br from-amber-500 to-orange-400">
+          <CollapsibleSection id="audience-dive" number="📊" title="Audience Deep Dive" subtitle={`Spotify for Artists · ${audienceStats.period}`} color="bg-gradient-to-br from-amber-500 to-orange-400" collapsedSummary={`${fmt(audienceStats.listeners)} listeners · ${fmt(audienceStats.streams)} streams · ${audienceStats.streamsPerListener.toFixed(1)} SPL · ${fmt(audienceStats.saves)} saves`}>
           <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             {[
               { label: "Listeners", value: audienceStats.listeners, accent: "" },
@@ -1067,7 +1067,7 @@ function Dashboard() {
         <div id="pr" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
-          <CollapsibleSection id="pr-media" number="6" title="PR & Media Exposure" subtitle={`Meltwater · ${livePR.period}`} color="bg-gradient-to-br from-violet-500 to-indigo-400" trend={livePR.wow ? { value: `${Math.abs(livePR.wow.changePct)}% WoW`, positive: livePR.wow.changePct >= 0 } : null}>
+          <CollapsibleSection id="pr-media" number="6" title="PR & Media Exposure" subtitle={`Meltwater · ${livePR.period}`} color="bg-gradient-to-br from-violet-500 to-indigo-400" trend={livePR.wow ? { value: `${Math.abs(livePR.wow.changePct)}% WoW`, positive: livePR.wow.changePct >= 0 } : null} collapsedSummary={`${fmt(livePR.totalMentions)} mentions · ${fmt(livePR.perDay)}/day · ${fmt(livePR.uniqueAuthors)} authors · ${livePR.topSources?.[0]?.name ?? ''} leads`}>
           <div className="grid grid-cols-3 gap-3 mb-5">
             {[
               { label: "Total Mentions", value: livePR.totalMentions, accent: "text-violet-400" },
@@ -1204,7 +1204,7 @@ function Dashboard() {
         <div id="sentiment" className="scroll-mt-16" />
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
-          <CollapsibleSection id="fan-sentiment" number="7" title="Fan Sentiment & Conversation" subtitle={`Meltwater · ${liveSentiment.period}`} color="bg-gradient-to-br from-rose-500 to-pink-400" trend={trendSentiment}>
+          <CollapsibleSection id="fan-sentiment" number="7" title="Fan Sentiment & Conversation" subtitle={`Meltwater · ${liveSentiment.period}`} color="bg-gradient-to-br from-rose-500 to-pink-400" trend={trendSentiment} collapsedSummary={`${liveSentiment.positive.pct}% positive · ${liveSentiment.neutral.pct}% neutral · ${liveSentiment.negative.pct}% negative · Net +${(liveSentiment.positive.pct - liveSentiment.negative.pct).toFixed(0)}`}>
 
           {/* Sentiment summary cards */}
           <div className="grid grid-cols-3 gap-3 mb-6">

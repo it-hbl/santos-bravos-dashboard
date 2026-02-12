@@ -29,6 +29,7 @@ export default function CollapsibleSection({
   children,
   defaultOpen = true,
   trend,
+  collapsedSummary,
 }: {
   id: string;
   number: string;
@@ -38,6 +39,7 @@ export default function CollapsibleSection({
   children: ReactNode;
   defaultOpen?: boolean;
   trend?: { value: string; positive: boolean } | null;
+  collapsedSummary?: string;
 }) {
   const [open, setOpen] = useState(defaultOpen);
 
@@ -101,6 +103,12 @@ export default function CollapsibleSection({
           </svg>
         </div>
       </button>
+      {/* Collapsed summary line */}
+      {!open && collapsedSummary && (
+        <p className="text-[11px] text-neutral-500 -mt-2 mb-1 pl-11 truncate leading-relaxed">
+          {collapsedSummary}
+        </p>
+      )}
       <div
         className={`transition-all duration-300 overflow-hidden ${
           open ? "max-h-[5000px] opacity-100" : "max-h-0 opacity-0"
