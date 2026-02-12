@@ -26,6 +26,8 @@ import SkeletonLoader from "./components/SkeletonLoader";
 import BackToTop from "./components/BackToTop";
 import { ErrorBoundary, SectionErrorBoundary } from "./components/ErrorBoundary";
 import GlowCard from "./components/GlowCard";
+import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 // Dynamic imports — lazy-loaded below-fold components for faster initial page load
 const StreamingCharts = dynamic(() => import("./components/StreamingCharts"), { ssr: false });
@@ -1590,6 +1592,22 @@ function Dashboard() {
 }
 
 function Home() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-white text-lg animate-pulse">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!session) {
+    router.push("/login");
+    return null;
+  }
+
   return (
     <div suppressHydrationWarning>
       <ErrorBoundary>
