@@ -62,6 +62,7 @@ import HistoricalTrends from "./components/HistoricalTrends";
 import TrackHistory from "./components/TrackHistory";
 import QuickShare from "./components/QuickShare";
 import EngagementDepth from "./components/EngagementDepth";
+import BackToTop from "./components/BackToTop";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 
 /** Extract short date like "2/9/26" from "February 9, 2026" or ISO date */
@@ -1338,6 +1339,7 @@ function Dashboard() {
       <KeyboardShortcuts onRefresh={refresh} />
       <CommandPalette onRefresh={refresh} />
       <MobileNav />
+      <BackToTop />
       {/* Bottom padding for mobile nav */}
       <div className="h-16 lg:hidden print:hidden" />
     </main>
