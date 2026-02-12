@@ -67,6 +67,7 @@ import BackToTop from "./components/BackToTop";
 import { ErrorBoundary, SectionErrorBoundary } from "./components/ErrorBoundary";
 import StreamProjections from "./components/StreamProjections";
 import ContentEfficiency from "./components/ContentEfficiency";
+import AudienceHealth from "./components/AudienceHealth";
 
 /** Extract short date like "2/9/26" from "February 9, 2026" or ISO date */
 function shortDate(dateStr: string): string {
@@ -1105,6 +1106,14 @@ function Dashboard() {
             saves={audienceStats.saves}
             playlistAdds={audienceStats.playlistAdds}
             followers={audienceStats.followers}
+          />
+          <AudienceHealth
+            listeners={audienceStats.listeners}
+            streams={audienceStats.streams}
+            saves={audienceStats.saves}
+            playlistAdds={audienceStats.playlistAdds}
+            followers={audienceStats.followers}
+            streamsPerListener={audienceStats.streamsPerListener}
           />
           </CollapsibleSection>
         </section>
