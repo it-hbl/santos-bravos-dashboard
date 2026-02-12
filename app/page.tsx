@@ -25,6 +25,7 @@ import DataFreshness from "./components/DataFreshness";
 import SkeletonLoader from "./components/SkeletonLoader";
 import BackToTop from "./components/BackToTop";
 import { ErrorBoundary, SectionErrorBoundary } from "./components/ErrorBoundary";
+import GlowCard from "./components/GlowCard";
 
 // Dynamic imports — lazy-loaded below-fold components for faster initial page load
 const StreamingCharts = dynamic(() => import("./components/StreamingCharts"), { ssr: false });
@@ -544,7 +545,7 @@ function Dashboard() {
               ].map(card => {
                 const targetPct = card.target ? Math.min(100, (card.value / card.target) * 100) : null;
                 return (
-                <div key={card.label} className="glass-hybe glass-hybe-card hero-card-enter rounded-xl p-3 text-center min-w-[120px] relative overflow-hidden cursor-default">
+                <GlowCard key={card.label} className="glass-hybe glass-hybe-card hero-card-enter rounded-xl p-3 text-center min-w-[120px] cursor-default" glowColor={`${card.color}20`} glowSize={200}>
                   <div className="absolute bottom-0 right-0 opacity-40 pointer-events-none">
                     <Sparkline
                       data={trendPoints(card.prior, card.isSpl ? card.value * 1000 : card.value)}
@@ -577,7 +578,7 @@ function Dashboard() {
                       <p className="text-[8px] text-neutral-600 mt-0.5">{targetPct.toFixed(0)}% → {card.targetLabel}</p>
                     </div>
                   )}
-                </div>
+                </GlowCard>
                 );
               })}
             </div>
