@@ -19,13 +19,22 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: "/sb-avatar.jpg",
-    apple: "/sb-avatar.jpg",
+    apple: "/icon-512.jpg",
+  },
+  manifest: "/manifest.json",
+  other: {
+    "mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-status-bar-style": "black-translucent",
   },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
+      <head>
+        <meta name="theme-color" content="#7c3aed" />
+      </head>
       <body className="antialiased min-h-screen">{children}</body>
     </html>
   );

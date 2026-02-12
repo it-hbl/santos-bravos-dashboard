@@ -1,0 +1,24 @@
+{
+  "name": "Santos Bravos — Artist Intelligence Dashboard",
+  "short_name": "Santos Bravos",
+  "description": "Real-time streaming, social, PR & sentiment analytics for Santos Bravos · HYBE Latin America",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#7c3aed",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ]
+}
