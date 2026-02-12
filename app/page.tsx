@@ -11,63 +11,67 @@ import {
 } from "./lib/data";
 import { getDashboardData, getAvailableDates } from "./lib/db";
 import { useState, useEffect, useCallback, useRef } from "react";
+import dynamic from "next/dynamic";
 import DatePicker from "./components/DatePicker";
-import StreamingCharts from "./components/StreamingCharts";
-import SocialChart from "./components/SocialChart";
-import GeoChart, { GeoProgressBars } from "./components/GeoChart";
-import MentionsChart from "./components/MentionsChart";
-import SentimentDonut from "./components/SentimentDonut";
 import { AnimatedSection, CountUpValue, StaggerChildren, StaggerItem } from "./components/AnimatedSection";
 import Image from "next/image";
 import { LiveDataProvider, LiveBadge, useLiveData } from "./components/LiveDataProvider";
-import ViralityChart from "./components/ViralityChart";
-import ViralityRatio from "./components/ViralityRatio";
-import SourceDonut from "./components/SourceDonut";
-import KeyHighlights from "./components/KeyHighlights";
-import GrowthVelocity from "./components/GrowthVelocity";
-import SectionNav from "./components/SectionNav";
-import PlatformDistribution from "./components/PlatformDistribution";
-import SentimentGauge from "./components/SentimentGauge";
-import TrackRadar from "./components/TrackRadar";
 import CollapsibleSection from "./components/CollapsibleSection";
-import MemberBuzz from "./components/MemberBuzz";
 import ScrollProgress from "./components/ScrollProgress";
-import CopySummary from "./components/CopySummary";
-import SentimentTimeline from "./components/SentimentTimeline";
-import AudienceFunnel from "./components/AudienceFunnel";
-import DataSourcesStatus from "./components/DataSourcesStatus";
-import MilestonesTracker from "./components/MilestonesTracker";
 import Sparkline from "./components/Sparkline";
-import KeyboardShortcuts from "./components/KeyboardShortcuts";
-import GeoTreemap from "./components/GeoTreemap";
-import DailyComparisonChart from "./components/DailyComparisonChart";
-import TopInfluencers from "./components/TopInfluencers";
 import MetricTooltip from "./components/MetricTooltip";
 import StickyTicker from "./components/StickyTicker";
 import DataFreshness from "./components/DataFreshness";
-import AnalystNote from "./components/AnalystNote";
-import ExportCSV from "./components/ExportCSV";
-import RegionalBreakdown from "./components/RegionalBreakdown";
-import PerformanceScore from "./components/PerformanceScore";
-import WowComparison from "./components/WowComparison";
-import MobileNav from "./components/MobileNav";
-import CommandPalette from "./components/CommandPalette";
-import TopTopics from "./components/TopTopics";
-import ReleaseTimeline from "./components/ReleaseTimeline";
-import SocialMediaCards from "./components/SocialMediaCards";
 import SkeletonLoader from "./components/SkeletonLoader";
-import MediaVsAudience from "./components/MediaVsAudience";
-import MentionMomentum from "./components/MentionMomentum";
-import WeekdayHeatmap from "./components/WeekdayHeatmap";
-import HistoricalTrends from "./components/HistoricalTrends";
-import TrackHistory from "./components/TrackHistory";
-import QuickShare from "./components/QuickShare";
-import EngagementDepth from "./components/EngagementDepth";
 import BackToTop from "./components/BackToTop";
 import { ErrorBoundary, SectionErrorBoundary } from "./components/ErrorBoundary";
-import StreamProjections from "./components/StreamProjections";
-import ContentEfficiency from "./components/ContentEfficiency";
-import AudienceHealth from "./components/AudienceHealth";
+
+// Dynamic imports — lazy-loaded below-fold components for faster initial page load
+const StreamingCharts = dynamic(() => import("./components/StreamingCharts"), { ssr: false });
+const SocialChart = dynamic(() => import("./components/SocialChart"), { ssr: false });
+const GeoChart = dynamic(() => import("./components/GeoChart").then(m => ({ default: m.default })), { ssr: false });
+const GeoProgressBarsLazy = dynamic(() => import("./components/GeoChart").then(m => ({ default: m.GeoProgressBars })), { ssr: false });
+const MentionsChart = dynamic(() => import("./components/MentionsChart"), { ssr: false });
+const SentimentDonut = dynamic(() => import("./components/SentimentDonut"), { ssr: false });
+const ViralityChart = dynamic(() => import("./components/ViralityChart"), { ssr: false });
+const ViralityRatio = dynamic(() => import("./components/ViralityRatio"), { ssr: false });
+const SourceDonut = dynamic(() => import("./components/SourceDonut"), { ssr: false });
+const KeyHighlights = dynamic(() => import("./components/KeyHighlights"), { ssr: false });
+const GrowthVelocity = dynamic(() => import("./components/GrowthVelocity"), { ssr: false });
+const SectionNav = dynamic(() => import("./components/SectionNav"), { ssr: false });
+const PlatformDistribution = dynamic(() => import("./components/PlatformDistribution"), { ssr: false });
+const SentimentGauge = dynamic(() => import("./components/SentimentGauge"), { ssr: false });
+const TrackRadar = dynamic(() => import("./components/TrackRadar"), { ssr: false });
+const MemberBuzz = dynamic(() => import("./components/MemberBuzz"), { ssr: false });
+const CopySummary = dynamic(() => import("./components/CopySummary"), { ssr: false });
+const SentimentTimeline = dynamic(() => import("./components/SentimentTimeline"), { ssr: false });
+const AudienceFunnel = dynamic(() => import("./components/AudienceFunnel"), { ssr: false });
+const DataSourcesStatus = dynamic(() => import("./components/DataSourcesStatus"), { ssr: false });
+const MilestonesTracker = dynamic(() => import("./components/MilestonesTracker"), { ssr: false });
+const KeyboardShortcuts = dynamic(() => import("./components/KeyboardShortcuts"), { ssr: false });
+const GeoTreemap = dynamic(() => import("./components/GeoTreemap"), { ssr: false });
+const DailyComparisonChart = dynamic(() => import("./components/DailyComparisonChart"), { ssr: false });
+const TopInfluencers = dynamic(() => import("./components/TopInfluencers"), { ssr: false });
+const AnalystNote = dynamic(() => import("./components/AnalystNote"), { ssr: false });
+const ExportCSV = dynamic(() => import("./components/ExportCSV"), { ssr: false });
+const RegionalBreakdown = dynamic(() => import("./components/RegionalBreakdown"), { ssr: false });
+const PerformanceScore = dynamic(() => import("./components/PerformanceScore"), { ssr: false });
+const WowComparison = dynamic(() => import("./components/WowComparison"), { ssr: false });
+const MobileNav = dynamic(() => import("./components/MobileNav"), { ssr: false });
+const CommandPalette = dynamic(() => import("./components/CommandPalette"), { ssr: false });
+const TopTopics = dynamic(() => import("./components/TopTopics"), { ssr: false });
+const ReleaseTimeline = dynamic(() => import("./components/ReleaseTimeline"), { ssr: false });
+const SocialMediaCards = dynamic(() => import("./components/SocialMediaCards"), { ssr: false });
+const MediaVsAudience = dynamic(() => import("./components/MediaVsAudience"), { ssr: false });
+const MentionMomentum = dynamic(() => import("./components/MentionMomentum"), { ssr: false });
+const WeekdayHeatmap = dynamic(() => import("./components/WeekdayHeatmap"), { ssr: false });
+const HistoricalTrends = dynamic(() => import("./components/HistoricalTrends"), { ssr: false });
+const TrackHistory = dynamic(() => import("./components/TrackHistory"), { ssr: false });
+const QuickShare = dynamic(() => import("./components/QuickShare"), { ssr: false });
+const EngagementDepth = dynamic(() => import("./components/EngagementDepth"), { ssr: false });
+const StreamProjections = dynamic(() => import("./components/StreamProjections"), { ssr: false });
+const ContentEfficiency = dynamic(() => import("./components/ContentEfficiency"), { ssr: false });
+const AudienceHealth = dynamic(() => import("./components/AudienceHealth"), { ssr: false });
 
 /** Extract short date like "2/9/26" from "February 9, 2026" or ISO date */
 function shortDate(dateStr: string): string {
@@ -1065,7 +1069,7 @@ function Dashboard() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3">Top Countries</p>
-              <GeoProgressBars data={geoCountries} color="#6366F1" />
+              <GeoProgressBarsLazy data={geoCountries} color="#6366F1" />
             </div>
             <div>
               <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3">Top Cities</p>
@@ -1438,5 +1442,4 @@ function Home() {
 }
 
 // Disable SSR entirely to avoid hydration mismatch errors
-import dynamic from "next/dynamic";
 export default dynamic(() => Promise.resolve(Home), { ssr: false });
