@@ -1302,8 +1302,32 @@ function Dashboard() {
               </div>
             </div>
           </div>
-          {/* Row 2: Keyphrases + Influencers + Media vs Audience (3 cols) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+          {/* Row 2: Cities + Keyphrases + Influencers + Media vs Audience (4 cols on xl, 2 on md) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mt-4">
+            {/* Top Cities by Mentions */}
+            {((livePR as any).topCities || []).length > 0 && (
+              <div className="bg-white/[0.02] rounded-xl p-4 border border-white/[0.04]">
+                <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3">🏙️ Top Cities by Mentions</p>
+                <div className="space-y-2.5">
+                  {((livePR as any).topCities || []).slice(0, 8).map((c: any, i: number) => {
+                    const maxCount = ((livePR as any).topCities || [])[0]?.count || 1;
+                    return (
+                      <div key={c.city}>
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-[10px] text-neutral-600 w-4 text-right font-bold">{i + 1}</span>
+                          <span className="text-xs">{c.flag}</span>
+                          <span className="text-sm text-neutral-300 flex-1 truncate">{c.city}</span>
+                          <span className="text-[10px] font-bold tabular-nums text-rose-400">{c.count?.toLocaleString() ?? "—"}</span>
+                        </div>
+                        <div className="ml-[36px] w-auto bg-white/[0.04] rounded-full h-1 overflow-hidden">
+                          <div className="bg-rose-500/70 h-full rounded-full transition-all duration-700" style={{ width: `${(c.count / maxCount) * 100}%` }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
             {/* Trending Keyphrases */}
             <div className="bg-white/[0.02] rounded-xl p-4 border border-white/[0.04]">
               <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3">🔥 Trending Keyphrases</p>

@@ -182,6 +182,18 @@ export const prMedia = {
   { topic: "Cultural Representation", count: 234 },
 ];
 
+// @ts-ignore — accessed via prMedia.topCities
+(prMedia as any).topCities = [
+  { city: "Lima", country: "PE", count: 187, flag: "🇵🇪" },
+  { city: "Mexico City", country: "MX", count: 124, flag: "🇲🇽" },
+  { city: "São Paulo", country: "BR", count: 78, flag: "🇧🇷" },
+  { city: "Bogotá", country: "CO", count: 52, flag: "🇨🇴" },
+  { city: "Santiago", country: "CL", count: 45, flag: "🇨🇱" },
+  { city: "Buenos Aires", country: "AR", count: 33, flag: "🇦🇷" },
+  { city: "Los Angeles", country: "US", count: 28, flag: "🇺🇸" },
+  { city: "Madrid", country: "ES", count: 22, flag: "🇪🇸" },
+];
+
 // === SECTION 7: Fan Sentiment (Meltwater) ===
 export const fanSentiment = {
   period: "Feb 3 – Feb 9, 2026",
