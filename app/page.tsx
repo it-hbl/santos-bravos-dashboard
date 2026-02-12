@@ -27,6 +27,7 @@ import BackToTop from "./components/BackToTop";
 import TopMoverBadge, { Mover } from "./components/TopMoverBadge";
 import { ErrorBoundary, SectionErrorBoundary } from "./components/ErrorBoundary";
 import GlowCard from "./components/GlowCard";
+import useSectionHash from "./components/useSectionHash";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -188,6 +189,9 @@ function SectionHeader({ number, title, subtitle, color }: { number: string; tit
 }
 
 function Dashboard() {
+  // Sync URL hash with visible section for deep linking
+  useSectionHash();
+
   // Read initial date from URL query param (?date=YYYY-MM-DD) or default
   const getInitialDate = () => {
     if (typeof window !== "undefined") {
