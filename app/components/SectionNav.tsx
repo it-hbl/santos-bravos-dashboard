@@ -3,6 +3,10 @@
 import { useEffect, useState, useCallback } from "react";
 import { toggleAllSections, areAllExpanded } from "./CollapsibleSection";
 
+export interface SectionTrendData {
+  [sectionId: string]: { positive: boolean; value: string } | null;
+}
+
 const SECTIONS = [
   { id: "hero", label: "Overview", icon: "🏠", short: "Top" },
   { id: "highlights", label: "Key Highlights", icon: "⚡", short: "Highlights" },
@@ -23,7 +27,7 @@ const SECTIONS = [
   { id: "sentiment", label: "Fan Sentiment", icon: "7", short: "Sentiment" },
 ];
 
-export default function SectionNav() {
+export default function SectionNav({ trends }: { trends?: SectionTrendData }) {
   const [active, setActive] = useState("hero");
   const [visible, setVisible] = useState(false);
   const [allExpanded, setAllExpanded] = useState(true);
@@ -71,6 +75,7 @@ export default function SectionNav() {
     <nav className="fixed right-3 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col gap-1 py-2 px-1.5 rounded-xl glass border border-white/[0.06] shadow-2xl shadow-black/40">
       {SECTIONS.map(s => {
         const isActive = active === s.id;
+        const trend = trends?.[s.id] ?? null;
         return (
           <button
             key={s.id}
@@ -86,11 +91,24 @@ export default function SectionNav() {
             title={s.label}
           >
             <span className="text-[10px] font-bold leading-none">
-              {/^\d$/.test(s.icon) ? s.icon : s.icon}
+              {s.icon}
             </span>
-            {/* Tooltip on hover */}
-            <span className="absolute right-full mr-2 px-2 py-1 rounded-md bg-neutral-900 border border-white/[0.08] text-[10px] text-neutral-300 font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+            {/* Trend indicator dot */}
+            {trend && (
+              <span
+                className={`absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full border border-neutral-900 ${
+                  trend.positive ? "bg-emerald-500" : "bg-red-500"
+                }`}
+              />
+            )}
+            {/* Tooltip on hover — includes trend value */}
+            <span className="absolute right-full mr-2 px-2 py-1 rounded-md bg-neutral-900 border border-white/[0.08] text-[10px] text-neutral-300 font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none flex items-center gap-1.5">
               {s.label}
+              {trend && (
+                <span className={`text-[9px] font-bold ${trend.positive ? "text-emerald-400" : "text-red-400"}`}>
+                  {trend.positive ? "↑" : "↓"}{trend.value}
+                </span>
+              )}
             </span>
             {/* Active indicator */}
             {isActive && (

@@ -453,7 +453,42 @@ function Dashboard() {
 
       <div className="max-w-7xl mx-auto px-4 py-8 space-y-10">
         {/* Section Nav */}
-        <SectionNav />
+        <SectionNav trends={(() => {
+          const t: Record<string, { positive: boolean; value: string } | null> = {};
+          // Business Performance — listener growth
+          if (bp.spotifyMonthlyListeners.prior) {
+            const pct = ((liveListeners - bp.spotifyMonthlyListeners.prior) / bp.spotifyMonthlyListeners.prior * 100);
+            t.business = { positive: pct >= 0, value: `${Math.abs(pct).toFixed(1)}%` };
+          }
+          // Social Media — SNS footprint
+          if (liveSocialMedia.totalFootprint.prior) {
+            const pct = ((liveSocialMedia.totalFootprint.current - liveSocialMedia.totalFootprint.prior) / liveSocialMedia.totalFootprint.prior * 100);
+            t.social = { positive: pct >= 0, value: `${Math.abs(pct).toFixed(1)}%` };
+          }
+          // Audio Virality
+          if (audioVirality.totalAudioViews.prior) {
+            const pct = ((audioVirality.totalAudioViews.current - audioVirality.totalAudioViews.prior) / audioVirality.totalAudioViews.prior * 100);
+            t.virality = { positive: pct >= 0, value: `${Math.abs(pct).toFixed(1)}%` };
+          }
+          // PR & Media — WoW or total mentions
+          if (livePR.wow) {
+            t.pr = { positive: livePR.wow.changePct >= 0, value: `${Math.abs(livePR.wow.changePct).toFixed(0)}% WoW` };
+          }
+          // Fan Sentiment — net sentiment
+          const netSent = liveSentiment.positive.pct - liveSentiment.negative.pct;
+          t.sentiment = { positive: netSent >= 0, value: `+${Math.abs(netSent).toFixed(0)} net` };
+          // Charts — total cross-platform streams
+          if (bp.totalCrossPlatformStreams.prior) {
+            const pct = ((bp.totalCrossPlatformStreams.current - bp.totalCrossPlatformStreams.prior) / bp.totalCrossPlatformStreams.prior * 100);
+            t.charts = { positive: pct >= 0, value: `${Math.abs(pct).toFixed(1)}%` };
+          }
+          // Members — total member followers
+          if (totalMemberFollowers.prior) {
+            const pct = ((totalMemberFollowers.current - totalMemberFollowers.prior) / totalMemberFollowers.prior * 100);
+            t.members = { positive: pct >= 0, value: `${Math.abs(pct).toFixed(1)}%` };
+          }
+          return t;
+        })()} />
 
         {/* Skeleton loading state when switching dates */}
         {dateLoading && <SkeletonLoader />}
