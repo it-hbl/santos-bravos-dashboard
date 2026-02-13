@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 
 interface DatePickerProps {
   selectedDate: string;
@@ -9,10 +9,53 @@ interface DatePickerProps {
   loading?: boolean;
 }
 
+/** Build a 6-row calendar grid for a given month (Sun-Sat) */
+function buildCalendarGrid(year: number, month: number): (Date | null)[][] {
+  const first = new Date(year, month, 1);
+  const startDay = first.getDay(); // 0=Sun
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const rows: (Date | null)[][] = [];
+  let day = 1 - startDay;
+  for (let r = 0; r < 6; r++) {
+    const row: (Date | null)[] = [];
+    for (let c = 0; c < 7; c++, day++) {
+      if (day >= 1 && day <= daysInMonth) {
+        row.push(new Date(year, month, day));
+      } else {
+        row.push(null);
+      }
+    }
+    // skip empty trailing rows
+    if (row.every(d => d === null)) break;
+    rows.push(row);
+  }
+  return rows;
+}
+
+function toISO(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+const DAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
 export default function DatePicker({ selectedDate, availableDates, onDateChange, loading }: DatePickerProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
+  // Calendar month navigation state — start on the selected date's month
+  const selDate = useMemo(() => new Date(selectedDate + "T12:00:00"), [selectedDate]);
+  const [calYear, setCalYear] = useState(selDate.getFullYear());
+  const [calMonth, setCalMonth] = useState(selDate.getMonth());
+
+  // Reset calendar month when selected date changes
+  useEffect(() => {
+    const d = new Date(selectedDate + "T12:00:00");
+    setCalYear(d.getFullYear());
+    setCalMonth(d.getMonth());
+  }, [selectedDate]);
+
+  // Close on outside click
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
@@ -26,12 +69,8 @@ export default function DatePicker({ selectedDate, availableDates, onDateChange,
     return d.toLocaleDateString("en-US", { month: "numeric", day: "numeric", year: "numeric" });
   };
 
-  const formatOption = (dateStr: string) => {
-    const d = new Date(dateStr + "T12:00:00");
-    return d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" });
-  };
-
-  const sortedDates = [...availableDates].sort();
+  const sortedDates = useMemo(() => [...availableDates].sort(), [availableDates]);
+  const availableSet = useMemo(() => new Set(sortedDates), [sortedDates]);
   const currentIdx = sortedDates.indexOf(selectedDate);
   const hasPrev = currentIdx > 0;
   const hasNext = currentIdx < sortedDates.length - 1;
@@ -43,7 +82,19 @@ export default function DatePicker({ selectedDate, availableDates, onDateChange,
     if (hasNext && !loading) onDateChange(sortedDates[currentIdx + 1]);
   };
 
-  // Keyboard arrow navigation
+  // Calendar month nav
+  const goMonthPrev = () => {
+    if (calMonth === 0) { setCalMonth(11); setCalYear(y => y - 1); }
+    else setCalMonth(m => m - 1);
+  };
+  const goMonthNext = () => {
+    if (calMonth === 11) { setCalMonth(0); setCalYear(y => y + 1); }
+    else setCalMonth(m => m + 1);
+  };
+
+  const grid = useMemo(() => buildCalendarGrid(calYear, calMonth), [calYear, calMonth]);
+
+  // Keyboard arrow navigation for date switching
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
       if ((e.target as HTMLElement)?.tagName === "INPUT" || (e.target as HTMLElement)?.tagName === "TEXTAREA") return;
@@ -53,6 +104,8 @@ export default function DatePicker({ selectedDate, availableDates, onDateChange,
     document.addEventListener("keydown", handleKey);
     return () => document.removeEventListener("keydown", handleKey);
   });
+
+  const today = useMemo(() => toISO(new Date()), []);
 
   return (
     <div ref={ref} className="relative flex items-center gap-0.5">
@@ -100,35 +153,98 @@ export default function DatePicker({ selectedDate, availableDates, onDateChange,
         </button>
       )}
 
+      {/* Calendar dropdown */}
       {open && (
-        <div className="absolute right-0 top-full mt-1 z-[100] bg-neutral-900/95 backdrop-blur-xl border border-white/[0.08] rounded-xl shadow-2xl shadow-black/50 py-1 min-w-[220px] overflow-hidden">
-          <div className="px-3 py-2 border-b border-white/[0.06]">
-            <p className="text-[9px] text-neutral-500 uppercase tracking-[0.2em] font-semibold">Select Report Date</p>
+        <div className="absolute right-0 top-full mt-1 z-[100] bg-neutral-900/95 backdrop-blur-xl border border-white/[0.08] rounded-xl shadow-2xl shadow-black/50 min-w-[280px] overflow-hidden">
+          {/* Month nav header */}
+          <div className="flex items-center justify-between px-3 py-2.5 border-b border-white/[0.06]">
+            <button
+              onClick={goMonthPrev}
+              className="p-1 rounded-md hover:bg-white/[0.06] transition-colors"
+            >
+              <svg className="w-3.5 h-3.5 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <span className="text-xs font-bold text-white tracking-wide">
+              {MONTHS[calMonth]} {calYear}
+            </span>
+            <button
+              onClick={goMonthNext}
+              className="p-1 rounded-md hover:bg-white/[0.06] transition-colors"
+            >
+              <svg className="w-3.5 h-3.5 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
           </div>
-          <div className="max-h-[300px] overflow-y-auto">
-            {availableDates.map((date) => (
-              <button
-                key={date}
-                onClick={() => {
-                  onDateChange(date);
-                  setOpen(false);
-                }}
-                className={`w-full text-left px-3 py-2 text-xs transition-colors flex items-center justify-between ${
-                  date === selectedDate
-                    ? "bg-violet-500/20 text-violet-300 font-bold"
-                    : "text-neutral-400 hover:bg-white/[0.04] hover:text-white"
-                }`}
-              >
-                <span>{formatOption(date)}</span>
-                {date === selectedDate && (
-                  <span className="text-violet-400 text-[10px]">●</span>
-                )}
-              </button>
+
+          {/* Day-of-week header */}
+          <div className="grid grid-cols-7 px-2 pt-2">
+            {DAYS.map(d => (
+              <div key={d} className="text-center text-[9px] text-neutral-600 font-semibold uppercase tracking-wider py-1">
+                {d}
+              </div>
             ))}
           </div>
-          {availableDates.length === 0 && (
-            <p className="px-3 py-4 text-[10px] text-neutral-600 text-center">No reports available</p>
-          )}
+
+          {/* Calendar grid */}
+          <div className="px-2 pb-2">
+            {grid.map((row, ri) => (
+              <div key={ri} className="grid grid-cols-7">
+                {row.map((cell, ci) => {
+                  if (!cell) return <div key={ci} className="p-0.5"><div className="w-8 h-8" /></div>;
+                  const iso = toISO(cell);
+                  const isAvailable = availableSet.has(iso);
+                  const isSelected = iso === selectedDate;
+                  const isToday = iso === today;
+
+                  return (
+                    <div key={ci} className="p-0.5">
+                      <button
+                        disabled={!isAvailable || loading}
+                        onClick={() => {
+                          if (isAvailable) {
+                            onDateChange(iso);
+                            setOpen(false);
+                          }
+                        }}
+                        className={`
+                          w-8 h-8 rounded-lg text-[11px] font-medium transition-all relative flex items-center justify-center
+                          ${isSelected
+                            ? "bg-violet-500/30 text-violet-200 font-bold ring-1 ring-violet-500/50"
+                            : isAvailable
+                              ? "text-white hover:bg-white/[0.08] hover:text-violet-300 cursor-pointer"
+                              : "text-neutral-700 cursor-default"
+                          }
+                          ${isToday && !isSelected ? "ring-1 ring-white/20" : ""}
+                        `}
+                        title={isAvailable ? `View report: ${iso}` : isToday ? "Today (no report)" : undefined}
+                      >
+                        {cell.getDate()}
+                        {/* Dot indicator for available dates */}
+                        {isAvailable && !isSelected && (
+                          <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-violet-400/70" />
+                        )}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+
+          {/* Footer: report count + legend */}
+          <div className="border-t border-white/[0.06] px-3 py-2 flex items-center justify-between">
+            <span className="text-[9px] text-neutral-500">
+              {sortedDates.length} report{sortedDates.length !== 1 ? "s" : ""} available
+            </span>
+            <div className="flex items-center gap-2">
+              <span className="flex items-center gap-1 text-[9px] text-neutral-600">
+                <span className="w-1.5 h-1.5 rounded-full bg-violet-400/70 inline-block" /> has data
+              </span>
+            </div>
+          </div>
         </div>
       )}
     </div>
