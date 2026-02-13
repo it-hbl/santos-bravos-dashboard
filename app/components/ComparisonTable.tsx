@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 interface TableRow {
   metric: string;
@@ -44,12 +44,20 @@ export default function ComparisonTable({ rows }: { rows: TableRow[] }) {
   const [sortKey, setSortKey] = useState<SortKey>("changePct");
   const [sortAsc, setSortAsc] = useState(false);
   const [filterCat, setFilterCat] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
 
   if (rows.length === 0) return null;
 
   const categories = Array.from(new Set(rows.map(r => r.category)));
 
-  const filtered = filterCat ? rows.filter(r => r.category === filterCat) : rows;
+  const filtered = useMemo(() => {
+    let result = filterCat ? rows.filter(r => r.category === filterCat) : rows;
+    if (search.trim()) {
+      const q = search.toLowerCase().trim();
+      result = result.filter(r => r.metric.toLowerCase().includes(q) || r.category.toLowerCase().includes(q));
+    }
+    return result;
+  }, [rows, filterCat, search]);
 
   const sorted = [...filtered].sort((a, b) => {
     let av: number | string, bv: number | string;
@@ -109,6 +117,30 @@ export default function ComparisonTable({ rows }: { rows: TableRow[] }) {
         })}
       </div>
 
+      {/* Search input */}
+      <div className="mb-3 relative">
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search metrics…"
+          className="w-full sm:w-64 bg-white/[0.03] border border-white/[0.08] rounded-lg px-3 py-1.5 pl-8 text-xs text-neutral-300 placeholder-neutral-600 focus:outline-none focus:border-violet-500/40 focus:ring-1 focus:ring-violet-500/20 transition-colors"
+        />
+        <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" strokeLinecap="round" />
+        </svg>
+        {search && (
+          <button
+            onClick={() => setSearch("")}
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-neutral-600 hover:text-neutral-400 transition-colors"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path d="M6 18L18 6M6 6l12 12" strokeLinecap="round" />
+            </svg>
+          </button>
+        )}
+      </div>
+
       {/* Table */}
       <div className="overflow-x-auto -mx-2">
         <table className="w-full text-sm">
@@ -137,7 +169,7 @@ export default function ComparisonTable({ rows }: { rows: TableRow[] }) {
               return (
                 <tr
                   key={`${row.metric}-${i}`}
-                  className="border-t border-white/[0.03] hover:bg-white/[0.02] transition-colors group"
+                  className={`border-t border-white/[0.03] hover:bg-white/[0.04] transition-colors group ${i % 2 === 1 ? "bg-white/[0.015]" : ""}`}
                 >
                   <td className="py-2.5 px-2">
                     <div className="flex items-center gap-2">
@@ -179,9 +211,16 @@ export default function ComparisonTable({ rows }: { rows: TableRow[] }) {
         </table>
       </div>
 
+      {/* Empty state */}
+      {sorted.length === 0 && (
+        <div className="py-8 text-center text-neutral-600 text-xs">
+          No metrics match {search ? `"${search}"` : "this filter"}
+        </div>
+      )}
+
       {/* Summary row */}
       <div className="mt-3 pt-3 border-t border-white/[0.05] flex items-center justify-between text-[10px] text-neutral-500">
-        <span>{sorted.length} metric{sorted.length !== 1 ? "s" : ""} · sorted by {sortKey === "changePct" ? "% change" : sortKey}{sortAsc ? " (asc)" : " (desc)"}</span>
+        <span>{sorted.length} metric{sorted.length !== 1 ? "s" : ""}{search ? ` matching "${search}"` : ""} · sorted by {sortKey === "changePct" ? "% change" : sortKey}{sortAsc ? " (asc)" : " (desc)"}</span>
         <div className="flex items-center gap-3">
           <span className="text-emerald-400">{sorted.filter(r => (r.changePct ?? 0) > 0).length} ↑</span>
           <span className="text-red-400">{sorted.filter(r => (r.changePct ?? 0) < 0).length} ↓</span>
