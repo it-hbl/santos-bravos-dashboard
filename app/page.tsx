@@ -96,6 +96,7 @@ const ShareOfVoice = dynamic(() => import("./components/ShareOfVoice"), { ssr: f
 const CulturalAffinity = dynamic(() => import("./components/CulturalAffinity"), { ssr: false });
 const MetricAlerts = dynamic(() => import("./components/MetricAlerts"), { ssr: false });
 const PrintQR = dynamic(() => import("./components/PrintQR"), { ssr: false });
+const SectionDivider = dynamic(() => import("./components/SectionDivider"), { ssr: false });
 
 /** Extract short date like "2/9/26" from "February 9, 2026" or ISO date */
 function shortDate(dateStr: string): string {
@@ -1039,6 +1040,9 @@ function Dashboard() {
         </AnimatedSection>
         </SectionErrorBoundary>
 
+        {/* ── Divider: Executive Summary → Performance Data ── */}
+        <SectionDivider label="Performance Data" variant="violet" />
+
         {/* Growth Velocity */}
         <div id="velocity" className="scroll-mt-16" />
         <SectionErrorBoundary sectionName="Growth Velocity">
@@ -1347,6 +1351,9 @@ function Dashboard() {
         </AnimatedSection>
         </SectionErrorBoundary>
 
+        {/* ── Divider: Streaming → Artist & Community ── */}
+        <SectionDivider label="Artist & Community" variant="cyan" />
+
         {/* Section 4: Band Member Followers */}
         <div id="members" className="scroll-mt-16 print-page-break" />
         <SectionErrorBoundary sectionName="Band Members">
@@ -1510,6 +1517,9 @@ function Dashboard() {
         </section>
         </AnimatedSection>
         </SectionErrorBoundary>
+
+        {/* ── Divider: Community → Media Intelligence ── */}
+        <SectionDivider label="Media Intelligence" variant="emerald" />
 
         {/* Section 6: PR & Media */}
         <div id="pr" className="scroll-mt-16 print-page-break" />

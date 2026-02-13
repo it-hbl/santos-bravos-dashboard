@@ -583,6 +583,15 @@ a:focus-visible {
   animation: loadingBar 1.5s ease-in-out infinite;
 }
 
+/* Section divider shimmer — slow left-to-right sweep */
+@keyframes dividerShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.section-divider-shimmer {
+  animation: dividerShimmer 8s ease-in-out infinite;
+}
+
 /* Safe area for mobile bottom nav (notched devices) */
 .safe-area-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0px);
