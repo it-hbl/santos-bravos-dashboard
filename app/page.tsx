@@ -1657,13 +1657,13 @@ function Dashboard() {
               <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3">Top Hashtags (X / Twitter)</p>
               <div className="space-y-2">
                 {liveSentiment.topHashtags.map((h: any) => (
-                  <div key={h.tag} className="flex items-center gap-3">
-                    <span className="text-sm text-pink-400 flex-1 truncate">{h.tag}</span>
+                  <a key={h.tag} href={`https://x.com/search?q=${encodeURIComponent(h.tag)}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 group">
+                    <span className="text-sm text-pink-400 group-hover:text-pink-300 transition-colors flex-1 truncate">{h.tag}</span>
                     <div className="w-20 bg-white/[0.04] rounded-full h-1.5 overflow-hidden">
                       <div className="bg-pink-500 h-full rounded-full" style={{ width: `${(h.count / (liveSentiment.topHashtags[0]?.count || 1)) * 100}%` }} />
                     </div>
                     <span className="text-[10px] font-bold tabular-nums text-neutral-400 w-14 text-right">{h.pct}%</span>
-                  </div>
+                  </a>
                 ))}
               </div>
             </div>
