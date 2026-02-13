@@ -733,10 +733,10 @@ function Dashboard() {
             </div>
             <div className="grid grid-cols-2 gap-3 flex-shrink-0">
               {[
-                { label: "Listeners", value: liveListeners, prior: bp.spotifyMonthlyListeners.prior, color: "#1DB954", accent: "text-spotify", tooltip: "Monthly Listeners", target: 500000, targetLabel: "500K" },
-                { label: "SNS", value: liveSocialMedia.totalFootprint.current, prior: liveSocialMedia.totalFootprint.prior, color: "#00F2EA", accent: "text-tiktok", tooltip: "SNS Footprint", target: 2000000, targetLabel: "2M" },
-                { label: "Streams", value: bp.totalCrossPlatformStreams.current, prior: bp.totalCrossPlatformStreams.prior, color: "#FFFFFF", accent: "text-white", tooltip: "Cross-Platform Streams", target: 50000000, targetLabel: "50M" },
-                { label: "SPL", value: bp.spl.current, prior: bp.spl.prior ?? null, color: "#FBBF24", accent: "text-amber-400", isSpl: true, tooltip: "SPL", target: null, targetLabel: null },
+                { label: "Listeners", value: liveListeners, prior: bp.spotifyMonthlyListeners.prior, color: "#1DB954", accent: "text-spotify", tooltip: "Monthly Listeners", target: 500000, targetLabel: "500K", sectionId: "business" },
+                { label: "SNS", value: liveSocialMedia.totalFootprint.current, prior: liveSocialMedia.totalFootprint.prior, color: "#00F2EA", accent: "text-tiktok", tooltip: "SNS Footprint", target: 2000000, targetLabel: "2M", sectionId: "social" },
+                { label: "Streams", value: bp.totalCrossPlatformStreams.current, prior: bp.totalCrossPlatformStreams.prior, color: "#FFFFFF", accent: "text-white", tooltip: "Cross-Platform Streams", target: 50000000, targetLabel: "50M", sectionId: "charts" },
+                { label: "SPL", value: bp.spl.current, prior: bp.spl.prior ?? null, color: "#FBBF24", accent: "text-amber-400", isSpl: true, tooltip: "SPL", target: null, targetLabel: null, sectionId: "audience" },
               ].map(card => {
                 const targetPct = card.target ? Math.min(100, (card.value / card.target) * 100) : null;
                 // Compute daily velocity between prior and current report dates
@@ -752,7 +752,17 @@ function Dashboard() {
                   ? Math.round((card.value - card.prior) / daysBetween)
                   : null;
                 return (
-                <GlowCard key={card.label} className="glass-hybe glass-hybe-card hero-card-enter rounded-xl p-3 text-center min-w-[120px] cursor-default" glowColor={`${card.color}20`} glowSize={200}>
+                <GlowCard
+                  key={card.label}
+                  className={`glass-hybe glass-hybe-card hero-card-enter rounded-xl p-3 text-center min-w-[120px] ${card.sectionId ? "cursor-pointer" : "cursor-default"}`}
+                  glowColor={`${card.color}20`}
+                  glowSize={200}
+                  onClick={card.sectionId ? () => {
+                    const el = document.getElementById(card.sectionId!);
+                    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                  } : undefined}
+                  title={card.sectionId ? `Jump to ${card.label} section` : undefined}
+                >
                   <div className="absolute bottom-0 right-0 opacity-40 pointer-events-none">
                     <Sparkline
                       data={trendPoints(card.prior, card.isSpl ? card.value * 1000 : card.value)}

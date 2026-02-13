@@ -7,6 +7,8 @@ interface GlowCardProps {
   className?: string;
   glowColor?: string; // CSS color for the glow, e.g. "rgba(139, 92, 246, 0.15)"
   glowSize?: number;  // px radius of the glow
+  onClick?: () => void;
+  title?: string;
 }
 
 /**
@@ -19,6 +21,8 @@ export default function GlowCard({
   className = "",
   glowColor = "rgba(139, 92, 246, 0.12)",
   glowSize = 250,
+  onClick,
+  title,
 }: GlowCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const glowRef = useRef<HTMLDivElement>(null);
@@ -47,6 +51,11 @@ export default function GlowCard({
       className={`relative overflow-hidden ${className}`}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
+      onClick={onClick}
+      title={title}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={onClick ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); } } : undefined}
     >
       {/* Glow layer */}
       <div
