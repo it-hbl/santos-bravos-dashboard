@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 interface TickerMetric {
   label: string;
@@ -11,6 +11,28 @@ interface TickerMetric {
   sectionId?: string;
   sparkData?: number[];
 }
+
+const TICKER_SECTIONS = [
+  { id: "hero", label: "Overview", icon: "🏠" },
+  { id: "comparison", label: "All Metrics", icon: "📋" },
+  { id: "highlights", label: "Highlights", icon: "⚡" },
+  { id: "score", label: "Score", icon: "⚡" },
+  { id: "milestones", label: "Goals", icon: "🎯" },
+  { id: "velocity", label: "Growth", icon: "📊" },
+  { id: "historical", label: "History", icon: "📈" },
+  { id: "business", label: "§1 Business", icon: "1" },
+  { id: "daily", label: "Daily", icon: "⚡" },
+  { id: "charts", label: "Charts", icon: "📈" },
+  { id: "social", label: "§2 Social", icon: "2" },
+  { id: "virality", label: "§3 Virality", icon: "3" },
+  { id: "track-radar", label: "Tracks", icon: "🎯" },
+  { id: "members", label: "§4 Members", icon: "4" },
+  { id: "geo", label: "§5 Geo", icon: "5" },
+  { id: "audience", label: "Audience", icon: "📊" },
+  { id: "pr", label: "§6 PR", icon: "6" },
+  { id: "sentiment", label: "§7 Sentiment", icon: "7" },
+  { id: "section-cultural", label: "§8 Culture", icon: "8" },
+];
 
 /** Tiny inline SVG sparkline for the ticker bar */
 function MicroSparkline({ data, color, positive }: { data: number[]; color: string; positive?: boolean }) {
@@ -42,11 +64,34 @@ function MicroSparkline({ data, color, positive }: { data: number[]; color: stri
 
 export default function StickyTicker({ metrics }: { metrics: TickerMetric[] }) {
   const [visible, setVisible] = useState(false);
+  const [activeSection, setActiveSection] = useState<string | null>(null);
+  const prevSectionRef = useRef<string | null>(null);
+  const [animating, setAnimating] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
       // Show after scrolling past hero (~500px)
       setVisible(window.scrollY > 500);
+
+      // Detect current section
+      const threshold = window.innerHeight * 0.35;
+      let current = "hero";
+      for (const s of TICKER_SECTIONS) {
+        const el = document.getElementById(s.id);
+        if (el && el.getBoundingClientRect().top <= threshold) current = s.id;
+      }
+      const section = TICKER_SECTIONS.find(s => s.id === current);
+      if (section && current !== "hero") {
+        if (prevSectionRef.current !== current) {
+          prevSectionRef.current = current;
+          setAnimating(true);
+          setTimeout(() => setAnimating(false), 300);
+        }
+        setActiveSection(section.label);
+      } else {
+        setActiveSection(null);
+        prevSectionRef.current = null;
+      }
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
@@ -62,7 +107,17 @@ export default function StickyTicker({ metrics }: { metrics: TickerMetric[] }) {
       }`}
     >
       <div className="bg-black/80 backdrop-blur-xl border-b border-white/[0.06]">
-        <div className="max-w-7xl mx-auto px-4 py-1.5 flex items-center justify-center gap-3 sm:gap-6 overflow-x-auto scrollbar-hide">
+        <div className="max-w-7xl mx-auto px-4 py-1.5 flex items-center gap-3 sm:gap-6 overflow-x-auto scrollbar-hide">
+          {/* Active section breadcrumb */}
+          {activeSection && (
+            <div className={`flex items-center gap-1.5 flex-shrink-0 transition-all duration-300 ${animating ? "opacity-0 translate-x-1" : "opacity-100 translate-x-0"}`}>
+              <span className="text-[9px] font-bold text-violet-400 uppercase tracking-wider whitespace-nowrap">
+                📍 {activeSection}
+              </span>
+              <div className="w-px h-3 bg-violet-500/30" />
+            </div>
+          )}
+          <div className="flex items-center justify-center gap-3 sm:gap-6 flex-1">
           {metrics.map((m, i) => {
             const Wrapper = m.sectionId ? "button" : "div";
             const wrapperProps = m.sectionId
@@ -98,6 +153,7 @@ export default function StickyTicker({ metrics }: { metrics: TickerMetric[] }) {
               </Wrapper>
             );
           })}
+          </div>
         </div>
       </div>
     </div>
