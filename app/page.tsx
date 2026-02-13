@@ -95,6 +95,7 @@ const ComparisonTable = dynamic(() => import("./components/ComparisonTable"), { 
 const ShareOfVoice = dynamic(() => import("./components/ShareOfVoice"), { ssr: false });
 const CulturalAffinity = dynamic(() => import("./components/CulturalAffinity"), { ssr: false });
 const MetricAlerts = dynamic(() => import("./components/MetricAlerts"), { ssr: false });
+const PrintQR = dynamic(() => import("./components/PrintQR"), { ssr: false });
 
 /** Extract short date like "2/9/26" from "February 9, 2026" or ISO date */
 function shortDate(dateStr: string): string {
@@ -1824,6 +1825,7 @@ function Dashboard() {
           </div>
           <p className="text-neutral-700 text-[10px] uppercase tracking-[0.3em]">Artist Intelligence Platform · {reportDate}</p>
           <p className="text-neutral-800 text-[10px]">Chartmetric · Spotify for Artists · YouTube Data API · Cobrand · Weverse · Instagram · Meltwater</p>
+          <PrintQR reportDate={reportDate} />
           <div className="mt-4">
             <DataSourcesStatus />
           </div>

@@ -499,6 +499,11 @@ a:focus-visible {
   .print-header {
     display: block !important;
   }
+
+  /* Print QR code block — visible only in print */
+  .print-qr-block {
+    display: flex !important;
+  }
 }
 
 /* ─── Reduced Motion Accessibility ─── */
