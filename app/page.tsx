@@ -566,7 +566,24 @@ function Dashboard() {
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-blue-500 flex items-center justify-center text-sm font-black text-white">{dayNumber(reportDate)}</div>
               <div>
                 <p className="text-white font-bold text-sm">Daily Report — {reportDate}</p>
-                <p className="text-[10px] text-neutral-500">Compared vs prior report: {priorDate}</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-[10px] text-neutral-500">Compared vs prior report: {priorDate}</p>
+                  {(() => {
+                    try {
+                      const cur = new Date(reportDate);
+                      const pri = new Date(priorDate);
+                      if (!isNaN(cur.getTime()) && !isNaN(pri.getTime())) {
+                        const days = Math.round((cur.getTime() - pri.getTime()) / 86400000);
+                        if (days > 0) return (
+                          <span className="text-[9px] font-bold text-violet-400 bg-violet-500/10 border border-violet-500/20 rounded-full px-2 py-0.5">
+                            {days}d window
+                          </span>
+                        );
+                      }
+                    } catch {}
+                    return null;
+                  })()}
+                </div>
               </div>
             </div>
             <div className="text-right">
@@ -574,7 +591,18 @@ function Dashboard() {
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse-slow" />
                 <span className="text-[10px] text-emerald-400 font-semibold">DATA CURRENT</span>
               </div>
-              <p className="text-[9px] text-neutral-600 mt-0.5">Auto-updated via API pipeline</p>
+              <p className="text-[9px] text-neutral-600 mt-0.5">
+                {(() => {
+                  try {
+                    const d = new Date(reportDate);
+                    if (!isNaN(d.getTime())) {
+                      const dayName = d.toLocaleDateString("en-US", { weekday: "long" });
+                      return `${dayName} report · Supabase-backed`;
+                    }
+                  } catch {}
+                  return "Auto-updated via API pipeline";
+                })()}
+              </p>
             </div>
           </div>
 
