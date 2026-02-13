@@ -37,7 +37,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="theme-color" content="#7c3aed" />
       </head>
       <body className="antialiased min-h-screen">
-        <AuthProvider>{children}</AuthProvider>
+        <div className="ambient-orbs" aria-hidden="true"><div className="ambient-orb-3" /></div>
+        <div className="relative z-10">
+          <AuthProvider>{children}</AuthProvider>
+        </div>
       </body>
     </html>
   );
