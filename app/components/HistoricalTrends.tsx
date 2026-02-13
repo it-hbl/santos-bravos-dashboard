@@ -20,6 +20,8 @@ interface DataPoint {
   streams: number;
   sns: number;
   followers: number;
+  mentions: number;
+  netSentiment: number;
 }
 
 const METRICS = [
@@ -27,6 +29,8 @@ const METRICS = [
   { key: "streams", label: "Cross-Platform Streams", color: "#8b5cf6", format: formatM, axis: "right" as const },
   { key: "sns", label: "SNS Footprint", color: "#06b6d4", format: formatK, axis: "left" as const },
   { key: "followers", label: "Spotify Followers", color: "#f59e0b", format: formatK, axis: "left" as const },
+  { key: "mentions", label: "PR Mentions", color: "#a78bfa", format: formatK, axis: "left" as const },
+  { key: "netSentiment", label: "Net Sentiment", color: "#f472b6", format: formatSent, axis: "left" as const },
 ] as const;
 
 function formatK(n: number) {
@@ -39,6 +43,10 @@ function formatM(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
   if (n >= 1_000) return (n / 1_000).toFixed(1) + "K";
   return n.toLocaleString();
+}
+
+function formatSent(n: number) {
+  return (n >= 0 ? "+" : "") + n.toFixed(0);
 }
 
 function CustomTooltip({ active, payload, label, normalized, rawData }: any) {
@@ -85,24 +93,46 @@ export default function HistoricalTrends() {
   const [data, setData] = useState<DataPoint[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeMetrics, setActiveMetrics] = useState<Set<string>>(
-    new Set(["listeners", "streams", "sns", "followers"])
+    new Set(["listeners", "streams", "sns", "followers", "mentions"])
   );
   const [normalizedView, setNormalizedView] = useState(false);
 
   useEffect(() => {
     async function fetchHistory() {
       try {
-        const { data: reports, error } = await supabase
-          .from("daily_reports")
-          .select(
-            "report_date, spotify_monthly_listeners, total_cross_platform_streams, total_sns_footprint, spotify_followers"
-          )
-          .order("report_date", { ascending: true });
+        const [
+          { data: reports, error },
+          { data: prData },
+          { data: sentData },
+        ] = await Promise.all([
+          supabase
+            .from("daily_reports")
+            .select("report_date, spotify_monthly_listeners, total_cross_platform_streams, total_sns_footprint, spotify_followers")
+            .order("report_date", { ascending: true }),
+          supabase
+            .from("pr_media")
+            .select("report_date, total_mentions")
+            .order("report_date", { ascending: true }),
+          supabase
+            .from("fan_sentiment")
+            .select("report_date, positive_pct, negative_pct")
+            .order("report_date", { ascending: true }),
+        ]);
 
         if (error || !reports || reports.length === 0) {
           setLoading(false);
           return;
         }
+
+        // Build lookup maps for PR and sentiment by date
+        const prByDate: Record<string, number> = {};
+        (prData || []).forEach((r: any) => {
+          prByDate[r.report_date] = r.total_mentions || 0;
+        });
+        const sentByDate: Record<string, number> = {};
+        (sentData || []).forEach((r: any) => {
+          sentByDate[r.report_date] = (r.positive_pct || 0) - (r.negative_pct || 0);
+        });
 
         const points: DataPoint[] = reports.map((r: any) => {
           const d = new Date(r.report_date + "T12:00:00");
@@ -113,6 +143,8 @@ export default function HistoricalTrends() {
             streams: r.total_cross_platform_streams || 0,
             sns: r.total_sns_footprint || 0,
             followers: r.spotify_followers || 0,
+            mentions: prByDate[r.report_date] || 0,
+            netSentiment: sentByDate[r.report_date] || 0,
           };
         });
 
@@ -162,6 +194,8 @@ export default function HistoricalTrends() {
     streams: first.streams > 0 ? ((d.streams - first.streams) / first.streams) * 100 : 0,
     sns: first.sns > 0 ? ((d.sns - first.sns) / first.sns) * 100 : 0,
     followers: first.followers > 0 ? ((d.followers - first.followers) / first.followers) * 100 : 0,
+    mentions: first.mentions > 0 ? ((d.mentions - first.mentions) / first.mentions) * 100 : 0,
+    netSentiment: first.netSentiment !== 0 ? ((d.netSentiment - first.netSentiment) / Math.abs(first.netSentiment)) * 100 : 0,
   }));
 
   const chartData = normalizedView ? normalizedData : data;
