@@ -18,12 +18,16 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   );
 };
 
-export function GeoProgressBars({ data, color = "#8B5CF6" }: { data: { name: string; listeners: number; flag?: string }[]; color?: string }) {
+export function GeoProgressBars({ data, color = "#8B5CF6" }: { data: { name: string; listeners: number; flag?: string; priorListeners?: number | null }[]; color?: string }) {
   const max = data[0]?.listeners || 1;
   return (
     <div className="space-y-3">
       {data.map((item, i) => {
         const pct = (item.listeners / max) * 100;
+        const prior = item.priorListeners;
+        const hasGrowth = prior != null && prior > 0;
+        const change = hasGrowth ? item.listeners - prior! : 0;
+        const changePct = hasGrowth ? ((change / prior!) * 100).toFixed(1) : null;
         return (
           <div key={item.name} className="group">
             <div className="flex items-center justify-between mb-1">
@@ -31,8 +35,20 @@ export function GeoProgressBars({ data, color = "#8B5CF6" }: { data: { name: str
                 <span className="text-[10px] text-neutral-600 w-4 text-right font-mono">{i + 1}</span>
                 {item.flag && <span className="text-sm">{item.flag}</span>}
                 <span className="text-sm text-neutral-300 group-hover:text-white transition-colors">{item.name}</span>
+                {changePct !== null && change !== 0 && (
+                  <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full ${change > 0 ? 'text-emerald-400 bg-emerald-400/10' : 'text-red-400 bg-red-400/10'}`}>
+                    {change > 0 ? '↑' : '↓'}{Math.abs(Number(changePct))}%
+                  </span>
+                )}
               </div>
-              <span className="text-sm font-bold tabular-nums text-white">{fmt(item.listeners)}</span>
+              <div className="flex items-center gap-2">
+                {hasGrowth && change !== 0 && (
+                  <span className={`text-[9px] tabular-nums ${change > 0 ? 'text-emerald-500/60' : 'text-red-500/60'}`}>
+                    {change > 0 ? '+' : ''}{fmt(change)}
+                  </span>
+                )}
+                <span className="text-sm font-bold tabular-nums text-white">{fmt(item.listeners)}</span>
+              </div>
             </div>
             <div className="w-full h-2 bg-white/[0.04] rounded-full overflow-hidden">
               <div

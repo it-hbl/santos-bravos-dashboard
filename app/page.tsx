@@ -1435,7 +1435,7 @@ function Dashboard() {
         <SectionErrorBoundary sectionName="Geo Signals">
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
-          <CollapsibleSection id="geo-signals" number="5" title="Geo Signals" subtitle="Spotify · Jan 12 – Feb 8, 2026 (28 Days)" color="bg-gradient-to-br from-blue-500 to-indigo-400" collapsedSummary={`${geoCountries.length}+ countries · #1 ${geoCountries[0]?.flag} ${geoCountries[0]?.name} (${fmt(geoCountries[0]?.listeners)}) · ${geoCities.length} top cities`}>
+          <CollapsibleSection id="geo-signals" number="5" title="Geo Signals" subtitle={`Spotify · 28-Day Window · ${sectionDate(reportDate)}`} color="bg-gradient-to-br from-blue-500 to-indigo-400" collapsedSummary={`${geoCountries.length}+ countries · #1 ${geoCountries[0]?.flag} ${geoCountries[0]?.name} (${fmt(geoCountries[0]?.listeners)}) · ${geoCities.length} top cities`}>
           {/* Summary cards */}
           <div className="grid grid-cols-3 gap-3 mb-6">
             <div className="bg-white/[0.02] rounded-xl p-3 border border-white/[0.04] text-center">

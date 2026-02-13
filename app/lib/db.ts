@@ -85,8 +85,9 @@ export async function getDashboardData(date: string): Promise<DashboardData> {
     // Fetch prior report for fields that don't have _prior columns
     let priorReport: any = null;
     let priorMembers: any[] = [];
+    let priorGeoCountries: any[] = [];
     if (priorDateRaw) {
-      const [{ data: pr }, { data: pm }] = await Promise.all([
+      const [{ data: pr }, { data: pm }, { data: pg }] = await Promise.all([
         supabase
           .from('daily_reports')
           .select('spotify_followers, total_member_followers, spl')
@@ -96,9 +97,14 @@ export async function getDashboardData(date: string): Promise<DashboardData> {
           .from('member_followers')
           .select('member_name, followers')
           .eq('report_date', priorDateRaw),
+        supabase
+          .from('geo_countries')
+          .select('country_name, listeners')
+          .eq('report_date', priorDateRaw),
       ]);
       priorReport = pr;
       priorMembers = pm || [];
+      priorGeoCountries = pg || [];
     }
 
     // Build businessPerformance
@@ -202,11 +208,15 @@ export async function getDashboardData(date: string): Promise<DashboardData> {
         };
       }),
       totalMemberFollowers: { current: report.total_member_followers || 0, prior: priorReport?.total_member_followers ?? null },
-      geoCountries: (countries || []).map((c: any) => ({
-        name: c.country_name,
-        listeners: c.listeners,
-        flag: c.flag || '',
-      })),
+      geoCountries: (countries || []).map((c: any) => {
+        const prior = priorGeoCountries.find((p: any) => p.country_name === c.country_name);
+        return {
+          name: c.country_name,
+          listeners: c.listeners,
+          flag: c.flag || '',
+          priorListeners: prior?.listeners ?? null,
+        };
+      }),
       geoCities: (cities || []).map((c: any) => ({
         name: c.city_name,
         listeners: c.listeners,
