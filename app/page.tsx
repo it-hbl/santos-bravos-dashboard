@@ -1387,11 +1387,23 @@ function Dashboard() {
                     rel="noopener noreferrer"
                     className="block bg-white/[0.02] rounded-xl p-4 text-center border border-white/[0.04] hover:border-pink-500/30 hover:-translate-y-1 hover:shadow-lg hover:shadow-pink-500/5 transition-all group"
                   >
-                    <div className="relative">
-                      <div className={`w-12 h-12 mx-auto rounded-lg bg-gradient-to-br ${gradients[i]} flex items-center justify-center text-sm font-bold text-white mb-2 group-hover:scale-105 transition-transform`}>
+                    <div className="relative w-16 h-16 mx-auto mb-2">
+                      {/* SVG progress ring showing follower share */}
+                      <svg className="absolute inset-0 w-16 h-16 -rotate-90" viewBox="0 0 64 64">
+                        <circle cx="32" cy="32" r="28" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="3" />
+                        <circle
+                          cx="32" cy="32" r="28" fill="none"
+                          stroke={["#8B5CF6","#06B6D4","#EC4899","#F59E0B","#10B981"][i]}
+                          strokeWidth="3" strokeLinecap="round"
+                          strokeDasharray={`${sharePct * 1.76} ${176 - sharePct * 1.76}`}
+                          className="transition-all duration-1000"
+                          style={{ filter: `drop-shadow(0 0 4px ${["#8B5CF680","#06B6D480","#EC489980","#F59E0B80","#10B98180"][i]})` }}
+                        />
+                      </svg>
+                      <div className={`absolute inset-[6px] rounded-lg bg-gradient-to-br ${gradients[i]} flex items-center justify-center text-sm font-bold text-white group-hover:scale-105 transition-transform`}>
                         {m.country}
                       </div>
-                      <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-white/[0.06] flex items-center justify-center text-[9px] font-black text-neutral-500">#{i + 1}</span>
+                      <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-white/[0.06] flex items-center justify-center text-[9px] font-black text-neutral-500 z-10">#{i + 1}</span>
                     </div>
                     <p className="font-bold text-xs text-white group-hover:text-pink-300 transition-colors">{m.name}</p>
                     <p className="text-[9px] text-neutral-600 group-hover:text-neutral-400 transition-colors">{m.handle}</p>
