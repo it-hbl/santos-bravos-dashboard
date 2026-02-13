@@ -3,6 +3,7 @@ import { prMedia, fanSentiment } from "@/app/lib/data";
 
 const MW_TOKEN = "CwyOVYu0hn3hdXQ1CFPCqr5LLRVkuPNjn6tSAGtZ";
 const SEARCH_ID = "27861227";
+const HYBE_LATIN_SEARCH_ID = "27924306"; // HBL | Hybe Latin America (parent brand)
 const BASE = "https://api.meltwater.com";
 
 // Rolling 7-day window
@@ -58,7 +59,7 @@ export async function GET() {
     // Fetch analytics + keyphrases + hashtags + sources in parallel
     // Also fetch 14-day analytics for WoW comparison
     const { start: start14, end: end14 } = get14DayRange();
-    const [analyticsRes, keyphrasesRes, hashtagsRes, sourcesRes, entitiesRes, sharedLinksRes, mentionsRes, topicsRes, locationsRes, analytics14Res] = await Promise.all([
+    const [analyticsRes, keyphrasesRes, hashtagsRes, sourcesRes, entitiesRes, sharedLinksRes, mentionsRes, topicsRes, locationsRes, analytics14Res, hybeLatinRes] = await Promise.all([
       mwGet(`/v3/analytics/${SEARCH_ID}`),
       mwGet(`/v3/analytics/${SEARCH_ID}/top_keyphrases`, { source: "twitter" }),
       mwGet(`/v3/analytics/${SEARCH_ID}/top_tags`, { source: "twitter" }),
@@ -71,6 +72,7 @@ export async function GET() {
       fetch(`${BASE}/v3/analytics/${SEARCH_ID}?start=${start14}&end=${end14}&tz=America/Mexico_City`, {
         headers: { apikey: MW_TOKEN, Accept: "application/json" },
       }).then(r => r.ok ? r.json() : null).catch(() => null),
+      mwGet(`/v3/analytics/${HYBE_LATIN_SEARCH_ID}`).catch(() => null),
     ]);
 
     const analytics = analyticsRes;
@@ -268,11 +270,28 @@ export async function GET() {
       total: d.mentions,
     }));
 
+    // Parse HYBE Latin America (parent brand) analytics for Share of Voice
+    let hybeLatin: { totalMentions: number; uniqueAuthors: number; sentiment: { positive: number; negative: number; neutral: number } } | null = null;
+    if (hybeLatinRes) {
+      const hlSent = hybeLatinRes.sentiment || {};
+      const hlTotal = (hlSent.positive || 0) + (hlSent.negative || 0) + (hlSent.neutral || 0) || 1;
+      hybeLatin = {
+        totalMentions: hybeLatinRes.volume ?? 0,
+        uniqueAuthors: hybeLatinRes.unique_authors ?? 0,
+        sentiment: {
+          positive: parseFloat(((hlSent.positive || 0) / hlTotal * 100).toFixed(1)),
+          negative: parseFloat(((hlSent.negative || 0) / hlTotal * 100).toFixed(1)),
+          neutral: parseFloat(((hlSent.neutral || 0) / hlTotal * 100).toFixed(1)),
+        },
+      };
+    }
+
     return NextResponse.json({
       live: true,
       data: {
         prMedia: { period, totalMentions, perDay, uniqueAuthors, timeSeries, topCountries, topKeyphrases, topSources, topMentions, topTopics, topCities, topLanguages, wow },
         fanSentiment: { period, positive, negative, neutral, topHashtags, topEntities, topSharedLinks, sentimentTimeline },
+        hybeLatin,
         fetchedAt: new Date().toISOString(),
       },
     });

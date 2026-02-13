@@ -89,6 +89,7 @@ const NotableChanges = dynamic(() => import("./components/NotableChanges"), { ss
 const WeeklyWins = dynamic(() => import("./components/WeeklyWins"), { ssr: false });
 const RiskRadar = dynamic(() => import("./components/RiskRadar"), { ssr: false });
 const ComparisonTable = dynamic(() => import("./components/ComparisonTable"), { ssr: false });
+const ShareOfVoice = dynamic(() => import("./components/ShareOfVoice"), { ssr: false });
 
 /** Extract short date like "2/9/26" from "February 9, 2026" or ISO date */
 function shortDate(dateStr: string): string {
@@ -1408,6 +1409,11 @@ function Dashboard() {
                 <p className={`text-xl font-extrabold mt-1 ${s.accent}`}><CountUpValue value={s.value} /></p>
               </div>
             ))}
+          </div>
+          {/* Share of Voice vs HYBE Latin America */}
+          <div className="bg-white/[0.02] rounded-xl p-4 border border-white/[0.04] mb-5">
+            <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-3">📊 Share of Voice — Santos Bravos vs HYBE Latin America</p>
+            <ShareOfVoice />
           </div>
           <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-2">Daily Mention Volume</p>
           <MentionsChart data={livePR.timeSeries} />
