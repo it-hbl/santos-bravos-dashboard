@@ -4,19 +4,26 @@ import { useState, useEffect, useRef } from "react";
 
 const sections = [
   { id: "hero", icon: "🏠", label: "Top" },
-  { id: "business", icon: "📊", label: "Perf" },
+  { id: "comparison", icon: "📋", label: "Table" },
+  { id: "highlights", icon: "💡", label: "Highlights" },
+  { id: "score", icon: "⚡", label: "Score" },
+  { id: "milestones", icon: "🏆", label: "Goals" },
+  { id: "velocity", icon: "📊", label: "Growth" },
+  { id: "historical", icon: "📈", label: "History" },
+  { id: "business", icon: "1️⃣", label: "Perf" },
+  { id: "stream-projections", icon: "🚀", label: "Velocity" },
   { id: "daily", icon: "⚡", label: "Daily" },
-  { id: "streaming", icon: "🎵", label: "Charts" },
+  { id: "charts", icon: "🎵", label: "Charts" },
+  { id: "release-pacing", icon: "🏁", label: "Pacing" },
   { id: "social", icon: "📱", label: "Social" },
   { id: "virality", icon: "🔥", label: "Virality" },
-  { id: "track-comparison", icon: "🎯", label: "Tracks" },
+  { id: "track-radar", icon: "🎯", label: "Tracks" },
   { id: "members", icon: "👥", label: "Members" },
   { id: "geo", icon: "🌎", label: "Geo" },
   { id: "audience", icon: "👂", label: "Audience" },
   { id: "pr", icon: "📰", label: "PR" },
   { id: "sentiment", icon: "💬", label: "Sentiment" },
-  { id: "performance", icon: "⚡", label: "Score" },
-  { id: "milestones", icon: "🏆", label: "Goals" },
+  { id: "section-cultural", icon: "🎭", label: "Culture" },
 ];
 
 export default function MobileNav() {

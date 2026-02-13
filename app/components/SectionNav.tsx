@@ -9,14 +9,17 @@ export interface SectionTrendData {
 
 const SECTIONS = [
   { id: "hero", label: "Overview", icon: "🏠", short: "Top" },
+  { id: "comparison", label: "All Metrics", icon: "📋", short: "Table" },
   { id: "highlights", label: "Key Highlights", icon: "⚡", short: "Highlights" },
   { id: "score", label: "Performance Score", icon: "⚡", short: "Score" },
   { id: "milestones", label: "Milestones", icon: "🎯", short: "Goals" },
   { id: "velocity", label: "Growth Velocity", icon: "📊", short: "Growth" },
   { id: "historical", label: "Historical Trends", icon: "📈", short: "History" },
   { id: "business", label: "Business Performance", icon: "1", short: "Business" },
+  { id: "stream-projections", label: "Stream Projections", icon: "🚀", short: "Velocity" },
   { id: "daily", label: "Daily Snapshot", icon: "⚡", short: "Daily" },
   { id: "charts", label: "Charts", icon: "📈", short: "Charts" },
+  { id: "release-pacing", label: "Release Pacing", icon: "🏁", short: "Pacing" },
   { id: "social", label: "Social Media", icon: "2", short: "Social" },
   { id: "virality", label: "Audio Virality", icon: "3", short: "Virality" },
   { id: "track-radar", label: "Track Comparison", icon: "🎯", short: "Radar" },
@@ -25,6 +28,7 @@ const SECTIONS = [
   { id: "audience", label: "Audience Deep Dive", icon: "📊", short: "Audience" },
   { id: "pr", label: "PR & Media", icon: "6", short: "PR" },
   { id: "sentiment", label: "Fan Sentiment", icon: "7", short: "Sentiment" },
+  { id: "section-cultural", label: "Cultural Affinity", icon: "8", short: "Culture" },
 ];
 
 export default function SectionNav({ trends }: { trends?: SectionTrendData }) {

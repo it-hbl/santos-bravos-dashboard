@@ -4,22 +4,26 @@ import { useEffect, useState, useCallback, useRef } from "react";
 
 const SECTIONS = [
   { id: "hero", label: "Overview", emoji: "🏠" },
-  { id: "highlights", label: "Highlights", emoji: "⭐" },
   { id: "comparison", label: "Metrics", emoji: "📋" },
+  { id: "highlights", label: "Highlights", emoji: "⭐" },
   { id: "score", label: "Score", emoji: "⚡" },
   { id: "milestones", label: "Milestones", emoji: "🎯" },
   { id: "velocity", label: "Velocity", emoji: "📊" },
   { id: "historical", label: "Trends", emoji: "📈" },
   { id: "business", label: "Business", emoji: "1" },
+  { id: "stream-projections", label: "Projections", emoji: "🚀" },
   { id: "daily", label: "Daily", emoji: "⚡" },
   { id: "charts", label: "Charts", emoji: "🎵" },
+  { id: "release-pacing", label: "Pacing", emoji: "🏁" },
   { id: "social", label: "Social", emoji: "2" },
   { id: "virality", label: "Virality", emoji: "3" },
+  { id: "track-radar", label: "Tracks", emoji: "🎯" },
   { id: "members", label: "Members", emoji: "4" },
   { id: "geo", label: "Geo", emoji: "5" },
   { id: "audience", label: "Audience", emoji: "📊" },
   { id: "pr", label: "PR", emoji: "6" },
   { id: "sentiment", label: "Sentiment", emoji: "7" },
+  { id: "section-cultural", label: "Culture", emoji: "8" },
 ];
 
 interface SectionPosition {

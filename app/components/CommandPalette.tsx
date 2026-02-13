@@ -37,6 +37,11 @@ export default function CommandPalette({ onRefresh }: { onRefresh?: () => void }
     { id: "audience", label: "Audience Deep Dive", category: "Sections", icon: "🎧", action: () => scrollTo("audience"), keywords: ["funnel", "listeners", "saves", "playlist"] },
     { id: "pr", label: "PR & Media", category: "Sections", icon: "📰", action: () => scrollTo("pr"), keywords: ["meltwater", "mentions", "press", "media", "news"] },
     { id: "sentiment", label: "Fan Sentiment", category: "Sections", icon: "💬", action: () => scrollTo("sentiment"), keywords: ["sentiment", "positive", "negative", "hashtags", "entities"] },
+    { id: "cultural", label: "Cultural Affinity", category: "Sections", icon: "🎭", action: () => scrollTo("section-cultural"), keywords: ["culture", "affinity", "themes", "cultural"] },
+    { id: "comparison", label: "All Metrics Table", category: "Sections", icon: "📋", action: () => scrollTo("comparison"), keywords: ["table", "sort", "filter", "all metrics", "comparison"] },
+    { id: "stream-proj", label: "Stream Projections", category: "Sections", icon: "🚀", action: () => scrollTo("stream-projections"), keywords: ["projections", "velocity", "eta", "milestone"] },
+    { id: "historical", label: "Historical Trends", category: "Sections", icon: "📈", action: () => scrollTo("historical"), keywords: ["historical", "trends", "multi-date", "over time"] },
+    { id: "release-pacing", label: "Release Pacing", category: "Sections", icon: "🏁", action: () => scrollTo("release-pacing"), keywords: ["pacing", "day zero", "release", "comparison"] },
     // Actions
     { id: "refresh", label: "Refresh Live Data", category: "Actions", icon: "🔄", action: () => onRefresh?.(), keywords: ["reload", "update", "fetch"] },
     { id: "print", label: "Print / Export PDF", category: "Actions", icon: "🖨️", action: () => window.print(), keywords: ["pdf", "export", "save"] },
