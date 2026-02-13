@@ -1377,6 +1377,17 @@ function Dashboard() {
                     <p className="font-bold text-xs text-white group-hover:text-pink-300 transition-colors">{m.name}</p>
                     <p className="text-[9px] text-neutral-600 group-hover:text-neutral-400 transition-colors">{m.handle}</p>
                     <p className="text-base font-extrabold text-pink-400 mt-1">{fmt(m.followers)}</p>
+                    {(m as any).priorFollowers != null && (m as any).priorFollowers > 0 && (() => {
+                      const prior = (m as any).priorFollowers;
+                      const change = m.followers - prior;
+                      const pct = ((change / prior) * 100).toFixed(1);
+                      if (change === 0) return null;
+                      return (
+                        <p className={`text-[9px] font-semibold mt-0.5 ${change > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                          {change > 0 ? '↑' : '↓'} {pct}% ({change > 0 ? '+' : ''}{fmt(change)})
+                        </p>
+                      );
+                    })()}
                     <div className="mt-2">
                       <div className="w-full bg-white/[0.04] rounded-full h-1.5 overflow-hidden">
                         <div className={`h-full ${barColors[i]} rounded-full transition-all duration-1000`} style={{ width: `${sharePct}%` }} />

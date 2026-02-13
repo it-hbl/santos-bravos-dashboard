@@ -84,13 +84,21 @@ export async function getDashboardData(date: string): Promise<DashboardData> {
 
     // Fetch prior report for fields that don't have _prior columns
     let priorReport: any = null;
+    let priorMembers: any[] = [];
     if (priorDateRaw) {
-      const { data: pr } = await supabase
-        .from('daily_reports')
-        .select('spotify_followers, total_member_followers, spl')
-        .eq('report_date', priorDateRaw)
-        .single();
+      const [{ data: pr }, { data: pm }] = await Promise.all([
+        supabase
+          .from('daily_reports')
+          .select('spotify_followers, total_member_followers, spl')
+          .eq('report_date', priorDateRaw)
+          .single(),
+        supabase
+          .from('member_followers')
+          .select('member_name, followers')
+          .eq('report_date', priorDateRaw),
+      ]);
       priorReport = pr;
+      priorMembers = pm || [];
     }
 
     // Build businessPerformance
@@ -183,12 +191,16 @@ export async function getDashboardData(date: string): Promise<DashboardData> {
         totalAudioViews: { current: report.total_audio_views || 0, prior: report.total_audio_views_prior || null, label: "Total Audio Views (TT + IG)" },
         tracks: viralityTracks,
       },
-      members: (membersData || []).map((m: any) => ({
-        name: m.member_name,
-        handle: m.handle,
-        followers: m.followers,
-        country: m.country || '',
-      })),
+      members: (membersData || []).map((m: any) => {
+        const prior = priorMembers.find((p: any) => p.member_name === m.member_name);
+        return {
+          name: m.member_name,
+          handle: m.handle,
+          followers: m.followers,
+          priorFollowers: prior?.followers ?? null,
+          country: m.country || '',
+        };
+      }),
       totalMemberFollowers: { current: report.total_member_followers || 0, prior: priorReport?.total_member_followers ?? null },
       geoCountries: (countries || []).map((c: any) => ({
         name: c.country_name,
