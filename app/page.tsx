@@ -90,6 +90,7 @@ const WeeklyWins = dynamic(() => import("./components/WeeklyWins"), { ssr: false
 const RiskRadar = dynamic(() => import("./components/RiskRadar"), { ssr: false });
 const ComparisonTable = dynamic(() => import("./components/ComparisonTable"), { ssr: false });
 const ShareOfVoice = dynamic(() => import("./components/ShareOfVoice"), { ssr: false });
+const CulturalAffinity = dynamic(() => import("./components/CulturalAffinity"), { ssr: false });
 
 /** Extract short date like "2/9/26" from "February 9, 2026" or ISO date */
 function shortDate(dateStr: string): string {
@@ -1725,6 +1726,17 @@ function Dashboard() {
               </div>
             </div>
           )}
+          </CollapsibleSection>
+        </section>
+        </AnimatedSection>
+        </SectionErrorBoundary>
+
+        {/* Section 8: Cultural Affinity */}
+        <SectionErrorBoundary sectionName="Cultural Affinity">
+        <AnimatedSection>
+        <section id="section-cultural" className="scroll-mt-16">
+          <CollapsibleSection id="cultural-affinity" number="8" title="Cultural Affinity" subtitle="Meltwater · Cultural context & audience themes" color="bg-gradient-to-br from-fuchsia-500 to-purple-400" collapsedSummary="Cultural themes, hashtags & sentiment from dedicated affinity search">
+            <CulturalAffinity />
           </CollapsibleSection>
         </section>
         </AnimatedSection>
