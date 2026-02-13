@@ -484,6 +484,13 @@ function Dashboard() {
             sentimentNet: liveSentiment.positive.pct - liveSentiment.negative.pct,
             selectedDate,
           }} />
+          <a
+            href="/guide"
+            className="bg-white/[0.04] border border-white/[0.06] rounded-lg px-2 sm:px-3 py-1.5 hover:bg-white/[0.08] transition-colors hidden sm:inline-flex items-center gap-1"
+            title="Dashboard Guide"
+          >
+            <span className="text-[10px] text-white font-bold uppercase tracking-wider">📖<span className="hidden md:inline"> Guide</span></span>
+          </a>
           <LiveBadge />
           <UserMenu />
         </div>

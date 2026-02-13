@@ -22,6 +22,7 @@ const ACTION_SHORTCUTS: { key: string; label: string; action: string }[] = [
   { key: "r", label: "Refresh Data", action: "refresh" },
   { key: "p", label: "Print / PDF", action: "print" },
   { key: "e", label: "Expand / Collapse All", action: "toggle-sections" },
+  { key: "g", label: "Open Guide", action: "guide" },
   { key: "?", label: "Toggle Shortcuts", action: "help" },
 ];
 
@@ -75,6 +76,9 @@ export default function KeyboardShortcuts({ onRefresh }: KeyboardShortcutsProps)
         // Toggle expand/collapse all sections
         const { toggleAllSections, areAllExpanded } = require("./CollapsibleSection");
         toggleAllSections(!areAllExpanded());
+      } else if (key === "g") {
+        e.preventDefault();
+        window.open("/guide", "_blank");
       }
     },
     [showHelp, onRefresh]

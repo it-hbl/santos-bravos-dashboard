@@ -46,6 +46,7 @@ export default function CommandPalette({ onRefresh }: { onRefresh?: () => void }
     { id: "refresh", label: "Refresh Live Data", category: "Actions", icon: "🔄", action: () => onRefresh?.(), keywords: ["reload", "update", "fetch"] },
     { id: "print", label: "Print / Export PDF", category: "Actions", icon: "🖨️", action: () => window.print(), keywords: ["pdf", "export", "save"] },
     { id: "copy", label: "Copy Summary to Clipboard", category: "Actions", icon: "📋", action: () => document.querySelector<HTMLButtonElement>('[title*="Copy"]')?.click(), keywords: ["clipboard", "text", "share"] },
+    { id: "guide", label: "Open Dashboard Guide", category: "Actions", icon: "📖", action: () => window.open("/guide", "_blank"), keywords: ["help", "documentation", "manual", "how", "tutorial"] },
     // Metrics (jump to their section)
     { id: "m-listeners", label: "Spotify Monthly Listeners", category: "Metrics", icon: "🎧", action: () => scrollTo("business"), keywords: ["spotify", "listeners", "monthly"] },
     { id: "m-streams", label: "Cross-Platform Streams", category: "Metrics", icon: "🎵", action: () => scrollTo("business"), keywords: ["streams", "total", "cross"] },
