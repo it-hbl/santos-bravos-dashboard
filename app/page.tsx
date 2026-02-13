@@ -90,6 +90,7 @@ const SpotifyEmbed = dynamic(() => import("./components/SpotifyEmbed"), { ssr: f
 const NotableChanges = dynamic(() => import("./components/NotableChanges"), { ssr: false });
 const WeeklyWins = dynamic(() => import("./components/WeeklyWins"), { ssr: false });
 const RiskRadar = dynamic(() => import("./components/RiskRadar"), { ssr: false });
+const ActionItems = dynamic(() => import("./components/ActionItems"), { ssr: false });
 const ComparisonTable = dynamic(() => import("./components/ComparisonTable"), { ssr: false });
 const ShareOfVoice = dynamic(() => import("./components/ShareOfVoice"), { ssr: false });
 const CulturalAffinity = dynamic(() => import("./components/CulturalAffinity"), { ssr: false });
@@ -880,6 +881,29 @@ function Dashboard() {
             mentions={livePR.totalMentions}
             sentiment={{ positive: liveSentiment.positive.pct, negative: liveSentiment.negative.pct }}
             audienceStats={{ streamsPerListener: audienceStats.streamsPerListener, saves: audienceStats.saves, streams: audienceStats.streams }}
+          />
+        </AnimatedSection>
+        </SectionErrorBoundary>
+
+        {/* Recommended Actions */}
+        <SectionErrorBoundary sectionName="Recommended Actions">
+        <AnimatedSection>
+          <ActionItems
+            listeners={liveListeners}
+            listenersPrior={bp.spotifyMonthlyListeners.prior}
+            totalStreams={bp.totalCrossPlatformStreams.current}
+            snsFootprint={liveSocialMedia.totalFootprint.current}
+            snsFootprintPrior={liveSocialMedia.totalFootprint.prior}
+            ytSubscribers={liveYTSubscribers}
+            sentimentPositive={liveSentiment.positive.pct}
+            sentimentNegative={liveSentiment.negative.pct}
+            mentionVolume={livePR.totalMentions}
+            tracks={liveTrackStreams.map(t => ({ name: t.name, current: t.spotifyStreams.current, prior: t.spotifyStreams.prior }))}
+            ytVideos={liveYTVideos.map(v => ({ name: v.name, current: v.views.current, prior: v.views.prior }))}
+            geoTop={geoCountries.slice(0, 5).map(c => ({ name: c.name, listeners: c.listeners }))}
+            dailyTopTrack={dailyStreams.length > 0 ? { name: dailyStreams.sort((a, b) => b.streams - a.streams)[0].name, streams: dailyStreams.sort((a, b) => b.streams - a.streams)[0].streams } : null}
+            spotifyFollowers={liveFollowers}
+            spotifyPopularity={bp.spotifyPopularity?.current ?? 0}
           />
         </AnimatedSection>
         </SectionErrorBoundary>
