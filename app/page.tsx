@@ -70,6 +70,7 @@ const CommandPalette = dynamic(() => import("./components/CommandPalette"), { ss
 const TopTopics = dynamic(() => import("./components/TopTopics"), { ssr: false });
 const ExecutiveOneLiner = dynamic(() => import("./components/ExecutiveOneLiner"), { ssr: false });
 const ReleaseTimeline = dynamic(() => import("./components/ReleaseTimeline"), { ssr: false });
+const InsightCarousel = dynamic(() => import("./components/InsightCarousel"), { ssr: false });
 const SocialMediaCards = dynamic(() => import("./components/SocialMediaCards"), { ssr: false });
 const MediaVsAudience = dynamic(() => import("./components/MediaVsAudience"), { ssr: false });
 const MentionMomentum = dynamic(() => import("./components/MentionMomentum"), { ssr: false });
@@ -756,6 +757,21 @@ function Dashboard() {
           </section>
         </AnimatedSection>
         </SectionErrorBoundary>
+
+                {/* Insight Carousel — auto-cycling data insights */}
+        <InsightCarousel
+          listeners={liveListeners}
+          listenersPrior={bp.spotifyMonthlyListeners.prior}
+          tracks={liveTrackStreams.map(t => ({ name: t.name, streams: t.spotifyStreams.current, prior: t.spotifyStreams.prior }))}
+          ytVideos={liveYTVideos.map(v => ({ name: v.name.replace(/ (Performance Video|Official MV|Lyric Video|Debut Visualizer)/, ""), views: v.views.current, prior: v.views.prior }))}
+          snsFootprint={liveSocialMedia.totalFootprint.current}
+          snsPrior={liveSocialMedia.totalFootprint.prior}
+          topCountry={geoCountries[0] ? { name: geoCountries[0].name, flag: geoCountries[0].flag, pct: (geoCountries[0].listeners / geoCountries.reduce((s: number, c: any) => s + c.listeners, 0)) * 100 } : null}
+          prMentions={livePR.totalMentions}
+          prPerDay={livePR.perDay}
+          netSentiment={liveSentiment.positive.pct - liveSentiment.negative.pct}
+          topHashtag={liveSentiment.topHashtags?.[0]?.tag ?? null}
+        />
 
         {/* Key Highlights - Executive Summary */}
         <div id="highlights" className="scroll-mt-16" />
