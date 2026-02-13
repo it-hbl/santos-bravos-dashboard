@@ -66,6 +66,7 @@ export default function TrackHistory() {
   const [data, setData] = useState<TrackPoint[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTrack, setActiveTrack] = useState<string | null>(null); // null = show all
+  const [viewMode, setViewMode] = useState<"cumulative" | "daily">("cumulative");
 
   useEffect(() => {
     async function fetchTrackHistory() {
@@ -117,6 +118,23 @@ export default function TrackHistory() {
     );
   }
 
+  // Compute daily rate data (streams gained per day between consecutive reports)
+  const dailyRateData: TrackPoint[] = data.length >= 2 ? data.slice(1).map((point, i) => {
+    const prev = data[i];
+    const daysBetween = Math.max(1, Math.round(
+      (new Date(point.date + "T12:00:00").getTime() - new Date(prev.date + "T12:00:00").getTime()) / 86400000
+    ));
+    const rates: Record<string, number | string> = { date: point.date, label: point.label };
+    for (const t of TRACK_COLORS) {
+      const curr = (point[t.name] as number) || 0;
+      const prevVal = (prev[t.name] as number) || 0;
+      rates[t.name] = curr > 0 && prevVal > 0 ? Math.round((curr - prevVal) / daysBetween) : 0;
+    }
+    return rates as TrackPoint;
+  }) : [];
+
+  const chartData = viewMode === "daily" ? dailyRateData : data;
+
   // Compute growth per track
   const first = data[0];
   const last = data[data.length - 1];
@@ -136,13 +154,38 @@ export default function TrackHistory() {
           <h3 className="text-sm font-bold text-white flex items-center gap-2">
             🎵 Track Stream Growth
             <span className="text-[10px] text-neutral-500 font-normal">
-              Spotify cumulative · {data.length} reports
+              Spotify {viewMode === "daily" ? "daily rate" : "cumulative"} · {data.length} reports
             </span>
           </h3>
         </div>
 
-        {/* Track toggles */}
+        {/* View mode + Track toggles */}
         <div className="flex flex-wrap gap-1.5">
+          {dailyRateData.length > 0 && (
+            <>
+              <button
+                onClick={() => setViewMode("cumulative")}
+                className={`text-[10px] px-2.5 py-1 rounded-full border transition-all font-medium ${
+                  viewMode === "cumulative"
+                    ? "border-amber-500/40 text-amber-300 bg-amber-500/10"
+                    : "border-white/[0.05] text-neutral-600 hover:text-neutral-400"
+                }`}
+              >
+                📊 Cumulative
+              </button>
+              <button
+                onClick={() => setViewMode("daily")}
+                className={`text-[10px] px-2.5 py-1 rounded-full border transition-all font-medium ${
+                  viewMode === "daily"
+                    ? "border-cyan-500/40 text-cyan-300 bg-cyan-500/10"
+                    : "border-white/[0.05] text-neutral-600 hover:text-neutral-400"
+                }`}
+              >
+                ⚡ Daily Rate
+              </button>
+              <div className="w-px h-4 bg-white/[0.06] self-center mx-1" />
+            </>
+          )}
           <button
             onClick={() => setActiveTrack(null)}
             className={`text-[10px] px-2.5 py-1 rounded-full border transition-all font-medium ${
@@ -202,7 +245,7 @@ export default function TrackHistory() {
       {/* Area chart */}
       <div className="bg-white/[0.02] rounded-xl p-4 border border-white/[0.04]">
         <ResponsiveContainer width="100%" height={240}>
-          <AreaChart data={data} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+          <AreaChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
             <defs>
               {TRACK_COLORS.map((t) => (
                 <linearGradient key={t.name} id={`grad-${t.name.replace(/[^a-z]/gi, "")}`} x1="0" y1="0" x2="0" y2="1">
@@ -226,8 +269,8 @@ export default function TrackHistory() {
               width={55}
             />
             <Tooltip content={<CustomTooltip />} />
-            {/* Release date reference lines */}
-            {data.length > 0 && RELEASES.filter(r => r.trackName).map((r) => {
+            {/* Release date reference lines (cumulative mode only) */}
+            {viewMode === "cumulative" && data.length > 0 && RELEASES.filter(r => r.trackName).map((r) => {
               const d = new Date(r.date + "T12:00:00");
               const label = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
               // Only show if the date falls within our data range
