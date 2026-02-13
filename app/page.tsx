@@ -271,6 +271,8 @@ function Dashboard() {
   const handleDateChange = useCallback(async (date: string) => {
     setSelectedDate(date);
     setDateLoading(true);
+    // Scroll to top so the user sees fresh data from the beginning
+    window.scrollTo({ top: 0, behavior: "smooth" });
     try {
       const data = await getDashboardData(date);
       setReportDate(data.reportDate);
