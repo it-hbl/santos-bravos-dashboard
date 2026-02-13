@@ -1,28 +1,34 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const sections = [
   { id: "hero", icon: "🏠", label: "Top" },
   { id: "business", icon: "📊", label: "Perf" },
   { id: "daily", icon: "⚡", label: "Daily" },
+  { id: "streaming", icon: "🎵", label: "Charts" },
   { id: "social", icon: "📱", label: "Social" },
+  { id: "virality", icon: "🔥", label: "Virality" },
+  { id: "track-comparison", icon: "🎯", label: "Tracks" },
   { id: "members", icon: "👥", label: "Members" },
   { id: "geo", icon: "🌎", label: "Geo" },
+  { id: "audience", icon: "👂", label: "Audience" },
   { id: "pr", icon: "📰", label: "PR" },
   { id: "sentiment", icon: "💬", label: "Sentiment" },
+  { id: "performance", icon: "⚡", label: "Score" },
+  { id: "milestones", icon: "🏆", label: "Goals" },
 ];
 
 export default function MobileNav() {
   const [active, setActive] = useState("hero");
   const [visible, setVisible] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const activeRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
-      // Show after scrolling past 300px
       setVisible(window.scrollY > 300);
 
-      // Find active section
       const offsets = sections
         .map((s) => {
           const el = document.getElementById(s.id);
@@ -31,7 +37,6 @@ export default function MobileNav() {
         })
         .filter(Boolean) as { id: string; top: number }[];
 
-      // Pick the section closest to top but above center
       const threshold = window.innerHeight * 0.4;
       let current = "hero";
       for (const o of offsets) {
@@ -44,6 +49,20 @@ export default function MobileNav() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Auto-scroll the nav bar to keep active section visible
+  useEffect(() => {
+    if (activeRef.current && scrollRef.current) {
+      const btn = activeRef.current;
+      const container = scrollRef.current;
+      const btnCenter = btn.offsetLeft + btn.offsetWidth / 2;
+      const containerCenter = container.offsetWidth / 2;
+      container.scrollTo({
+        left: btnCenter - containerCenter,
+        behavior: "smooth",
+      });
+    }
+  }, [active]);
+
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -55,23 +74,26 @@ export default function MobileNav() {
         visible ? "translate-y-0" : "translate-y-full"
       }`}
     >
-      {/* Backdrop blur bar */}
-      <div className="bg-black/80 backdrop-blur-xl border-t border-white/[0.08] px-1 py-1.5 safe-area-bottom">
-        <div className="flex items-center justify-around max-w-lg mx-auto">
+      <div className="bg-black/80 backdrop-blur-xl border-t border-white/[0.08] safe-area-bottom">
+        <div
+          ref={scrollRef}
+          className="flex items-center gap-0.5 px-2 py-1.5 overflow-x-auto scrollbar-hide scroll-smooth"
+        >
           {sections.map((s) => {
             const isActive = active === s.id;
             return (
               <button
                 key={s.id}
+                ref={isActive ? activeRef : undefined}
                 onClick={() => scrollTo(s.id)}
-                className={`flex flex-col items-center gap-0.5 px-1.5 py-1 rounded-lg transition-all min-w-0 ${
+                className={`flex flex-col items-center gap-0.5 px-2 py-1 rounded-lg transition-all flex-shrink-0 min-w-[44px] ${
                   isActive
                     ? "text-violet-400 bg-violet-500/10"
                     : "text-neutral-500 active:text-neutral-300"
                 }`}
               >
                 <span className="text-sm leading-none">{s.icon}</span>
-                <span className="text-[8px] font-semibold tracking-wide truncate max-w-[40px]">
+                <span className="text-[8px] font-semibold tracking-wide truncate max-w-[44px]">
                   {s.label}
                 </span>
               </button>
