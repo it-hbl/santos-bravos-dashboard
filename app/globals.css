@@ -489,6 +489,26 @@ a:focus-visible {
     page-break-inside: avoid;
   }
 
+  /* Major sections start on new pages in print for cleaner PDF layout */
+  .print-page-break {
+    break-before: page;
+    page-break-before: always;
+  }
+
+  /* Print section dividers — visible only in print, appear before page-broken sections */
+  .print-page-break::before {
+    content: "Santos Bravos — Intelligence Report";
+    display: block !important;
+    font-size: 8pt;
+    color: #9CA3AF !important;
+    -webkit-text-fill-color: #9CA3AF !important;
+    text-align: right;
+    border-bottom: 1px solid #E5E7EB;
+    padding-bottom: 4px;
+    margin-bottom: 12px;
+    letter-spacing: 0.05em;
+  }
+
   /* Recharts SVGs print */
   .recharts-wrapper {
     -webkit-print-color-adjust: exact;

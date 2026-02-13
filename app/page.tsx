@@ -1063,7 +1063,7 @@ function Dashboard() {
         </SectionErrorBoundary>
 
         {/* Section 1: Business Performance */}
-        <div id="business" className="scroll-mt-16" />
+        <div id="business" className="scroll-mt-16 print-page-break" />
         <SectionErrorBoundary sectionName="Business Performance">
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
@@ -1201,7 +1201,7 @@ function Dashboard() {
         </SectionErrorBoundary>
 
         {/* Charts */}
-        <div id="charts" className="scroll-mt-16" />
+        <div id="charts" className="scroll-mt-16 print-page-break" />
         <SectionErrorBoundary sectionName="Streaming Charts">
         <AnimatedSection>
         <section className="space-y-4">
@@ -1240,7 +1240,7 @@ function Dashboard() {
         </SectionErrorBoundary>
 
         {/* Section 2: Social Media */}
-        <div id="social" className="scroll-mt-16" />
+        <div id="social" className="scroll-mt-16 print-page-break" />
         <SectionErrorBoundary sectionName="Social Media">
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
@@ -1320,7 +1320,7 @@ function Dashboard() {
         </SectionErrorBoundary>
 
         {/* Section 4: Band Member Followers */}
-        <div id="members" className="scroll-mt-16" />
+        <div id="members" className="scroll-mt-16 print-page-break" />
         <SectionErrorBoundary sectionName="Band Members">
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
@@ -1375,7 +1375,7 @@ function Dashboard() {
         </SectionErrorBoundary>
 
         {/* Section 5: Geo Signals */}
-        <div id="geo" className="scroll-mt-16" />
+        <div id="geo" className="scroll-mt-16 print-page-break" />
         <SectionErrorBoundary sectionName="Geo Signals">
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
@@ -1473,7 +1473,7 @@ function Dashboard() {
         </SectionErrorBoundary>
 
         {/* Section 6: PR & Media */}
-        <div id="pr" className="scroll-mt-16" />
+        <div id="pr" className="scroll-mt-16 print-page-break" />
         <SectionErrorBoundary sectionName="PR & Media">
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
@@ -1665,7 +1665,7 @@ function Dashboard() {
         </SectionErrorBoundary>
 
         {/* Section 7: Fan Sentiment */}
-        <div id="sentiment" className="scroll-mt-16" />
+        <div id="sentiment" className="scroll-mt-16 print-page-break" />
         <SectionErrorBoundary sectionName="Fan Sentiment">
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
