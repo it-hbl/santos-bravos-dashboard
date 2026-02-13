@@ -222,6 +222,26 @@ export default function HistoricalTrends() {
             <span className="text-[10px] text-neutral-500 font-normal">
               {data.length} report{data.length !== 1 ? "s" : ""} · {first.label} → {last.label}
             </span>
+            <button
+              onClick={() => {
+                const header = "Date,Spotify Listeners,Cross-Platform Streams,SNS Footprint,Spotify Followers,PR Mentions,Net Sentiment\n";
+                const rows = data.map(d =>
+                  `${d.date},${d.listeners},${d.streams},${d.sns},${d.followers},${d.mentions},${d.netSentiment}`
+                ).join("\n");
+                const csv = "\uFEFF" + header + rows;
+                const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `santos-bravos-historical-${first.date}-to-${last.date}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+              }}
+              className="text-[9px] px-2 py-0.5 rounded-full border border-white/[0.06] text-neutral-500 hover:text-neutral-300 hover:bg-white/[0.04] transition-all font-medium"
+              title="Download all historical data as CSV"
+            >
+              📥 Export
+            </button>
           </h3>
           {/* Per-metric growth badges */}
           <div className="flex flex-wrap gap-2 mt-1">
