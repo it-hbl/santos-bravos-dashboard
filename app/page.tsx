@@ -358,18 +358,21 @@ function Dashboard() {
           change: bp.spotifyMonthlyListeners.prior ? dod(liveListeners, bp.spotifyMonthlyListeners.prior).pct : undefined,
           positive: bp.spotifyMonthlyListeners.prior ? dod(liveListeners, bp.spotifyMonthlyListeners.prior).positive : true,
           sectionId: "business",
+          sparkData: trendPoints(bp.spotifyMonthlyListeners.prior, liveListeners, 5),
         },
         {
           label: "Followers",
           value: fmt(liveFollowers),
           color: "text-spotify",
           sectionId: "business",
+          sparkData: bp.spotifyFollowers?.prior ? trendPoints(bp.spotifyFollowers.prior, liveFollowers, 5) : undefined,
         },
         {
           label: "Streams",
           value: fmt(bp.totalCrossPlatformStreams.current),
           color: "text-white",
           sectionId: "charts",
+          sparkData: trendPoints(bp.totalCrossPlatformStreams.prior, bp.totalCrossPlatformStreams.current, 5),
         },
         {
           label: "SNS",
@@ -378,6 +381,7 @@ function Dashboard() {
           change: liveSocialMedia.totalFootprint.prior ? dod(liveSocialMedia.totalFootprint.current, liveSocialMedia.totalFootprint.prior).pct : undefined,
           positive: liveSocialMedia.totalFootprint.prior ? dod(liveSocialMedia.totalFootprint.current, liveSocialMedia.totalFootprint.prior).positive : true,
           sectionId: "social",
+          sparkData: trendPoints(liveSocialMedia.totalFootprint.prior, liveSocialMedia.totalFootprint.current, 5),
         },
         {
           label: "YT Subs",
@@ -390,6 +394,7 @@ function Dashboard() {
           value: fmt(livePR.totalMentions),
           color: "text-violet-400",
           sectionId: "pr",
+          sparkData: livePR.timeSeries?.length >= 2 ? livePR.timeSeries.slice(-5).map((d: any) => d.mentions) : undefined,
         },
         {
           label: "Sentiment",
