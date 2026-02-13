@@ -72,7 +72,9 @@ a:focus-visible {
   background: linear-gradient(135deg, rgba(15, 15, 20, 0.9), rgba(20, 15, 30, 0.8));
   backdrop-filter: blur(16px);
   border: 1px solid rgba(139, 92, 246, 0.15);
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+  position: relative;
+  overflow: visible;
 }
 
 .glass-hybe:hover {
@@ -263,6 +265,48 @@ a:focus-visible {
   transform: translateY(-1px);
 }
 
+/* ─── Border Beam Effect ─── */
+/* A small light dot that travels along the border of glass sections on hover */
+@property --border-beam-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes borderBeamSpin {
+  from { --border-beam-angle: 0deg; }
+  to { --border-beam-angle: 360deg; }
+}
+
+.glass-hybe::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--border-beam-angle),
+    transparent 0%,
+    transparent 75%,
+    rgba(139, 92, 246, 0.6) 85%,
+    rgba(6, 182, 212, 0.5) 90%,
+    rgba(236, 72, 153, 0.4) 95%,
+    transparent 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: borderBeamSpin 6s linear infinite;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  z-index: 1;
+}
+
+.glass-hybe:hover::before {
+  opacity: 1;
+}
+
 .border-glow-purple {
   border: 1px solid rgba(139, 92, 246, 0.2);
   box-shadow: 0 0 20px rgba(139, 92, 246, 0.05);
@@ -292,6 +336,10 @@ a:focus-visible {
     backdrop-filter: none !important;
     border: 1px solid #e5e7eb !important;
     box-shadow: none !important;
+  }
+
+  .glass-hybe::before {
+    display: none !important;
   }
 
   .hero-bg {
@@ -402,7 +450,8 @@ a:focus-visible {
     animation: none !important;
   }
 
-  .glass-hybe-card::after {
+  .glass-hybe-card::after,
+  .glass-hybe::before {
     display: none !important;
   }
 
