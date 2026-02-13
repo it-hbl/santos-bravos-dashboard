@@ -37,6 +37,7 @@ function fmt(n: number): string {
 export default function InsightCarousel(props: InsightCarouselProps) {
   const [index, setIndex] = useState(0);
   const [visible, setVisible] = useState(true);
+  const [paused, setPaused] = useState(false);
 
   const insights = useMemo(() => {
     const items: Insight[] = [];
@@ -153,7 +154,7 @@ export default function InsightCarousel(props: InsightCarouselProps) {
   }, [props]);
 
   useEffect(() => {
-    if (insights.length <= 1) return;
+    if (insights.length <= 1 || paused) return;
     const interval = setInterval(() => {
       setVisible(false);
       setTimeout(() => {
@@ -162,35 +163,73 @@ export default function InsightCarousel(props: InsightCarouselProps) {
       }, 400);
     }, 6000);
     return () => clearInterval(interval);
-  }, [insights.length]);
+  }, [insights.length, paused]);
+
+  const goTo = (i: number) => {
+    if (i === index % insights.length) return;
+    setVisible(false);
+    setTimeout(() => {
+      setIndex(i);
+      setVisible(true);
+    }, 200);
+  };
+
+  const prev = () => goTo(((index % insights.length) - 1 + insights.length) % insights.length);
+  const next = () => goTo(((index % insights.length) + 1) % insights.length);
 
   if (insights.length === 0) return null;
 
   const insight = insights[index % insights.length];
 
   return (
-    <div className="w-full flex items-center justify-center py-2">
+    <div
+      className="w-full flex items-center justify-center py-2"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
       <div
-        className={`flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white/[0.03] border border-white/[0.06] transition-all duration-400 ${
+        className={`flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white/[0.03] border border-white/[0.06] transition-all duration-400 group ${
           visible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-1"
         }`}
       >
+        {/* Prev arrow — visible on hover */}
+        {insights.length > 1 && (
+          <button
+            onClick={prev}
+            className="text-neutral-600 hover:text-white transition-colors opacity-0 group-hover:opacity-100 flex-shrink-0 -ml-1 w-5 h-5 flex items-center justify-center"
+            aria-label="Previous insight"
+          >
+            ‹
+          </button>
+        )}
         <span className="text-base flex-shrink-0">{insight.emoji}</span>
         <span className={`text-xs font-medium ${insight.color}`}>{insight.text}</span>
         <span className="text-[9px] text-neutral-600 uppercase tracking-wider flex-shrink-0 hidden sm:inline">
           {insight.category}
         </span>
-        {/* Dot pagination */}
+        {/* Dot pagination — clickable */}
         <div className="flex gap-1 ml-2 flex-shrink-0">
           {insights.map((_, i) => (
-            <div
+            <button
               key={i}
-              className={`w-1 h-1 rounded-full transition-colors duration-300 ${
-                i === index % insights.length ? "bg-white/50" : "bg-white/10"
+              onClick={() => goTo(i)}
+              className={`w-1.5 h-1.5 rounded-full transition-all duration-300 hover:scale-150 ${
+                i === index % insights.length ? "bg-white/60 scale-125" : "bg-white/10 hover:bg-white/30"
               }`}
+              aria-label={`Insight ${i + 1}`}
             />
           ))}
         </div>
+        {/* Next arrow — visible on hover */}
+        {insights.length > 1 && (
+          <button
+            onClick={next}
+            className="text-neutral-600 hover:text-white transition-colors opacity-0 group-hover:opacity-100 flex-shrink-0 -mr-1 w-5 h-5 flex items-center justify-center"
+            aria-label="Next insight"
+          >
+            ›
+          </button>
+        )}
       </div>
     </div>
   );
