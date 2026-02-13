@@ -94,6 +94,7 @@ const ActionItems = dynamic(() => import("./components/ActionItems"), { ssr: fal
 const ComparisonTable = dynamic(() => import("./components/ComparisonTable"), { ssr: false });
 const ShareOfVoice = dynamic(() => import("./components/ShareOfVoice"), { ssr: false });
 const CulturalAffinity = dynamic(() => import("./components/CulturalAffinity"), { ssr: false });
+const MetricAlerts = dynamic(() => import("./components/MetricAlerts"), { ssr: false });
 
 /** Extract short date like "2/9/26" from "February 9, 2026" or ISO date */
 function shortDate(dateStr: string): string {
@@ -493,6 +494,20 @@ function Dashboard() {
             <span className="text-[10px] text-white font-bold uppercase tracking-wider">📖<span className="hidden md:inline"> Guide</span></span>
           </a>
           <LiveBadge />
+          <MetricAlerts metrics={(() => {
+            const m: { label: string; current: number; prior: number | null; category: "streaming" | "social" | "youtube" | "media" | "audience" }[] = [];
+            m.push({ label: "Spotify Monthly Listeners", current: liveListeners, prior: bp.spotifyMonthlyListeners.prior, category: "streaming" });
+            m.push({ label: "Spotify Followers", current: liveFollowers, prior: bp.spotifyFollowers.prior, category: "streaming" });
+            m.push({ label: "Spotify Popularity", current: livePopularity, prior: bp.spotifyPopularity.prior, category: "streaming" });
+            liveTrackStreams.forEach(t => m.push({ label: `${t.name} Streams`, current: t.spotifyStreams.current, prior: t.spotifyStreams.prior, category: "streaming" }));
+            m.push({ label: "Cross-Platform Streams", current: bp.totalCrossPlatformStreams.current, prior: bp.totalCrossPlatformStreams.prior, category: "streaming" });
+            liveYTVideos.forEach(v => m.push({ label: `YT: ${v.name}`, current: v.views.current, prior: v.views.prior, category: "youtube" }));
+            m.push({ label: "YouTube Subscribers", current: liveYTSubscribers, prior: null, category: "youtube" });
+            m.push({ label: "SNS Footprint", current: liveSocialMedia.totalFootprint.current, prior: liveSocialMedia.totalFootprint.prior, category: "social" });
+            if (liveSocialMedia.platforms) liveSocialMedia.platforms.forEach((p: any) => m.push({ label: `${p.platform} Followers`, current: p.current, prior: p.prior, category: "social" }));
+            m.push({ label: "Audio Views (TikTok)", current: audioVirality.totalAudioViews.current, prior: audioVirality.totalAudioViews.prior, category: "social" });
+            return m;
+          })()} />
           <UserMenu />
         </div>
       </nav>
