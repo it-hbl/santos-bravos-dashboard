@@ -77,6 +77,7 @@ const MentionMomentum = dynamic(() => import("./components/MentionMomentum"), { 
 const WeekdayHeatmap = dynamic(() => import("./components/WeekdayHeatmap"), { ssr: false });
 const HistoricalTrends = dynamic(() => import("./components/HistoricalTrends"), { ssr: false });
 const TrackHistory = dynamic(() => import("./components/TrackHistory"), { ssr: false });
+const YouTubeHistory = dynamic(() => import("./components/YouTubeHistory"), { ssr: false });
 const QuickShare = dynamic(() => import("./components/QuickShare"), { ssr: false });
 const EngagementDepth = dynamic(() => import("./components/EngagementDepth"), { ssr: false });
 const StreamProjections = dynamic(() => import("./components/StreamProjections"), { ssr: false });
@@ -1000,6 +1001,9 @@ function Dashboard() {
             <HistoricalTrends />
             <div className="mt-6 pt-5 border-t border-white/[0.05]">
               <TrackHistory />
+            </div>
+            <div className="mt-6 pt-5 border-t border-white/[0.05]">
+              <YouTubeHistory />
             </div>
           </CollapsibleSection>
         </section>
