@@ -9,7 +9,9 @@ import {
   YAxis,
   Tooltip,
   CartesianGrid,
+  ReferenceLine,
 } from "recharts";
+import { RELEASES } from "../lib/data";
 import { supabase } from "../lib/supabase";
 
 interface TrackPoint {
@@ -224,6 +226,30 @@ export default function TrackHistory() {
               width={55}
             />
             <Tooltip content={<CustomTooltip />} />
+            {/* Release date reference lines */}
+            {data.length > 0 && RELEASES.filter(r => r.trackName).map((r) => {
+              const d = new Date(r.date + "T12:00:00");
+              const label = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+              // Only show if the date falls within our data range
+              const match = data.find(p => p.label === label);
+              if (!match) return null;
+              return (
+                <ReferenceLine
+                  key={r.id}
+                  x={label}
+                  stroke={r.color}
+                  strokeDasharray="4 4"
+                  strokeOpacity={0.5}
+                  label={{
+                    value: `${r.emoji} ${r.trackName === "0% (Portuguese Version)" ? "0% PT" : r.trackName}`,
+                    position: "top",
+                    fill: r.color,
+                    fontSize: 9,
+                    fontWeight: 600,
+                  }}
+                />
+              );
+            })}
             {TRACK_COLORS.map((t) =>
               activeTrack === null || activeTrack === t.name ? (
                 <Area
