@@ -31,7 +31,7 @@ export const priorDate = "February 4, 2026";
 export const businessPerformance = {
   spotifyMonthlyListeners: { current: 335584, prior: 325961, label: "Spotify Monthly Listeners (Global)" },
   spotifyPopularity: { current: 51, prior: null, label: "Spotify Popularity Index" },
-  spotifyFollowers: { current: 97592, prior: null, label: "Spotify Followers" },
+  spotifyFollowers: { current: 97592, prior: null as number | null, label: "Spotify Followers" },
   tracks: [
     { name: "0%", spotifyStreams: { current: 4818683, prior: 4712736 } },
     { name: "0% (Portuguese Version)", spotifyStreams: { current: 902520, prior: 868325 } },
@@ -44,7 +44,7 @@ export const businessPerformance = {
     { name: "0% (Portuguese) Lyric Video", views: { current: 953545, prior: 941246 } },
     { name: "0% Debut Visualizer", views: { current: 6224940, prior: 6181833 } },
   ],
-  spl: { current: 6.129, label: "Streams Per Listener (SPL) — 28 Days" },
+  spl: { current: 6.129, prior: null as number | null, label: "Streams Per Listener (SPL) — 28 Days" },
 };
 
 // Daily streams from Spotify for Artists (Feb 8, 24h)
@@ -83,7 +83,7 @@ export const members = [
   { name: "Drew Venegas", handle: "@and.venn", followers: 179000, country: "🇺🇸" },
   { name: "Gabi Bermúdez", handle: "@gabiprpr", followers: 130000, country: "🇵🇷" },
 ];
-export const totalMemberFollowers = { current: 1451000, prior: null };
+export const totalMemberFollowers = { current: 1451000, prior: null as number | null };
 
 // === SECTION 5: Geo Signals ===
 export const geoCountries = [

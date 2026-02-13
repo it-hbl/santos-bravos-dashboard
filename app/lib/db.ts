@@ -82,6 +82,17 @@ export async function getDashboardData(date: string): Promise<DashboardData> {
       ? new Date(priorDateRaw + 'T12:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
       : '';
 
+    // Fetch prior report for fields that don't have _prior columns
+    let priorReport: any = null;
+    if (priorDateRaw) {
+      const { data: pr } = await supabase
+        .from('daily_reports')
+        .select('spotify_followers, total_member_followers, spl')
+        .eq('report_date', priorDateRaw)
+        .single();
+      priorReport = pr;
+    }
+
     // Build businessPerformance
     const trackList = (tracks || []).map((t: any) => ({
       name: t.track_name,
@@ -152,11 +163,11 @@ export async function getDashboardData(date: string): Promise<DashboardData> {
       businessPerformance: {
         spotifyMonthlyListeners: { current: report.spotify_monthly_listeners, prior: report.spotify_monthly_listeners_prior, label: "Spotify Monthly Listeners (Global)" },
         spotifyPopularity: { current: report.spotify_popularity, prior: report.spotify_popularity_prior, label: "Spotify Popularity Index" },
-        spotifyFollowers: { current: report.spotify_followers, prior: null, label: "Spotify Followers" },
+        spotifyFollowers: { current: report.spotify_followers, prior: priorReport?.spotify_followers ?? null, label: "Spotify Followers" },
         tracks: trackList,
         totalCrossPlatformStreams: { current: report.total_cross_platform_streams, prior: report.total_cross_platform_streams_prior, label: "Total Cross-Platform Streams (All DSPs + YouTube)" },
         youtubeVideos: ytVideoList,
-        spl: { current: parseFloat(report.spl) || 0, label: "Streams Per Listener (SPL) — 28 Days" },
+        spl: { current: parseFloat(report.spl) || 0, prior: priorReport?.spl ? parseFloat(priorReport.spl) : null, label: "Streams Per Listener (SPL) — 28 Days" },
       },
       dailyStreams: (tracks || []).filter((t: any) => t.daily_streams > 0).map((t: any) => ({
         name: t.track_name,
@@ -178,7 +189,7 @@ export async function getDashboardData(date: string): Promise<DashboardData> {
         followers: m.followers,
         country: m.country || '',
       })),
-      totalMemberFollowers: { current: report.total_member_followers || 0, prior: null },
+      totalMemberFollowers: { current: report.total_member_followers || 0, prior: priorReport?.total_member_followers ?? null },
       geoCountries: (countries || []).map((c: any) => ({
         name: c.country_name,
         listeners: c.listeners,
