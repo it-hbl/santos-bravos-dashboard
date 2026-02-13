@@ -320,6 +320,15 @@ function Dashboard() {
     ? { value: `+${(liveSentiment.positive.pct - liveSentiment.negative.pct).toFixed(0)} net`, positive: true }
     : { value: `${(liveSentiment.positive.pct - liveSentiment.negative.pct).toFixed(0)} net`, positive: false };
 
+  // Dynamic browser tab title — shows key metric so executives see the number even in background tabs
+  useEffect(() => {
+    const listenerStr = fmt(liveListeners);
+    const streamStr = fmt(bp.totalCrossPlatformStreams.current);
+    const netSent = liveSentiment.positive.pct - liveSentiment.negative.pct;
+    const sentStr = netSent >= 0 ? `+${netSent.toFixed(0)}` : netSent.toFixed(0);
+    document.title = `${listenerStr} Listeners · ${streamStr} Streams · Sent ${sentStr} — Santos Bravos`;
+  }, [liveListeners, bp.totalCrossPlatformStreams.current, liveSentiment.positive.pct, liveSentiment.negative.pct]);
+
   return (
     <main className="min-h-screen">
       {/* Focus mode overlay */}
