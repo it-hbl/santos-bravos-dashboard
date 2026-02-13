@@ -2,7 +2,89 @@ import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
 
+// Compact number formatter for OG metrics
+function fmt(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1).replace(/\.0$/, "")}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1).replace(/\.0$/, "")}K`;
+  return n.toLocaleString();
+}
+
+// Fallback values (updated periodically) in case API calls fail
+const FALLBACK = {
+  listeners: "345K",
+  ytViews: "23.1M",
+  sns: "1.7M",
+  mentions: "6K+",
+};
+
+async function fetchLiveMetrics(): Promise<{
+  listeners: string;
+  ytViews: string;
+  sns: string;
+  mentions: string;
+}> {
+  try {
+    // Chartmetric: Spotify listeners + social followers
+    const cmTokenRes = await fetch("https://api.chartmetric.com/api/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refreshtoken: "D3dkDB915eXHxZd56jcBNdFkhqcrNmm2kdZy7VrryBbW1z0ELS5Mu7D9p5x9Atex" }),
+    });
+    if (!cmTokenRes.ok) throw new Error("CM token fail");
+    const { token } = await cmTokenRes.json();
+
+    const artistRes = await fetch(`https://api.chartmetric.com/api/artist/14502018`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!artistRes.ok) throw new Error("CM artist fail");
+    const { obj: artist } = await artistRes.json();
+    const cm = artist?.cm_statistics || {};
+
+    const listeners = cm.sp_monthly_listeners || 345000;
+    const igFollowers = cm.ins_followers || 0;
+    const tiktokFollowers = cm.tiktok_followers || 0;
+
+    // YouTube uses OAuth (no public API key available), so use fallback for YT views
+    const totalYtViews = 23100000; // Updated when dashboard data refreshes
+    const ytSubs = 471000; // Fallback — Chartmetric doesn't track YT subs reliably
+
+    const snsTotal = (igFollowers || 0) + (tiktokFollowers || 0) + ytSubs;
+
+    // Meltwater: mention volume (7-day)
+    let mentions = 6000;
+    try {
+      const end = new Date();
+      const start = new Date();
+      start.setDate(start.getDate() - 7);
+      const qs = new URLSearchParams({
+        start: start.toISOString().split("T")[0] + "T00:00:00",
+        end: end.toISOString().split("T")[0] + "T23:59:59",
+        tz: "America/Mexico_City",
+      });
+      const mwRes = await fetch(`https://api.meltwater.com/v3/analytics/27861227?${qs}`, {
+        headers: { apikey: "CwyOVYu0hn3hdXQ1CFPCqr5LLRVkuPNjn6tSAGtZ", Accept: "application/json" },
+      });
+      if (mwRes.ok) {
+        const mwData = await mwRes.json();
+        mentions = mwData.volume || mentions;
+      }
+    } catch {}
+
+    return {
+      listeners: fmt(listeners),
+      ytViews: fmt(totalYtViews),
+      sns: fmt(snsTotal),
+      mentions: mentions >= 1000 ? fmt(mentions) : `${mentions}+`,
+    };
+  } catch {
+    return FALLBACK;
+  }
+}
+
 export async function GET() {
+  const metrics = await fetchLiveMetrics();
+  const now = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "America/Mexico_City" });
+
   return new ImageResponse(
     (
       <div
@@ -107,19 +189,29 @@ export async function GET() {
               fontSize: "32px",
               fontWeight: 500,
               color: "rgba(255,255,255,0.5)",
-              marginBottom: "48px",
+              marginBottom: "12px",
             }}
           >
             Artist Intelligence Dashboard
+          </div>
+          <div
+            style={{
+              fontSize: "14px",
+              fontWeight: 500,
+              color: "rgba(255,255,255,0.3)",
+              marginBottom: "36px",
+            }}
+          >
+            Updated {now}
           </div>
 
           {/* Metric pills */}
           <div style={{ display: "flex", gap: "16px" }}>
             {[
-              { label: "Spotify Listeners", value: "345K", color: "#1DB954" },
-              { label: "YouTube Views", value: "23.1M", color: "#FF0000" },
-              { label: "SNS Footprint", value: "1.7M", color: "#8B5CF6" },
-              { label: "Media Mentions", value: "6K+", color: "#06B6D4" },
+              { label: "Spotify Listeners", value: metrics.listeners, color: "#1DB954" },
+              { label: "YouTube Views", value: metrics.ytViews, color: "#FF0000" },
+              { label: "SNS Footprint", value: metrics.sns, color: "#8B5CF6" },
+              { label: "Media Mentions", value: metrics.mentions, color: "#06B6D4" },
             ].map((m) => (
               <div
                 key={m.label}
