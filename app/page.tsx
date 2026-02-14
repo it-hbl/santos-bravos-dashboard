@@ -462,6 +462,30 @@ function Dashboard() {
           color: liveSentiment.positive.pct > liveSentiment.negative.pct ? "text-emerald-400" : "text-red-400",
           sectionId: "sentiment",
         },
+        // Nearest milestone ETA
+        ...(() => {
+          const milestones = [
+            { label: "500K Listeners", current: liveListeners, prior: bp.spotifyMonthlyListeners.prior, target: 500000 },
+            { label: "500K YT Subs", current: liveYTSubscribers, prior: null as number | null, target: 500000 },
+            { label: "2M SNS", current: liveSocialMedia.totalFootprint.current, prior: liveSocialMedia.totalFootprint.prior, target: 2000000 },
+            { label: "50M Streams", current: bp.totalCrossPlatformStreams.current, prior: bp.totalCrossPlatformStreams.prior, target: 50000000 },
+          ].filter(m => m.current < m.target && m.prior && m.current > m.prior);
+          if (milestones.length === 0) return [];
+          // Pick nearest by % completion
+          const nearest = milestones.sort((a, b) => (b.current / b.target) - (a.current / a.target))[0];
+          const daysBtwn = (() => { try { const d1 = new Date(reportDate); const d2 = new Date(priorDate); return Math.max(1, Math.round((d1.getTime() - d2.getTime()) / 86400000)); } catch { return 5; } })();
+          const dailyGrowth = (nearest.current - nearest.prior!) / daysBtwn;
+          const remaining = nearest.target - nearest.current;
+          const daysToGo = dailyGrowth > 0 ? Math.ceil(remaining / dailyGrowth) : null;
+          if (!daysToGo || daysToGo > 365) return [];
+          const shortLabel = nearest.label.replace("500K ", "").replace("2M ", "").replace("50M ", "");
+          return [{
+            label: `🎯 ${shortLabel}`,
+            value: `~${daysToGo}d`,
+            color: daysToGo <= 14 ? "text-amber-400" : "text-neutral-400",
+            sectionId: "milestones",
+          }];
+        })(),
       ]} />
       {/* Skip to content — keyboard accessibility */}
       <a href="#main-content" className="skip-to-content">Skip to dashboard content</a>
