@@ -64,6 +64,26 @@ const CHANNELS = [
       return `https://twitter.com/intent/tweet?text=${encodeURIComponent(short)}`;
     },
   },
+  {
+    key: "email",
+    label: "Email",
+    emoji: "📧",
+    color: "hover:bg-amber-500/20 hover:border-amber-500/30",
+    buildUrl: (text: string) => {
+      const firstLine = text.split("\n")[0] || "Santos Bravos Report";
+      return `mailto:?subject=${encodeURIComponent(firstLine)}&body=${encodeURIComponent(text)}`;
+    },
+  },
+  {
+    key: "linkedin",
+    label: "LinkedIn",
+    emoji: "💼",
+    color: "hover:bg-blue-500/20 hover:border-blue-500/30",
+    buildUrl: (text: string) => {
+      const url = text.split("\n").find(l => l.startsWith("📊"))?.replace("📊 ", "") || "https://santos-bravos-dashboard.vercel.app";
+      return `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+    },
+  },
 ];
 
 export default function QuickShare({ data }: { data: QuickShareData }) {
@@ -120,7 +140,7 @@ export default function QuickShare({ data }: { data: QuickShareData }) {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-64 glass-hybe rounded-xl border border-white/[0.08] shadow-2xl shadow-black/40 z-[60] p-3 space-y-2 animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="absolute right-0 top-full mt-2 w-80 glass-hybe rounded-xl border border-white/[0.08] shadow-2xl shadow-black/40 z-[60] p-3 space-y-2 animate-in fade-in slide-in-from-top-2 duration-200">
           <p className="text-[10px] text-neutral-500 uppercase tracking-wider font-semibold px-1">Quick Share</p>
 
           {/* Preview */}
@@ -129,7 +149,7 @@ export default function QuickShare({ data }: { data: QuickShareData }) {
           </div>
 
           {/* Channel buttons */}
-          <div className="grid grid-cols-2 gap-1.5">
+          <div className="grid grid-cols-3 gap-1.5">
             {CHANNELS.map(ch => (
               <a
                 key={ch.key}
