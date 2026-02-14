@@ -185,11 +185,13 @@ export default function CollapsibleSection({
         </p>
       )}
       <div
-        className={`transition-all duration-300 overflow-hidden ${
-          open ? "max-h-[5000px] opacity-100" : "max-h-0 opacity-0"
+        className={`grid transition-[grid-template-rows,opacity] duration-300 ease-in-out ${
+          open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
         }`}
       >
-        {children}
+        <div className="overflow-hidden">
+          {children}
+        </div>
       </div>
     </div>
   );
