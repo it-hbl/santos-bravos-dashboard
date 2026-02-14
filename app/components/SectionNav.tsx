@@ -29,6 +29,8 @@ const SECTIONS = [
   { id: "pr", label: "PR & Media", icon: "6", short: "PR" },
   { id: "sentiment", label: "Fan Sentiment", icon: "7", short: "Sentiment" },
   { id: "section-cultural", label: "Cultural Affinity", icon: "8", short: "Culture" },
+  { id: "benchmark", label: "Debut Benchmark", icon: "📏", short: "Bench" },
+  { id: "revenue-estimate", label: "Est. Revenue", icon: "💰", short: "Revenue" },
 ];
 
 export default function SectionNav({ trends }: { trends?: SectionTrendData }) {

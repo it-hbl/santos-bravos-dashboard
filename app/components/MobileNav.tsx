@@ -24,6 +24,8 @@ const sections = [
   { id: "pr", icon: "📰", label: "PR" },
   { id: "sentiment", icon: "💬", label: "Sentiment" },
   { id: "section-cultural", icon: "🎭", label: "Culture" },
+  { id: "benchmark", icon: "📏", label: "Bench" },
+  { id: "revenue-estimate", icon: "💰", label: "Revenue" },
 ];
 
 export default function MobileNav() {

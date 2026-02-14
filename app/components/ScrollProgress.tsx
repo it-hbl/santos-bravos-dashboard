@@ -24,6 +24,8 @@ const SECTIONS = [
   { id: "pr", label: "PR", emoji: "6" },
   { id: "sentiment", label: "Sentiment", emoji: "7" },
   { id: "section-cultural", label: "Culture", emoji: "8" },
+  { id: "benchmark", label: "Benchmark", emoji: "📏" },
+  { id: "revenue-estimate", label: "Revenue", emoji: "💰" },
 ];
 
 interface SectionPosition {
