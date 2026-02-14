@@ -111,6 +111,7 @@ const GrowthStreak = dynamic(() => import("./components/GrowthStreak"), { ssr: f
 const TrackMomentum = dynamic(() => import("./components/TrackMomentum"), { ssr: false });
 const MomentumArrows = dynamic(() => import("./components/MomentumArrows"), { ssr: false });
 const ViralMoments = dynamic(() => import("./components/ViralMoments"), { ssr: false });
+const PulseGrid = dynamic(() => import("./components/PulseGrid"), { ssr: false });
 
 /** Extract short date like "2/9/26" from "February 9, 2026" or ISO date */
 function shortDate(dateStr: string): string {
@@ -714,6 +715,21 @@ function Dashboard() {
             socialPct={liveSocialMedia.totalFootprint.prior ? ((liveSocialMedia.totalFootprint.current - liveSocialMedia.totalFootprint.prior) / liveSocialMedia.totalFootprint.prior) * 100 : null}
             mediaPct={livePR.wowChange ?? null}
           />
+
+          {/* System Pulse — traffic-light grid of all key metrics */}
+          <PulseGrid metrics={[
+            { label: "Listeners", emoji: "🟢", pct: bp.spotifyMonthlyListeners.prior ? ((liveListeners - bp.spotifyMonthlyListeners.prior) / bp.spotifyMonthlyListeners.prior) * 100 : null },
+            { label: "Followers", emoji: "💚", pct: bp.spotifyFollowers?.prior ? ((liveFollowers - bp.spotifyFollowers.prior) / bp.spotifyFollowers.prior) * 100 : null },
+            { label: "Popularity", emoji: "📊", pct: bp.spotifyPopularity.prior ? ((livePopularity - bp.spotifyPopularity.prior) / bp.spotifyPopularity.prior) * 100 : null },
+            ...liveTrackStreams.map(t => ({ label: t.name, emoji: "🎵", pct: t.spotifyStreams.prior ? ((t.spotifyStreams.current - t.spotifyStreams.prior) / t.spotifyStreams.prior) * 100 : null })),
+            ...liveYTVideos.slice(0, 4).map(v => ({ label: v.name.replace(/ (Performance Video|Official MV|Lyric Video|Debut Visualizer)/, "").trim(), emoji: "▶️", pct: v.views.prior ? ((v.views.current - v.views.prior) / v.views.prior) * 100 : null })),
+            { label: "YT Subs", emoji: "📺", pct: null },
+            { label: "SNS", emoji: "📱", pct: liveSocialMedia.totalFootprint.prior ? ((liveSocialMedia.totalFootprint.current - liveSocialMedia.totalFootprint.prior) / liveSocialMedia.totalFootprint.prior) * 100 : null },
+            ...liveSocialMedia.platforms.map((p: any) => ({ label: p.platform, emoji: p.platform === "TikTok" ? "🎵" : p.platform === "Instagram" ? "📸" : p.platform === "Weverse" ? "💚" : "📺", pct: p.prior ? ((p.current - p.prior) / p.prior) * 100 : null })),
+            { label: "Virality", emoji: "🔥", pct: audioVirality.totalAudioViews.prior ? ((audioVirality.totalAudioViews.current - audioVirality.totalAudioViews.prior) / audioVirality.totalAudioViews.prior) * 100 : null },
+            { label: "Mentions", emoji: "📰", pct: livePR.wowChange ?? null, status: livePR.wowChange != null ? (livePR.wowChange >= 5 ? "green" as const : livePR.wowChange >= -5 ? "amber" as const : "red" as const) : undefined },
+            { label: "Sentiment", emoji: "💬", pct: null, status: (liveSentiment.positive.pct - liveSentiment.negative.pct) >= 10 ? "green" as const : (liveSentiment.positive.pct - liveSentiment.negative.pct) >= 0 ? "amber" as const : "red" as const },
+          ]} />
 
           <div className="flex flex-col md:flex-row items-center gap-8">
             <div className="flex flex-col items-center gap-2 flex-shrink-0">
