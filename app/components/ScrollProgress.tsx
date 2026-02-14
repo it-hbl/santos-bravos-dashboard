@@ -93,6 +93,7 @@ export default function ScrollProgress() {
   }, [updatePositions]);
 
   const jumpTo = (sectionId: string) => {
+    window.dispatchEvent(new CustomEvent("sb-scroll-to-section", { detail: { id: sectionId } }));
     const el = document.getElementById(sectionId);
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };

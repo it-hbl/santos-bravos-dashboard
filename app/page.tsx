@@ -878,6 +878,7 @@ function Dashboard() {
                   glowColor={`${card.color}20`}
                   glowSize={200}
                   onClick={card.sectionId ? () => {
+                    window.dispatchEvent(new CustomEvent("sb-scroll-to-section", { detail: { id: card.sectionId } }));
                     const el = document.getElementById(card.sectionId!);
                     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
                   } : undefined}

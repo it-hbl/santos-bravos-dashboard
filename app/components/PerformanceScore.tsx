@@ -143,6 +143,7 @@ export default function PerformanceScore({ metrics }: PerformanceScoreProps) {
             const delta = m.priorScore != null ? m.score - m.priorScore : null;
             const handleClick = () => {
               if (m.sectionId) {
+                window.dispatchEvent(new CustomEvent("sb-scroll-to-section", { detail: { id: m.sectionId } }));
                 const el = document.getElementById(m.sectionId);
                 if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
               }

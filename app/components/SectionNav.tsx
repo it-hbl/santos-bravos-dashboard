@@ -86,6 +86,7 @@ export default function SectionNav({ trends }: { trends?: SectionTrendData }) {
           <button
             key={s.id}
             onClick={() => {
+              window.dispatchEvent(new CustomEvent("sb-scroll-to-section", { detail: { id: s.id } }));
               const el = document.getElementById(s.id);
               if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
             }}

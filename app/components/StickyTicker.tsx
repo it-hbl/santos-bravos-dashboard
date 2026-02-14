@@ -123,6 +123,7 @@ export default function StickyTicker({ metrics }: { metrics: TickerMetric[] }) {
             const wrapperProps = m.sectionId
               ? {
                   onClick: () => {
+                    window.dispatchEvent(new CustomEvent("sb-scroll-to-section", { detail: { id: m.sectionId } }));
                     const el = document.getElementById(m.sectionId!);
                     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
                   },

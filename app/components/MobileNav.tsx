@@ -73,6 +73,7 @@ export default function MobileNav() {
   }, [active]);
 
   const scrollTo = (id: string) => {
+    window.dispatchEvent(new CustomEvent("sb-scroll-to-section", { detail: { id } }));
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };

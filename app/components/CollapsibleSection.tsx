@@ -70,6 +70,33 @@ export default function CollapsibleSection({
     if (id in saved) setOpen(!saved[id]);
   }, [id]);
 
+  // Auto-expand when navigated to via URL hash or section nav click
+  useEffect(() => {
+    const expandIfTarget = () => {
+      const hash = window.location.hash.replace("#", "");
+      if (hash === id) {
+        setOpen(true);
+        setCollapsed(id, false);
+      }
+    };
+    // Check on mount (URL hash on page load)
+    expandIfTarget();
+    // Listen for hash changes (section nav clicks use replaceState, so also listen for custom event)
+    window.addEventListener("hashchange", expandIfTarget);
+    const scrollHandler = (e: Event) => {
+      const targetId = (e as CustomEvent).detail?.id;
+      if (targetId === id) {
+        setOpen(true);
+        setCollapsed(id, false);
+      }
+    };
+    window.addEventListener("sb-scroll-to-section", scrollHandler);
+    return () => {
+      window.removeEventListener("hashchange", expandIfTarget);
+      window.removeEventListener("sb-scroll-to-section", scrollHandler);
+    };
+  }, [id]);
+
   // Listen for global expand/collapse all events
   useEffect(() => {
     const handler = (e: Event) => {
