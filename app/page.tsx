@@ -104,6 +104,7 @@ const RevenueEstimate = dynamic(() => import("./components/RevenueEstimate"), { 
 const HeroScoreBadge = dynamic(() => import("./components/HeroScoreBadge"), { ssr: false });
 const SentimentWeekday = dynamic(() => import("./components/SentimentWeekday"), { ssr: false });
 const GrowthStreak = dynamic(() => import("./components/GrowthStreak"), { ssr: false });
+const MomentumArrows = dynamic(() => import("./components/MomentumArrows"), { ssr: false });
 
 /** Extract short date like "2/9/26" from "February 9, 2026" or ISO date */
 function shortDate(dateStr: string): string {
@@ -675,6 +676,13 @@ function Dashboard() {
             tracks={liveTrackStreams.map(t => ({ name: t.name, current: t.spotifyStreams.current, prior: t.spotifyStreams.prior }))}
             ytVideos={liveYTVideos.map(v => ({ name: v.name, current: v.views.current, prior: v.views.prior }))}
             dailyTopTrack={dailyStreams.length > 0 ? { name: dailyStreams[0].name, streams: dailyStreams[0].streams } : null}
+          />
+
+          {/* Momentum Arrows — pillar trajectory indicators */}
+          <MomentumArrows
+            streamingPct={bp.totalCrossPlatformStreams.prior ? ((bp.totalCrossPlatformStreams.current - bp.totalCrossPlatformStreams.prior) / bp.totalCrossPlatformStreams.prior) * 100 : null}
+            socialPct={liveSocialMedia.totalFootprint.prior ? ((liveSocialMedia.totalFootprint.current - liveSocialMedia.totalFootprint.prior) / liveSocialMedia.totalFootprint.prior) * 100 : null}
+            mediaPct={livePR.wowChange ?? null}
           />
 
           <div className="flex flex-col md:flex-row items-center gap-8">
