@@ -12,6 +12,8 @@ interface PerformanceMetric {
   color: string;
   /** Optional section anchor to scroll to on click */
   sectionId?: string;
+  /** Optional prior period score for comparison */
+  priorScore?: number;
 }
 
 interface PerformanceScoreProps {
@@ -28,6 +30,18 @@ function getGrade(score: number): { label: string; color: string; emoji: string 
   return { label: "Needs Work", color: "text-red-400", emoji: "🚨" };
 }
 
+function getLetterGrade(score: number): { letter: string; color: string } {
+  if (score >= 93) return { letter: "A+", color: "text-emerald-400" };
+  if (score >= 85) return { letter: "A", color: "text-emerald-400" };
+  if (score >= 78) return { letter: "B+", color: "text-green-400" };
+  if (score >= 70) return { letter: "B", color: "text-green-400" };
+  if (score >= 63) return { letter: "C+", color: "text-lime-400" };
+  if (score >= 55) return { letter: "C", color: "text-yellow-400" };
+  if (score >= 45) return { letter: "D+", color: "text-amber-400" };
+  if (score >= 35) return { letter: "D", color: "text-amber-400" };
+  return { letter: "F", color: "text-red-400" };
+}
+
 export default function PerformanceScore({ metrics }: PerformanceScoreProps) {
   const [animatedScore, setAnimatedScore] = useState(0);
   const [showBreakdown, setShowBreakdown] = useState(false);
@@ -37,6 +51,14 @@ export default function PerformanceScore({ metrics }: PerformanceScoreProps) {
     metrics.reduce((s, m) => s + (m.score * m.weight) / totalWeight, 0)
   );
   const grade = getGrade(compositeScore);
+  const compositeLetterGrade = getLetterGrade(compositeScore);
+
+  // Prior composite score (if any metrics have prior data)
+  const hasPrior = metrics.some(m => m.priorScore != null);
+  const priorComposite = hasPrior ? Math.round(
+    metrics.reduce((s, m) => s + ((m.priorScore ?? m.score) * m.weight) / totalWeight, 0)
+  ) : null;
+  const compositeDelta = priorComposite != null ? compositeScore - priorComposite : null;
 
   useEffect(() => {
     let frame: number;
@@ -102,8 +124,14 @@ export default function PerformanceScore({ metrics }: PerformanceScoreProps) {
           </svg>
           {/* Center text */}
           <div className="absolute inset-0 flex flex-col items-center justify-end pb-2">
+            <span className={`text-sm font-black ${compositeLetterGrade.color} mb--0.5`}>{compositeLetterGrade.letter}</span>
             <span className="text-4xl font-black text-white tabular-nums">{animatedScore}</span>
             <span className={`text-xs font-bold ${grade.color}`}>{grade.emoji} {grade.label}</span>
+            {compositeDelta != null && (
+              <span className={`text-[10px] font-semibold mt-0.5 ${compositeDelta > 0 ? "text-emerald-400" : compositeDelta < 0 ? "text-red-400" : "text-neutral-500"}`}>
+                {compositeDelta > 0 ? "↑" : compositeDelta < 0 ? "↓" : "→"}{Math.abs(compositeDelta)} vs prior
+              </span>
+            )}
           </div>
         </div>
 
@@ -111,6 +139,8 @@ export default function PerformanceScore({ metrics }: PerformanceScoreProps) {
         <div className="flex-1 w-full space-y-2">
           {metrics.map((m) => {
             const isClickable = !!m.sectionId;
+            const letterGrade = getLetterGrade(m.score);
+            const delta = m.priorScore != null ? m.score - m.priorScore : null;
             const handleClick = () => {
               if (m.sectionId) {
                 const el = document.getElementById(m.sectionId);
@@ -120,23 +150,37 @@ export default function PerformanceScore({ metrics }: PerformanceScoreProps) {
             return (
               <div
                 key={m.label}
-                className={`group rounded-lg px-2 py-1 -mx-2 transition-colors duration-200 ${isClickable ? "cursor-pointer hover:bg-white/[0.03]" : ""}`}
+                className={`group rounded-lg px-2 py-1.5 -mx-2 transition-colors duration-200 ${isClickable ? "cursor-pointer hover:bg-white/[0.03]" : ""}`}
                 onClick={isClickable ? handleClick : undefined}
                 role={isClickable ? "button" : undefined}
                 tabIndex={isClickable ? 0 : undefined}
                 onKeyDown={isClickable ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handleClick(); } } : undefined}
-                title={isClickable ? `Go to ${m.label}` : undefined}
+                title={isClickable ? `Go to ${m.label} — Grade: ${letterGrade.letter} (${m.score}/100)${delta != null ? `, ${delta >= 0 ? "+" : ""}${delta} vs prior` : ""}` : undefined}
               >
                 <div className="flex items-center justify-between mb-0.5">
-                  <span className={`text-[11px] transition-colors duration-200 ${isClickable ? "text-neutral-400 group-hover:text-white" : "text-neutral-400"}`}>
+                  <span className={`text-[11px] transition-colors duration-200 flex items-center gap-1.5 ${isClickable ? "text-neutral-400 group-hover:text-white" : "text-neutral-400"}`}>
+                    <span className={`text-[10px] font-black ${letterGrade.color} w-5 text-center`}>{letterGrade.letter}</span>
                     {m.label}
-                    {isClickable && <span className="ml-1 opacity-0 group-hover:opacity-60 transition-opacity text-[9px]">→</span>}
+                    {isClickable && <span className="ml-0.5 opacity-0 group-hover:opacity-60 transition-opacity text-[9px]">→</span>}
                   </span>
-                  <span className="text-[11px] font-bold text-white tabular-nums">{m.score}</span>
+                  <div className="flex items-center gap-2">
+                    {delta != null && (
+                      <span className={`text-[9px] font-semibold tabular-nums ${delta > 0 ? "text-emerald-400" : delta < 0 ? "text-red-400" : "text-neutral-600"}`}>
+                        {delta > 0 ? "↑" : delta < 0 ? "↓" : "→"}{Math.abs(delta)}
+                      </span>
+                    )}
+                    <span className="text-[11px] font-bold text-white tabular-nums">{m.score}</span>
+                  </div>
                 </div>
-                <div className="h-1.5 bg-white/[0.04] rounded-full overflow-hidden">
+                <div className="h-1.5 bg-white/[0.04] rounded-full overflow-hidden relative">
+                  {m.priorScore != null && (
+                    <div
+                      className="absolute h-full rounded-full bg-white/[0.08] transition-all duration-1000 ease-out"
+                      style={{ width: `${m.priorScore}%` }}
+                    />
+                  )}
                   <div
-                    className={`h-full rounded-full ${m.color} transition-all duration-1000 ease-out`}
+                    className={`h-full rounded-full ${m.color} transition-all duration-1000 ease-out relative z-10`}
                     style={{ width: `${m.score}%` }}
                   />
                 </div>

@@ -1160,13 +1160,28 @@ function Dashboard() {
             ];
             const milestoneScore = Math.round(milestoneTargets.reduce((s, m) => s + Math.min(100, (m.current / m.target) * 100), 0) / milestoneTargets.length);
 
+            // Prior period scores (using prior values where available)
+            const priorSnsScore = liveSocialMedia.totalFootprint.prior
+              ? Math.min(100, (liveSocialMedia.totalFootprint.prior / 2000000) * 100)
+              : undefined;
+            const priorMediaScore = livePR.wow?.priorTotal
+              ? Math.min(100, ((livePR.wow.priorTotal / 7) / 1000) * 100)
+              : undefined;
+            const priorMilestoneTargets = [
+              { current: bp.spotifyMonthlyListeners.prior ?? liveListeners, target: 500000 },
+              { current: bp.tracks[0]?.spotifyStreams.prior ?? 0, target: 10000000 },
+              { current: liveSocialMedia.totalFootprint.prior ?? liveSocialMedia.totalFootprint.current, target: 2000000 },
+              { current: liveSocialMedia.platforms.find(p => p.platform === "YouTube")?.prior ?? liveYTSubscribers, target: 500000 },
+            ];
+            const priorMilestoneScore = Math.round(priorMilestoneTargets.reduce((s, m) => s + Math.min(100, (m.current / m.target) * 100), 0) / priorMilestoneTargets.length);
+
             return [
               { label: "Streaming Growth", score: Math.round(streamingScore), weight: 25, color: "bg-emerald-500", sectionId: "business" },
-              { label: "Social Reach", score: Math.round(snsScore), weight: 20, color: "bg-cyan-500", sectionId: "social" },
+              { label: "Social Reach", score: Math.round(snsScore), weight: 20, color: "bg-cyan-500", sectionId: "social", priorScore: priorSnsScore != null ? Math.round(priorSnsScore) : undefined },
               { label: "Content Velocity", score: Math.round(contentScore), weight: 20, color: "bg-violet-500", sectionId: "charts" },
-              { label: "Media Presence", score: Math.round(mediaScore), weight: 15, color: "bg-pink-500", sectionId: "pr" },
+              { label: "Media Presence", score: Math.round(mediaScore), weight: 15, color: "bg-pink-500", sectionId: "pr", priorScore: priorMediaScore != null ? Math.round(priorMediaScore) : undefined },
               { label: "Sentiment Health", score: Math.round(sentimentScore), weight: 10, color: "bg-amber-500", sectionId: "sentiment" },
-              { label: "Milestone Progress", score: milestoneScore, weight: 10, color: "bg-indigo-500", sectionId: "milestones" },
+              { label: "Milestone Progress", score: milestoneScore, weight: 10, color: "bg-indigo-500", sectionId: "milestones", priorScore: priorMilestoneScore },
             ];
           })()} />
         </AnimatedSection>
