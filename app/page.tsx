@@ -48,6 +48,7 @@ const KeyHighlights = dynamic(() => import("./components/KeyHighlights"), { ssr:
 const GrowthVelocity = dynamic(() => import("./components/GrowthVelocity"), { ssr: false });
 const SectionNav = dynamic(() => import("./components/SectionNav"), { ssr: false });
 const PlatformDistribution = dynamic(() => import("./components/PlatformDistribution"), { ssr: false });
+const PlatformSync = dynamic(() => import("./components/PlatformSync"), { ssr: false });
 const SentimentGauge = dynamic(() => import("./components/SentimentGauge"), { ssr: false });
 const TrackRadar = dynamic(() => import("./components/TrackRadar"), { ssr: false });
 const MemberBuzz = dynamic(() => import("./components/MemberBuzz"), { ssr: false });
@@ -1481,6 +1482,25 @@ function Dashboard() {
           />
           <div className="mt-4">
             <SocialChart data={liveSocialMedia.platforms.map(p => ({ platform: p.platform, followers: p.current, color: p.color }))} />
+          </div>
+          {/* Cross-Platform Sync Score */}
+          <div className="mt-5">
+            <PlatformSync platforms={(() => {
+              const platformMeta: Record<string, { emoji: string; color: string }> = {
+                TikTok: { emoji: "🎵", color: "#00F2EA" },
+                YouTube: { emoji: "▶️", color: "#FF0000" },
+                Instagram: { emoji: "📷", color: "#E1306C" },
+                Weverse: { emoji: "💚", color: "#10B981" },
+              };
+              return liveSocialMedia.platforms
+                .filter(p => p.prior != null && p.prior > 0)
+                .map(p => ({
+                  name: p.platform,
+                  emoji: platformMeta[p.platform]?.emoji || "📱",
+                  color: platformMeta[p.platform]?.color || "#8B5CF6",
+                  growthPct: ((p.current - (p.prior ?? 0)) / (p.prior ?? 1)) * 100,
+                }));
+            })()} />
           </div>
           </CollapsibleSection>
         </section>
