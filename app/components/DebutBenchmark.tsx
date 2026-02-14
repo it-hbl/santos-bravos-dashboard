@@ -124,8 +124,21 @@ export default function DebutBenchmark({
   const overallScore = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
   const overallRating = getRating(overallScore - 100);
 
+  // Radar chart data: normalize each metric as % of max(current, benchmark, 1) capped at 200%
+  const radarData = benchmarks.map(b => ({
+    label: b.emoji + " " + b.label.replace("Spotify ", "").replace("Weekly ", ""),
+    sb: Math.min(200, (b.current / (b.benchmark || 1)) * 100),
+    benchmark: 100, // benchmark is always 100%
+  }));
+
   return (
     <div className="space-y-4">
+      {/* Radar Chart — visual overlay of current vs benchmark */}
+      <div className="flex flex-col lg:flex-row gap-4 items-start">
+        <div className="w-full lg:w-1/2">
+          <BenchmarkRadar data={radarData} overallScore={overallScore} overallRating={overallRating} daysSinceDebut={daysSinceDebut} />
+        </div>
+        <div className="w-full lg:w-1/2 space-y-4">
       {/* Header with overall score */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
@@ -215,6 +228,139 @@ export default function DebutBenchmark({
         at similar post-debut age, scaled to Day {daysSinceDebut}. Santos Bravos benefits from HYBE&apos;s
         established distribution and fanbase infrastructure, which may accelerate early metrics beyond organic benchmarks.
       </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * BenchmarkRadar — Pure SVG radar/spider chart overlaying Santos Bravos
+ * performance (cyan polygon) against benchmark baseline (dashed white polygon).
+ * No Recharts dependency — lightweight pure SVG.
+ */
+function BenchmarkRadar({ data, overallScore, overallRating, daysSinceDebut }: {
+  data: { label: string; sb: number; benchmark: number }[];
+  overallScore: number;
+  overallRating: { label: string; emoji: string; color: string; bg: string };
+  daysSinceDebut: number;
+}) {
+  const cx = 140, cy = 130, maxR = 100;
+  const n = data.length;
+  const angleStep = (2 * Math.PI) / n;
+  const startAngle = -Math.PI / 2; // top
+
+  // Scale: 200% = full radius
+  const scale = (pct: number) => Math.min(maxR, (pct / 200) * maxR);
+
+  const pointAt = (i: number, r: number): [number, number] => {
+    const angle = startAngle + i * angleStep;
+    return [cx + r * Math.cos(angle), cy + r * Math.sin(angle)];
+  };
+
+  const polygon = (values: number[]) =>
+    values.map((v, i) => pointAt(i, scale(v))).map(([x, y]) => `${x},${y}`).join(" ");
+
+  // Grid rings at 50%, 100%, 150%, 200%
+  const rings = [50, 100, 150, 200];
+
+  return (
+    <div className="relative">
+      <svg viewBox="0 0 280 275" className="w-full max-w-[320px] mx-auto">
+        {/* Grid rings */}
+        {rings.map(pct => (
+          <polygon
+            key={pct}
+            points={Array.from({ length: n }, (_, i) => pointAt(i, scale(pct))).map(([x, y]) => `${x},${y}`).join(" ")}
+            fill="none"
+            stroke="rgba(255,255,255,0.06)"
+            strokeWidth={pct === 100 ? 1.5 : 0.5}
+            strokeDasharray={pct === 100 ? "none" : "2,3"}
+          />
+        ))}
+
+        {/* Axis lines */}
+        {data.map((_, i) => {
+          const [x, y] = pointAt(i, maxR);
+          return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />;
+        })}
+
+        {/* Benchmark polygon (100% on all axes) — dashed white */}
+        <polygon
+          points={polygon(data.map(d => d.benchmark))}
+          fill="rgba(255,255,255,0.03)"
+          stroke="rgba(255,255,255,0.3)"
+          strokeWidth="1.5"
+          strokeDasharray="4,3"
+        />
+
+        {/* Santos Bravos polygon — cyan filled */}
+        <polygon
+          points={polygon(data.map(d => d.sb))}
+          fill="rgba(6,182,212,0.12)"
+          stroke="#06b6d4"
+          strokeWidth="2"
+          className="drop-shadow-[0_0_6px_rgba(6,182,212,0.4)]"
+        />
+
+        {/* Data points on SB polygon */}
+        {data.map((d, i) => {
+          const [x, y] = pointAt(i, scale(d.sb));
+          const isAbove = d.sb >= 100;
+          return (
+            <circle
+              key={i}
+              cx={x}
+              cy={y}
+              r="3.5"
+              fill={isAbove ? "#06b6d4" : "#ef4444"}
+              stroke={isAbove ? "#06b6d4" : "#ef4444"}
+              strokeWidth="1"
+              className="drop-shadow-[0_0_4px_rgba(6,182,212,0.5)]"
+            />
+          );
+        })}
+
+        {/* Labels */}
+        {data.map((d, i) => {
+          const labelR = maxR + 18;
+          const [x, y] = pointAt(i, labelR);
+          const isAbove = d.sb >= 100;
+          return (
+            <text
+              key={i}
+              x={x}
+              y={y}
+              textAnchor="middle"
+              dominantBaseline="central"
+              fill={isAbove ? "rgba(255,255,255,0.6)" : "rgba(239,68,68,0.7)"}
+              fontSize="8.5"
+              fontWeight="500"
+              fontFamily="Inter, system-ui"
+            >
+              {d.label}
+            </text>
+          );
+        })}
+
+        {/* Center score */}
+        <text x={cx} y={cy - 6} textAnchor="middle" fill="white" fontSize="18" fontWeight="bold" fontFamily="Inter, system-ui">
+          {overallScore}%
+        </text>
+        <text x={cx} y={cy + 10} textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="8" fontFamily="Inter, system-ui">
+          vs benchmark
+        </text>
+      </svg>
+
+      {/* Legend */}
+      <div className="flex items-center justify-center gap-4 -mt-2 text-[9px] text-neutral-500">
+        <span className="flex items-center gap-1.5">
+          <span className="w-3 h-0.5 bg-cyan-500 rounded-full inline-block" /> Santos Bravos
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="w-3 h-0.5 border-t border-dashed border-white/30 inline-block" /> Benchmark (100%)
+        </span>
+      </div>
     </div>
   );
 }
