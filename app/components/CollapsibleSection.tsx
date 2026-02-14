@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, ReactNode, useCallback } from "react";
+import { useState, useEffect, ReactNode, useCallback, useRef } from "react";
 import { focusSection } from "./FocusMode";
 
 const STORAGE_KEY = "sb-collapsed-sections";
@@ -62,6 +62,8 @@ export default function CollapsibleSection({
   collapsedSummary?: string;
 }) {
   const [open, setOpen] = useState(defaultOpen);
+  const [linkCopied, setLinkCopied] = useState(false);
+  const copyTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const saved = getCollapsed();
@@ -89,6 +91,17 @@ export default function CollapsibleSection({
     });
   }, [id]);
 
+  const copyLink = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    const url = new URL(window.location.href);
+    url.hash = id;
+    navigator.clipboard.writeText(url.toString()).then(() => {
+      setLinkCopied(true);
+      if (copyTimeout.current) clearTimeout(copyTimeout.current);
+      copyTimeout.current = setTimeout(() => setLinkCopied(false), 1500);
+    });
+  }, [id]);
+
   return (
     <div>
       <button
@@ -107,6 +120,23 @@ export default function CollapsibleSection({
           </h2>
         </div>
         <div className="flex items-center gap-3">
+          {/* Copy section link button */}
+          <button
+            onClick={copyLink}
+            className="w-6 h-6 rounded-md bg-white/[0.03] hover:bg-cyan-500/20 border border-transparent hover:border-cyan-500/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200"
+            title={linkCopied ? "Link copied!" : "Copy link to this section"}
+            aria-label={`Copy link to ${title}`}
+          >
+            {linkCopied ? (
+              <svg className="w-3 h-3 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            ) : (
+              <svg className="w-3 h-3 text-neutral-500 hover:text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+              </svg>
+            )}
+          </button>
           {/* Focus mode button */}
           <button
             onClick={(e) => { e.stopPropagation(); focusSection(id, title); }}
