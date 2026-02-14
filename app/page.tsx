@@ -602,10 +602,12 @@ function Dashboard() {
         })()} />
 
         {/* Skeleton loading state when switching dates */}
-        {dateLoading && <SkeletonLoader />}
+        <div className={`transition-all duration-300 ease-out ${dateLoading ? "opacity-100 max-h-none" : "opacity-0 max-h-0 overflow-hidden pointer-events-none"}`}>
+          <SkeletonLoader />
+        </div>
 
-        {/* Main dashboard content — hidden during date loading */}
-        <div className={dateLoading ? "hidden" : "space-y-10"}>
+        {/* Main dashboard content — fades in/out during date loading */}
+        <div className={`transition-opacity duration-300 ease-out ${dateLoading ? "opacity-0 pointer-events-none" : "opacity-100"} space-y-10`}>
 
         {/* Hero */}
         <section id="hero" tabIndex={-1} className="hero-bg rounded-3xl p-5 sm:p-8 md:p-10 scroll-mt-16"><span id="main-content" />
