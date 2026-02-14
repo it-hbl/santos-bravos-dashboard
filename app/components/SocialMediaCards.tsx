@@ -65,6 +65,13 @@ const PLATFORM_EMOJIS: Record<string, string> = {
   Weverse: "💚",
 };
 
+const PLATFORM_URLS: Record<string, string> = {
+  YouTube: "https://www.youtube.com/channel/UChKJaUFTKfw5O8JtQmF4Q6g",
+  TikTok: "https://www.tiktok.com/@santos_bravos",
+  Instagram: "https://www.instagram.com/santos_bravos/",
+  Weverse: "https://weverse.io/santosbravos",
+};
+
 export default function SocialMediaCards({
   platforms,
   totalFootprint,
@@ -114,13 +121,17 @@ export default function SocialMediaCards({
           const share = ((p.current / totalFootprint.current) * 100).toFixed(1);
 
           return (
-            <motion.div
+            <motion.a
               key={p.platform}
+              href={PLATFORM_URLS[p.platform] || "#"}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={`Open ${p.platform} profile`}
               initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: i * 0.08 }}
-              className="group bg-white/[0.02] hover:bg-white/[0.04] border border-white/[0.05] hover:border-white/[0.1] rounded-xl p-4 transition-all duration-300 cursor-default relative overflow-hidden"
+              className="group bg-white/[0.02] hover:bg-white/[0.04] border border-white/[0.05] hover:border-white/[0.1] rounded-xl p-4 transition-all duration-300 cursor-pointer relative overflow-hidden block"
             >
               {/* Background bar showing share of total */}
               <div
@@ -144,7 +155,7 @@ export default function SocialMediaCards({
                     {PLATFORM_EMOJIS[p.platform] || p.icon}
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-white">{p.platform}</p>
+                    <p className="text-sm font-bold text-white flex items-center gap-1">{p.platform}<span className="opacity-0 group-hover:opacity-40 transition-opacity text-[10px]">↗</span></p>
                     <p className="text-[10px] text-neutral-500">{p.metric}</p>
                   </div>
                 </div>
@@ -196,7 +207,7 @@ export default function SocialMediaCards({
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </motion.a>
           );
         })}
       </div>
