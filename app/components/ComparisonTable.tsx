@@ -11,6 +11,45 @@ interface TableRow {
   changePct: number | null;
 }
 
+/** Tiny inline SVG sparkline (32×14px) showing prior→current trend */
+function MiniTrend({ prior, current }: { prior: number | null; current: number }) {
+  if (prior == null || isNaN(prior)) return null;
+  const isUp = current >= prior;
+  const color = isUp ? "#34d399" : "#f87171";
+  // Generate 5 points with slight noise for visual interest
+  const points: number[] = [];
+  for (let i = 0; i < 5; i++) {
+    const t = i / 4;
+    const eased = t * t * (3 - 2 * t); // smoothstep
+    const base = prior + (current - prior) * eased;
+    const range = Math.abs(current - prior) || 1;
+    const noise = i > 0 && i < 4 ? (Math.sin(i * 2.7 + prior * 0.001) * range * 0.15) : 0;
+    points.push(base + noise);
+  }
+  const min = Math.min(...points);
+  const max = Math.max(...points);
+  const span = max - min || 1;
+  const w = 32, h = 14, pad = 1;
+  const coords = points.map((v, i) => {
+    const x = pad + (i / 4) * (w - pad * 2);
+    const y = pad + (1 - (v - min) / span) * (h - pad * 2);
+    return `${x},${y}`;
+  });
+  return (
+    <svg width={w} height={h} className="inline-block align-middle flex-shrink-0 opacity-60 group-hover:opacity-100 transition-opacity">
+      <polyline
+        points={coords.join(" ")}
+        fill="none"
+        stroke={color}
+        strokeWidth={1.5}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx={coords[4].split(",")[0]} cy={coords[4].split(",")[1]} r={1.5} fill={color} />
+    </svg>
+  );
+}
+
 function fmt(n: number | null | undefined) {
   if (n == null || isNaN(n)) return "—";
   if (Math.abs(n) >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -175,6 +214,7 @@ export default function ComparisonTable({ rows }: { rows: TableRow[] }) {
                     <div className="flex items-center gap-2">
                       <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${CATEGORY_COLORS[row.category] || "bg-neutral-500"}`} />
                       <span className="text-neutral-300 group-hover:text-white transition-colors truncate text-xs sm:text-sm">{row.metric}</span>
+                      <MiniTrend prior={row.prior} current={row.current} />
                     </div>
                   </td>
                   <td className="text-right py-2.5 px-2 font-bold text-white tabular-nums text-xs sm:text-sm">{fmt(row.current)}</td>
