@@ -8,7 +8,7 @@ import {
   geoCountries as fallbackGeoCountries, geoCities as fallbackGeoCities,
   prMedia as fallbackPrMedia, fanSentiment as fallbackFanSentiment,
   audienceStats as fallbackAudienceStats, artistOverview as fallbackArtistOverview,
-  RELEASES, getTrackReleaseDate, getTrackSpotifyUrl, getVideoYoutubeUrl,
+  RELEASES, getTrackReleaseDate, getTrackSpotifyUrl, getVideoYoutubeUrl, YOUTUBE_VIDEO_IDS,
 } from "./lib/data";
 import { getDashboardData, getAvailableDates } from "./lib/db";
 import { useState, useEffect, useCallback, useRef } from "react";
@@ -1227,7 +1227,31 @@ function Dashboard() {
                   const engRate = v.views.current > 0 ? ((v.likes + v.comments) / v.views.current * 100) : 0;
                   const shortName = v.name.replace("YouTube Views: ", "").replace(/ (Performance Video|Official MV|Lyric Video|Debut Visualizer)/, "").trim();
                   return (
-                    <div key={`eng-${v.name}`} className="bg-white/[0.02] rounded-xl p-3 border border-white/[0.04]">
+                    <div key={`eng-${v.name}`} className="bg-white/[0.02] rounded-xl p-3 border border-white/[0.04] group/eng">
+                      {/* Video thumbnail */}
+                      {(() => {
+                        const ytUrl = getVideoYoutubeUrl(v.name);
+                        const videoId = YOUTUBE_VIDEO_IDS[v.name];
+                        if (!videoId) return null;
+                        return (
+                          <a href={ytUrl!} target="_blank" rel="noopener noreferrer" className="block relative mb-2 rounded-lg overflow-hidden aspect-video bg-black/30">
+                            <img
+                              src={`https://img.youtube.com/vi/${videoId}/mqdefault.jpg`}
+                              alt={shortName}
+                              className="w-full h-full object-cover opacity-80 group-hover/eng:opacity-100 transition-opacity"
+                              loading="lazy"
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <div className="w-8 h-8 rounded-full bg-red-600/90 flex items-center justify-center opacity-70 group-hover/eng:opacity-100 group-hover/eng:scale-110 transition-all">
+                                <svg viewBox="0 0 24 24" fill="white" className="w-4 h-4 ml-0.5"><polygon points="5,3 19,12 5,21" /></svg>
+                              </div>
+                            </div>
+                            <div className="absolute bottom-1 right-1 bg-black/70 rounded px-1.5 py-0.5 text-[9px] font-bold text-white tabular-nums">
+                              {fmt(v.views.current)} views
+                            </div>
+                          </a>
+                        );
+                      })()}
                       <p className="text-[10px] text-neutral-500 font-medium truncate mb-2">{shortName}</p>
                       <div className="space-y-1.5">
                         <div className="flex items-center justify-between">
