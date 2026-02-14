@@ -97,6 +97,7 @@ const CulturalAffinity = dynamic(() => import("./components/CulturalAffinity"), 
 const MetricAlerts = dynamic(() => import("./components/MetricAlerts"), { ssr: false });
 const PrintQR = dynamic(() => import("./components/PrintQR"), { ssr: false });
 const SectionDivider = dynamic(() => import("./components/SectionDivider"), { ssr: false });
+const RevenueEstimate = dynamic(() => import("./components/RevenueEstimate"), { ssr: false });
 
 /** Extract short date like "2/9/26" from "February 9, 2026" or ISO date */
 function shortDate(dateStr: string): string {
@@ -1266,6 +1267,19 @@ function Dashboard() {
             youtubeViews={liveYTVideos.reduce((s, v) => s + v.views.current, 0)}
             tiktokAudioViews={audioVirality.totalAudioViews.current}
           />
+          <section className="glass-hybe rounded-2xl p-6">
+            <CollapsibleSection id="revenue-estimate" number="💰" title="Estimated Revenue" subtitle="Industry avg rates" color="bg-gradient-to-br from-emerald-500 to-teal-500">
+              <p className="text-[10px] text-neutral-500 mb-4">Revenue projections based on cumulative streams across all platforms using industry-average per-stream payout rates.</p>
+              <RevenueEstimate
+                spotifyStreams={liveTrackStreams.reduce((s, t) => s + t.spotifyStreams.current, 0)}
+                youtubeViews={liveYTVideos.reduce((s, v) => s + v.views.current, 0)}
+                tiktokAudioViews={audioVirality.totalAudioViews.current}
+                spotifyStreamsPrior={liveTrackStreams.reduce((s, t) => s + (t.spotifyStreams.prior ?? 0), 0) || null}
+                youtubeViewsPrior={liveYTVideos.reduce((s, v) => s + (v.views.prior ?? 0), 0) || null}
+                tiktokAudioViewsPrior={audioVirality.totalAudioViews.prior}
+              />
+            </CollapsibleSection>
+          </section>
           <section className="glass-hybe rounded-2xl p-6">
             <CollapsibleSection id="release-pacing" number="🏁" title="Release Pacing Comparison" subtitle="Streams from Day 0" color="bg-gradient-to-br from-amber-500 to-pink-500">
               <p className="text-[10px] text-neutral-500 mb-4">How fast each track accumulated Spotify streams since its release date. Steeper curves = faster growth.</p>
