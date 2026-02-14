@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 interface Milestone {
   label: string;
@@ -64,21 +64,49 @@ export default function MilestonesTracker({ milestones }: { milestones: Mileston
             else if (daysToTarget <= 365) { paceLabel = "🐢 Slow"; paceColor = "text-orange-400"; }
             else { paceLabel = "⏳ Long road"; paceColor = "text-neutral-500"; }
           }
+          const isAlmostThere = pct >= 90 && !isComplete;
           return (
             <div
               key={m.label}
-              className={`bg-white/[0.02] rounded-xl p-4 border transition-all duration-500 ${
-                isComplete ? "border-emerald-500/30 bg-emerald-500/[0.03]" : "border-white/[0.04]"
+              className={`relative bg-white/[0.02] rounded-xl p-4 border transition-all duration-500 overflow-hidden ${
+                isComplete
+                  ? "border-emerald-500/30 bg-emerald-500/[0.03] milestone-complete"
+                  : isAlmostThere
+                  ? "border-amber-500/30 milestone-almost"
+                  : "border-white/[0.04]"
               }`}
               style={{ animationDelay: `${i * 80}ms` }}
             >
-              <div className="flex items-center justify-between mb-2">
+              {/* Celebration particles for completed milestones */}
+              {isComplete && animate && (
+                <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-xl">
+                  {Array.from({ length: 12 }).map((_, pi) => (
+                    <span
+                      key={pi}
+                      className="milestone-particle"
+                      style={{
+                        left: `${10 + (pi * 7.5) % 80}%`,
+                        animationDelay: `${pi * 120}ms`,
+                        backgroundColor: pi % 3 === 0 ? "#34d399" : pi % 3 === 1 ? "#a78bfa" : "#f59e0b",
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
+              {/* Almost-there pulsing ring */}
+              {isAlmostThere && (
+                <div className="absolute inset-0 rounded-xl border-2 border-amber-400/20 animate-pulse pointer-events-none" />
+              )}
+              <div className="relative flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-base">{m.icon}</span>
+                  <span className={`text-base ${isComplete ? "milestone-icon-bounce" : ""}`}>{m.icon}</span>
                   <span className="text-xs font-semibold text-neutral-300">{m.label}</span>
                 </div>
                 {isComplete && (
-                  <span className="text-[9px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">✓ REACHED</span>
+                  <span className="text-[9px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full milestone-shimmer">✓ REACHED</span>
+                )}
+                {isAlmostThere && (
+                  <span className="text-[9px] font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full animate-pulse">🔥 ALMOST</span>
                 )}
               </div>
               <div className="flex items-end justify-between mb-2">
