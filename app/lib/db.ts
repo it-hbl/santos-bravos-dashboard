@@ -87,8 +87,9 @@ export async function getDashboardData(date: string): Promise<DashboardData> {
     let priorMembers: any[] = [];
     let priorGeoCountries: any[] = [];
     let priorTrackMetrics: any[] = [];
+    let priorSentiment: any = null;
     if (priorDateRaw) {
-      const [{ data: pr }, { data: pm }, { data: pg }, { data: pt }] = await Promise.all([
+      const [{ data: pr }, { data: pm }, { data: pg }, { data: pt }, { data: ps }] = await Promise.all([
         supabase
           .from('daily_reports')
           .select('spotify_followers, total_member_followers, spl')
@@ -106,11 +107,17 @@ export async function getDashboardData(date: string): Promise<DashboardData> {
           .from('track_metrics')
           .select('track_name, audio_views, tiktok_creates, ig_creates')
           .eq('report_date', priorDateRaw),
+        supabase
+          .from('fan_sentiment')
+          .select('positive_pct, negative_pct, neutral_pct')
+          .eq('report_date', priorDateRaw)
+          .single(),
       ]);
       priorReport = pr;
       priorMembers = pm || [];
       priorGeoCountries = pg || [];
       priorTrackMetrics = pt || [];
+      priorSentiment = ps;
     }
 
     // Build businessPerformance
@@ -171,6 +178,7 @@ export async function getDashboardData(date: string): Promise<DashboardData> {
       topEntities: sentiment.top_entities || [],
       topSharedLinks: sentiment.top_shared_links || [],
       sentimentTimeline: sentiment.sentiment_timeline || [],
+      priorNss: priorSentiment ? parseFloat(priorSentiment.positive_pct) - parseFloat(priorSentiment.negative_pct) : null,
     } : fallback.fanSentiment;
 
     const audienceData = audience ? {

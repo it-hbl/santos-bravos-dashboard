@@ -263,6 +263,7 @@ export const fanSentiment = {
     { date: "Feb 8", positive: 145, neutral: 370, negative: 94, total: 609 },
     { date: "Feb 9", positive: 97, neutral: 246, negative: 63, total: 406 },
   ],
+  priorNss: null,
 };
 
 // === Audience Stats (Spotify for Artists, 28 days) ===

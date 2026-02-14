@@ -1833,7 +1833,7 @@ function Dashboard() {
             <div className="space-y-5">
               <div>
                 <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-2"><MetricTooltip term="Net Sentiment Score">Net Sentiment Score</MetricTooltip></p>
-                <SentimentGauge positive={liveSentiment.positive.pct} negative={liveSentiment.negative.pct} neutral={liveSentiment.neutral.pct} />
+                <SentimentGauge positive={liveSentiment.positive.pct} negative={liveSentiment.negative.pct} neutral={liveSentiment.neutral.pct} priorNss={liveSentiment.priorNss ?? null} />
               </div>
               <div>
                 <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-2">Sentiment Breakdown</p>
