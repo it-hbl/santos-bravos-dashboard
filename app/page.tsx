@@ -879,7 +879,28 @@ function Dashboard() {
                           style={{ width: `${targetPct}%`, backgroundColor: card.color, opacity: 0.7 }}
                         />
                       </div>
-                      <p className="text-[8px] text-neutral-600 mt-0.5">{targetPct.toFixed(0)}% → {card.targetLabel}</p>
+                      <p className="text-[8px] text-neutral-600 mt-0.5">
+                        {targetPct.toFixed(0)}% → {card.targetLabel}
+                        {(() => {
+                          if (targetPct >= 100) return <span className="text-emerald-400 ml-1">✓</span>;
+                          if (dailyRate != null && dailyRate > 0 && card.target) {
+                            const remaining = card.target - card.value;
+                            const daysLeft = Math.ceil(remaining / dailyRate);
+                            if (daysLeft <= 365) {
+                              const eta = new Date();
+                              eta.setDate(eta.getDate() + daysLeft);
+                              const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+                              const etaStr = `${monthNames[eta.getMonth()]} ${eta.getDate()}`;
+                              return (
+                                <span className={`ml-1 ${daysLeft <= 30 ? "text-emerald-400" : daysLeft <= 90 ? "text-amber-400" : "text-neutral-500"}`}>
+                                  · ~{daysLeft}d ({etaStr})
+                                </span>
+                              );
+                            }
+                          }
+                          return null;
+                        })()}
+                      </p>
                     </div>
                   )}
                 </GlowCard>
