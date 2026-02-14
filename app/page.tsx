@@ -98,6 +98,7 @@ const MetricAlerts = dynamic(() => import("./components/MetricAlerts"), { ssr: f
 const PrintQR = dynamic(() => import("./components/PrintQR"), { ssr: false });
 const SectionDivider = dynamic(() => import("./components/SectionDivider"), { ssr: false });
 const RevenueEstimate = dynamic(() => import("./components/RevenueEstimate"), { ssr: false });
+const HeroScoreBadge = dynamic(() => import("./components/HeroScoreBadge"), { ssr: false });
 
 /** Extract short date like "2/9/26" from "February 9, 2026" or ISO date */
 function shortDate(dateStr: string): string {
@@ -629,9 +630,38 @@ function Dashboard() {
           />
 
           <div className="flex flex-col md:flex-row items-center gap-8">
-            <div className="avatar-ring flex-shrink-0">
-              <Image src="/sb-avatar.jpg" alt="Santos Bravos" width={120} height={120}
-                className="rounded-2xl shadow-2xl shadow-violet-500/20 block" />
+            <div className="flex flex-col items-center gap-2 flex-shrink-0">
+              <div className="avatar-ring">
+                <Image src="/sb-avatar.jpg" alt="Santos Bravos" width={120} height={120}
+                  className="rounded-2xl shadow-2xl shadow-violet-500/20 block" />
+              </div>
+              {/* Compact Performance Score badge */}
+              {(() => {
+                // Compute composite score (same weights as PerformanceScore section)
+                const listenerGrowth = bp.spotifyMonthlyListeners.prior
+                  ? ((liveListeners - bp.spotifyMonthlyListeners.prior) / bp.spotifyMonthlyListeners.prior) * 100 : 0;
+                const streamingScore = Math.min(100, Math.max(0, 50 + listenerGrowth * 8));
+                const snsScore = Math.min(100, (liveSocialMedia.totalFootprint.current / 2000000) * 100);
+                const trackGrowths = liveTrackStreams.filter(t => t.spotifyStreams.prior).map(t =>
+                  ((t.spotifyStreams.current - t.spotifyStreams.prior!) / t.spotifyStreams.prior!) * 100);
+                const avgTrackGrowth = trackGrowths.length > 0 ? trackGrowths.reduce((a, b) => a + b, 0) / trackGrowths.length : 0;
+                const contentScore = Math.min(100, Math.max(0, 40 + avgTrackGrowth * 4));
+                const mediaScore = Math.min(100, (livePR.perDay / 1000) * 100);
+                const netSentiment = liveSentiment.positive.pct - liveSentiment.negative.pct;
+                const sentimentScore = Math.min(100, Math.max(0, 50 + netSentiment));
+                const milestoneTargets = [
+                  { current: liveListeners, target: 500000 },
+                  { current: liveTrackStreams[0]?.spotifyStreams.current ?? 0, target: 10000000 },
+                  { current: liveSocialMedia.totalFootprint.current, target: 2000000 },
+                  { current: liveYTSubscribers, target: 500000 },
+                ];
+                const milestoneScore = Math.round(milestoneTargets.reduce((s, m) => s + Math.min(100, (m.current / m.target) * 100), 0) / milestoneTargets.length);
+                const weighted = Math.round(
+                  streamingScore * 0.25 + snsScore * 0.20 + contentScore * 0.20 +
+                  mediaScore * 0.15 + sentimentScore * 0.10 + milestoneScore * 0.10
+                );
+                return <HeroScoreBadge score={weighted} />;
+              })()}
             </div>
             <div className="text-center md:text-left space-y-2 flex-1">
               <div className="flex items-center gap-2 justify-center md:justify-start">
