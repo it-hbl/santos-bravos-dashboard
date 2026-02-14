@@ -1131,7 +1131,7 @@ function Dashboard() {
         </SectionErrorBoundary>
 
         {/* ── Divider: Executive Summary → Performance Data ── */}
-        <SectionDivider label="Performance Data" variant="violet" />
+        <SectionDivider label="Performance Data" variant="violet" subtitle="Growth · Historical · Streaming · Charts" />
 
         {/* Growth Velocity */}
         <div id="velocity" className="scroll-mt-16" />
@@ -1478,7 +1478,7 @@ function Dashboard() {
         </SectionErrorBoundary>
 
         {/* ── Divider: Streaming → Artist & Community ── */}
-        <SectionDivider label="Artist & Community" variant="cyan" />
+        <SectionDivider label="Artist & Community" variant="cyan" subtitle="Members · Geography · Audience" />
 
         {/* Section 4: Band Member Followers */}
         <div id="members" className="scroll-mt-16 print-page-break" />
@@ -1657,7 +1657,7 @@ function Dashboard() {
         </SectionErrorBoundary>
 
         {/* ── Divider: Community → Media Intelligence ── */}
-        <SectionDivider label="Media Intelligence" variant="emerald" />
+        <SectionDivider label="Media Intelligence" variant="emerald" subtitle="PR · Sentiment · Cultural Affinity" />
 
         {/* Section 6: PR & Media */}
         <div id="pr" className="scroll-mt-16 print-page-break" />
