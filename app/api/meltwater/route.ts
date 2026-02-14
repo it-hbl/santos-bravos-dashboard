@@ -59,7 +59,7 @@ export async function GET() {
     // Fetch analytics + keyphrases + hashtags + sources in parallel
     // Also fetch 14-day analytics for WoW comparison
     const { start: start14, end: end14 } = get14DayRange();
-    const [analyticsRes, keyphrasesRes, hashtagsRes, sourcesRes, entitiesRes, sharedLinksRes, mentionsRes, topicsRes, locationsRes, analytics14Res, hybeLatinRes] = await Promise.all([
+    const [analyticsRes, keyphrasesRes, hashtagsRes, sourcesRes, entitiesRes, sharedLinksRes, mentionsRes, topicsRes, locationsRes, analytics14Res, hybeLatinRes, twitterRes, instagramRes, newsRes, tiktokRes, redditRes] = await Promise.all([
       mwGet(`/v3/analytics/${SEARCH_ID}`),
       mwGet(`/v3/analytics/${SEARCH_ID}/top_keyphrases`, { source: "twitter" }),
       mwGet(`/v3/analytics/${SEARCH_ID}/top_tags`, { source: "twitter" }),
@@ -73,6 +73,12 @@ export async function GET() {
         headers: { apikey: MW_TOKEN, Accept: "application/json" },
       }).then(r => r.ok ? r.json() : null).catch(() => null),
       mwGet(`/v3/analytics/${HYBE_LATIN_SEARCH_ID}`).catch(() => null),
+      // Per-source sentiment for platform breakdown
+      mwGet(`/v3/analytics/${SEARCH_ID}`, { source: "twitter" }).catch(() => null),
+      mwGet(`/v3/analytics/${SEARCH_ID}`, { source: "instagram" }).catch(() => null),
+      mwGet(`/v3/analytics/${SEARCH_ID}`, { source: "news" }).catch(() => null),
+      mwGet(`/v3/analytics/${SEARCH_ID}`, { source: "tiktok" }).catch(() => null),
+      mwGet(`/v3/analytics/${SEARCH_ID}`, { source: "reddit" }).catch(() => null),
     ]);
 
     const analytics = analyticsRes;
@@ -286,11 +292,37 @@ export async function GET() {
       };
     }
 
+    // Parse per-source sentiment for platform breakdown
+    const parseSourceSentiment = (res: any, name: string, icon: string, color: string) => {
+      if (!res) return null;
+      const s = res.sentiment || {};
+      const vol = res.volume ?? 0;
+      const t = (s.positive || 0) + (s.negative || 0) + (s.neutral || 0) || 1;
+      return {
+        name,
+        icon,
+        color,
+        volume: vol,
+        positive: parseFloat(((s.positive || 0) / t * 100).toFixed(1)),
+        negative: parseFloat(((s.negative || 0) / t * 100).toFixed(1)),
+        neutral: parseFloat(((s.neutral || 0) / t * 100).toFixed(1)),
+        nss: parseFloat((((s.positive || 0) - (s.negative || 0)) / t * 100).toFixed(1)),
+      };
+    };
+
+    const sentimentByPlatform = [
+      parseSourceSentiment(twitterRes, "X / Twitter", "𝕏", "#1DA1F2"),
+      parseSourceSentiment(instagramRes, "Instagram", "📷", "#E1306C"),
+      parseSourceSentiment(newsRes, "News", "📰", "#8B5CF6"),
+      parseSourceSentiment(tiktokRes, "TikTok", "🎵", "#00F2EA"),
+      parseSourceSentiment(redditRes, "Reddit", "🟠", "#FF4500"),
+    ].filter(Boolean);
+
     return NextResponse.json({
       live: true,
       data: {
         prMedia: { period, totalMentions, perDay, uniqueAuthors, timeSeries, topCountries, topKeyphrases, topSources, topMentions, topTopics, topCities, topLanguages, wow },
-        fanSentiment: { period, positive, negative, neutral, topHashtags, topEntities, topSharedLinks, sentimentTimeline },
+        fanSentiment: { period, positive, negative, neutral, topHashtags, topEntities, topSharedLinks, sentimentTimeline, sentimentByPlatform },
         hybeLatin,
         fetchedAt: new Date().toISOString(),
       },

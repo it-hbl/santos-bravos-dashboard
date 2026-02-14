@@ -288,6 +288,13 @@ export const fanSentiment = {
     { date: "Feb 9", positive: 97, neutral: 246, negative: 63, total: 406 },
   ],
   priorNss: null,
+  sentimentByPlatform: [
+    { name: "X / Twitter", icon: "𝕏", color: "#1DA1F2", volume: 3870, positive: 26.1, negative: 16.8, neutral: 57.1, nss: 9.3 },
+    { name: "Instagram", icon: "📷", color: "#E1306C", volume: 1205, positive: 31.2, negative: 10.4, neutral: 58.4, nss: 20.8 },
+    { name: "News", icon: "📰", color: "#8B5CF6", volume: 620, positive: 18.5, negative: 8.2, neutral: 73.3, nss: 10.3 },
+    { name: "TikTok", icon: "🎵", color: "#00F2EA", volume: 285, positive: 35.8, negative: 12.3, neutral: 51.9, nss: 23.5 },
+    { name: "Reddit", icon: "🟠", color: "#FF4500", volume: 66, positive: 19.7, negative: 22.7, neutral: 57.6, nss: -3.0 },
+  ],
 };
 
 // === Audience Stats (Spotify for Artists, 28 days) ===

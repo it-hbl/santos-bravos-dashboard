@@ -75,6 +75,7 @@ const SocialMediaCards = dynamic(() => import("./components/SocialMediaCards"), 
 const MediaVsAudience = dynamic(() => import("./components/MediaVsAudience"), { ssr: false });
 const MentionMomentum = dynamic(() => import("./components/MentionMomentum"), { ssr: false });
 const WeekdayHeatmap = dynamic(() => import("./components/WeekdayHeatmap"), { ssr: false });
+const SentimentByPlatform = dynamic(() => import("./components/SentimentByPlatform"), { ssr: false });
 const HistoricalTrends = dynamic(() => import("./components/HistoricalTrends"), { ssr: false });
 const TrackHistory = dynamic(() => import("./components/TrackHistory"), { ssr: false });
 const YouTubeHistory = dynamic(() => import("./components/YouTubeHistory"), { ssr: false });
@@ -1889,6 +1890,13 @@ function Dashboard() {
           {(liveSentiment.sentimentTimeline || []).length >= 3 && (
             <div className="bg-white/[0.02] rounded-xl p-4 border border-white/[0.04] mb-6">
               <SentimentWeekday timeline={liveSentiment.sentimentTimeline!} />
+            </div>
+          )}
+
+          {/* Sentiment by Platform */}
+          {((liveSentiment as any).sentimentByPlatform || []).length > 0 && (
+            <div className="mb-6">
+              <SentimentByPlatform platforms={(liveSentiment as any).sentimentByPlatform} />
             </div>
           )}
 
