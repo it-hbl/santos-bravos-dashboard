@@ -98,6 +98,7 @@ const ActionItems = dynamic(() => import("./components/ActionItems"), { ssr: fal
 const ComparisonTable = dynamic(() => import("./components/ComparisonTable"), { ssr: false });
 const ShareOfVoice = dynamic(() => import("./components/ShareOfVoice"), { ssr: false });
 const CulturalAffinity = dynamic(() => import("./components/CulturalAffinity"), { ssr: false });
+const DebutBenchmark = dynamic(() => import("./components/DebutBenchmark"), { ssr: false });
 const MetricAlerts = dynamic(() => import("./components/MetricAlerts"), { ssr: false });
 const PrintQR = dynamic(() => import("./components/PrintQR"), { ssr: false });
 const SectionDivider = dynamic(() => import("./components/SectionDivider"), { ssr: false });
@@ -1097,6 +1098,26 @@ function Dashboard() {
             mentions={livePR.wow ? { current: livePR.totalMentions, wowChangePct: livePR.wow.changePct } : undefined}
             dailyStreams={dailyStreams.map(t => ({ name: t.name, streams: t.streams, listeners: t.listeners }))}
           />
+        </AnimatedSection>
+        </SectionErrorBoundary>
+
+        {/* Debut Benchmark Comparison */}
+        <div id="benchmark" className="scroll-mt-16" />
+        <SectionErrorBoundary sectionName="Debut Benchmark">
+        <AnimatedSection>
+        <section className="glass-hybe rounded-2xl p-5 sm:p-6">
+          <CollapsibleSection id="benchmark" number="📏" title="Debut Benchmark" subtitle={`Day ${(() => { const debut = new Date('2026-01-24T12:00:00'); const now = new Date(); return Math.floor((now.getTime() - debut.getTime()) / 86400000); })()} vs. Comparable LATAM Debuts`} color="bg-gradient-to-br from-amber-500 to-orange-500">
+            <DebutBenchmark
+              daysSinceDebut={(() => { const debut = new Date('2026-01-24T12:00:00'); const now = new Date(); return Math.floor((now.getTime() - debut.getTime()) / 86400000); })()}
+              spotifyListeners={liveListeners}
+              spotifyFollowers={bp.spotifyFollowers.current}
+              totalStreams={bp.totalCrossPlatformStreams.current}
+              snsFootprint={liveSocialMedia.totalFootprint.current}
+              ytSubscribers={liveYTSubscribers}
+              mediaMentions={livePR.totalMentions}
+            />
+          </CollapsibleSection>
+        </section>
         </AnimatedSection>
         </SectionErrorBoundary>
 
