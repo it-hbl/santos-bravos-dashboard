@@ -357,6 +357,10 @@ function Dashboard() {
 
   // All data now comes from Supabase via date picker — no more live API overlays
   const livePR = prMedia as any;
+  // Compute wowChange shorthand from wow.changePct for MomentumArrows, PulseGrid, SectionNav
+  if (livePR.wow && livePR.wowChange == null) {
+    livePR.wowChange = livePR.wow.changePct;
+  }
   const liveSentiment = fanSentiment as any;
   const liveListeners = bp.spotifyMonthlyListeners.current;
   const liveFollowers = bp.spotifyFollowers?.current ?? 0;
