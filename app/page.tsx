@@ -205,6 +205,40 @@ function SectionHeader({ number, title, subtitle, color }: { number: string; tit
   );
 }
 
+/** Compact live-updating "Xd Yh ago" badge showing data age */
+function DataAge({ reportDate }: { reportDate: string }) {
+  const [age, setAge] = useState("");
+  useEffect(() => {
+    function compute() {
+      try {
+        const d = new Date(reportDate);
+        if (isNaN(d.getTime())) return;
+        const diffMs = Date.now() - d.getTime();
+        if (diffMs < 0) return;
+        const hours = Math.floor(diffMs / 3600000);
+        const days = Math.floor(hours / 24);
+        const remainH = hours % 24;
+        if (days > 0) setAge(`${days}d ${remainH}h ago`);
+        else if (hours > 0) setAge(`${hours}h ago`);
+        else setAge("just now");
+      } catch {}
+    }
+    compute();
+    const iv = setInterval(compute, 60000);
+    return () => clearInterval(iv);
+  }, [reportDate]);
+  if (!age) return null;
+  const diffMs = (() => { try { return Date.now() - new Date(reportDate).getTime(); } catch { return 0; } })();
+  const isStale = diffMs > 86400000 * 2; // > 2 days
+  const isAging = diffMs > 86400000; // > 1 day
+  const color = isStale ? "text-red-400 bg-red-500/10" : isAging ? "text-amber-400 bg-amber-500/10" : "text-neutral-500 bg-white/[0.03]";
+  return (
+    <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full ${color}`}>
+      {age}
+    </span>
+  );
+}
+
 function Dashboard() {
   // Sync URL hash with visible section for deep linking
   useSectionHash();
@@ -597,6 +631,7 @@ function Dashboard() {
               <div className="flex items-center gap-1.5 justify-end">
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse-slow" />
                 <span className="text-[10px] text-emerald-400 font-semibold">DATA CURRENT</span>
+                <DataAge reportDate={reportDate} />
               </div>
               <p className="text-[9px] text-neutral-600 mt-0.5">
                 {(() => {
