@@ -19,6 +19,7 @@ const SECTION_SHORTCUTS: { key: string; label: string; target: string }[] = [
 const ACTION_SHORTCUTS: { key: string; label: string; action: string }[] = [
   { key: "h", label: "Go to Top", action: "home" },
   { key: "m", label: "Milestones", action: "milestones" },
+  { key: "f", label: "Focus Current Section", action: "focus" },
   { key: "r", label: "Refresh Data", action: "refresh" },
   { key: "p", label: "Print / PDF", action: "print" },
   { key: "e", label: "Expand / Collapse All", action: "toggle-sections" },
@@ -50,10 +51,11 @@ export default function KeyboardShortcuts({ onRefresh }: KeyboardShortcutsProps)
         return;
       }
 
-      // Section jumps 1-7
+      // Section jumps 1-7 (auto-expand if collapsed)
       const section = SECTION_SHORTCUTS.find((s) => s.key === key);
       if (section) {
         e.preventDefault();
+        window.dispatchEvent(new CustomEvent("sb-scroll-to-section", { detail: { sectionId: section.target } }));
         document.getElementById(section.target)?.scrollIntoView({ behavior: "smooth" });
         return;
       }
@@ -64,7 +66,38 @@ export default function KeyboardShortcuts({ onRefresh }: KeyboardShortcutsProps)
         window.scrollTo({ top: 0, behavior: "smooth" });
       } else if (key === "m") {
         e.preventDefault();
+        window.dispatchEvent(new CustomEvent("sb-scroll-to-section", { detail: { sectionId: "milestones" } }));
         document.getElementById("milestones")?.scrollIntoView({ behavior: "smooth" });
+      } else if (key === "f") {
+        e.preventDefault();
+        // Focus the currently-scrolled-to section
+        const sectionIds = SECTION_SHORTCUTS.map(s => s.target);
+        const extra = ["milestones", "score", "growth-velocity", "historical", "charts", "daily", "track-radar", "audience", "comparison", "benchmark", "revenue-estimate", "stream-projections", "release-pacing", "cultural-affinity"];
+        const allIds = [...sectionIds, ...extra];
+        let bestId: string | null = null;
+        let bestDist = Infinity;
+        const viewMid = window.innerHeight / 2;
+        for (const id of allIds) {
+          const el = document.getElementById(id);
+          if (!el) continue;
+          const rect = el.getBoundingClientRect();
+          const dist = Math.abs(rect.top + rect.height / 2 - viewMid);
+          if (dist < bestDist) { bestDist = dist; bestId = id; }
+        }
+        if (bestId) {
+          const { focusSection } = require("./FocusMode");
+          const labelMap: Record<string, string> = {
+            business: "Business Performance", social: "Social Media", virality: "Audio Virality",
+            members: "Band Members", geo: "Geo Signals", pr: "PR & Media", sentiment: "Fan Sentiment",
+            milestones: "Milestones", score: "Performance Score", "growth-velocity": "Growth Velocity",
+            historical: "Historical Trends", charts: "Streaming Charts", daily: "Daily Snapshot",
+            "track-radar": "Track Comparison", audience: "Audience Deep Dive", comparison: "All Metrics",
+            benchmark: "Debut Benchmark", "revenue-estimate": "Revenue Estimate",
+            "stream-projections": "Stream Projections", "release-pacing": "Release Pacing",
+            "cultural-affinity": "Cultural Affinity",
+          };
+          focusSection(bestId, labelMap[bestId] || bestId);
+        }
       } else if (key === "r") {
         e.preventDefault();
         onRefresh?.();
