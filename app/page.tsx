@@ -1104,12 +1104,12 @@ function Dashboard() {
             const milestoneScore = Math.round(milestoneTargets.reduce((s, m) => s + Math.min(100, (m.current / m.target) * 100), 0) / milestoneTargets.length);
 
             return [
-              { label: "Streaming Growth", score: Math.round(streamingScore), weight: 25, color: "bg-emerald-500" },
-              { label: "Social Reach", score: Math.round(snsScore), weight: 20, color: "bg-cyan-500" },
-              { label: "Content Velocity", score: Math.round(contentScore), weight: 20, color: "bg-violet-500" },
-              { label: "Media Presence", score: Math.round(mediaScore), weight: 15, color: "bg-pink-500" },
-              { label: "Sentiment Health", score: Math.round(sentimentScore), weight: 10, color: "bg-amber-500" },
-              { label: "Milestone Progress", score: milestoneScore, weight: 10, color: "bg-indigo-500" },
+              { label: "Streaming Growth", score: Math.round(streamingScore), weight: 25, color: "bg-emerald-500", sectionId: "business" },
+              { label: "Social Reach", score: Math.round(snsScore), weight: 20, color: "bg-cyan-500", sectionId: "social" },
+              { label: "Content Velocity", score: Math.round(contentScore), weight: 20, color: "bg-violet-500", sectionId: "charts" },
+              { label: "Media Presence", score: Math.round(mediaScore), weight: 15, color: "bg-pink-500", sectionId: "pr" },
+              { label: "Sentiment Health", score: Math.round(sentimentScore), weight: 10, color: "bg-amber-500", sectionId: "sentiment" },
+              { label: "Milestone Progress", score: milestoneScore, weight: 10, color: "bg-indigo-500", sectionId: "milestones" },
             ];
           })()} />
         </AnimatedSection>

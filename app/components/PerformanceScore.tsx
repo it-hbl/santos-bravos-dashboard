@@ -2,16 +2,20 @@
 
 import { useEffect, useState } from "react";
 
+interface PerformanceMetric {
+  label: string;
+  /** 0-100 normalized score for this dimension */
+  score: number;
+  /** Weight (all weights are normalized internally) */
+  weight: number;
+  /** Color class */
+  color: string;
+  /** Optional section anchor to scroll to on click */
+  sectionId?: string;
+}
+
 interface PerformanceScoreProps {
-  metrics: {
-    label: string;
-    /** 0-100 normalized score for this dimension */
-    score: number;
-    /** Weight (all weights are normalized internally) */
-    weight: number;
-    /** Color class */
-    color: string;
-  }[];
+  metrics: PerformanceMetric[];
 }
 
 function getGrade(score: number): { label: string; color: string; emoji: string } {
@@ -105,20 +109,40 @@ export default function PerformanceScore({ metrics }: PerformanceScoreProps) {
 
         {/* Dimension breakdown */}
         <div className="flex-1 w-full space-y-2">
-          {metrics.map((m) => (
-            <div key={m.label} className="group">
-              <div className="flex items-center justify-between mb-0.5">
-                <span className="text-[11px] text-neutral-400">{m.label}</span>
-                <span className="text-[11px] font-bold text-white tabular-nums">{m.score}</span>
+          {metrics.map((m) => {
+            const isClickable = !!m.sectionId;
+            const handleClick = () => {
+              if (m.sectionId) {
+                const el = document.getElementById(m.sectionId);
+                if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+              }
+            };
+            return (
+              <div
+                key={m.label}
+                className={`group rounded-lg px-2 py-1 -mx-2 transition-colors duration-200 ${isClickable ? "cursor-pointer hover:bg-white/[0.03]" : ""}`}
+                onClick={isClickable ? handleClick : undefined}
+                role={isClickable ? "button" : undefined}
+                tabIndex={isClickable ? 0 : undefined}
+                onKeyDown={isClickable ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handleClick(); } } : undefined}
+                title={isClickable ? `Go to ${m.label}` : undefined}
+              >
+                <div className="flex items-center justify-between mb-0.5">
+                  <span className={`text-[11px] transition-colors duration-200 ${isClickable ? "text-neutral-400 group-hover:text-white" : "text-neutral-400"}`}>
+                    {m.label}
+                    {isClickable && <span className="ml-1 opacity-0 group-hover:opacity-60 transition-opacity text-[9px]">→</span>}
+                  </span>
+                  <span className="text-[11px] font-bold text-white tabular-nums">{m.score}</span>
+                </div>
+                <div className="h-1.5 bg-white/[0.04] rounded-full overflow-hidden">
+                  <div
+                    className={`h-full rounded-full ${m.color} transition-all duration-1000 ease-out`}
+                    style={{ width: `${m.score}%` }}
+                  />
+                </div>
               </div>
-              <div className="h-1.5 bg-white/[0.04] rounded-full overflow-hidden">
-                <div
-                  className={`h-full rounded-full ${m.color} transition-all duration-1000 ease-out`}
-                  style={{ width: `${m.score}%` }}
-                />
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
