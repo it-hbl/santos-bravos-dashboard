@@ -1326,6 +1326,32 @@ function Dashboard() {
                         );
                       })()}
                       <p className="text-[10px] text-neutral-500 font-medium truncate mb-2">{shortName}</p>
+                      {/* Video age & views/day velocity */}
+                      {(() => {
+                        // Map video names to upload dates
+                        const VIDEO_UPLOAD_DATES: Record<string, string> = {
+                          "0% Official MV": "2026-01-31",
+                          "0% Debut Visualizer": "2026-01-24",
+                          "0% (Portuguese) Lyric Video": "2026-02-03",
+                          "KAWASAKI Performance Video": "2026-02-07",
+                        };
+                        const uploadDateStr = VIDEO_UPLOAD_DATES[v.name];
+                        if (!uploadDateStr) return null;
+                        const uploadDate = new Date(uploadDateStr + "T12:00:00");
+                        const now = new Date();
+                        const daysOld = Math.max(1, Math.floor((now.getTime() - uploadDate.getTime()) / 86400000));
+                        const viewsPerDay = Math.round(v.views.current / daysOld);
+                        return (
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-[9px] bg-white/[0.04] border border-white/[0.06] rounded-full px-2 py-0.5 text-neutral-500 tabular-nums">
+                              📅 {daysOld}d old
+                            </span>
+                            <span className="text-[9px] bg-red-500/10 border border-red-500/20 rounded-full px-2 py-0.5 text-red-400 font-semibold tabular-nums">
+                              ⚡ {fmt(viewsPerDay)}/day
+                            </span>
+                          </div>
+                        );
+                      })()}
                       <div className="space-y-1.5">
                         <div className="flex items-center justify-between">
                           <span className="text-[9px] text-neutral-600">👍 Likes</span>
