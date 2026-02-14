@@ -1497,6 +1497,12 @@ function Dashboard() {
                 spotifyStreamsPrior={liveTrackStreams.reduce((s, t) => s + (t.spotifyStreams.prior ?? 0), 0) || null}
                 youtubeViewsPrior={liveYTVideos.reduce((s, v) => s + (v.views.prior ?? 0), 0) || null}
                 tiktokAudioViewsPrior={audioVirality.totalAudioViews.prior}
+                tracks={[
+                  { name: "0%", spotifyStreams: liveTrackStreams[0]?.spotifyStreams.current ?? 0, dailyStreams: dailyStreams[0]?.streams ?? 0, color: "#22c55e" },
+                  { name: "0% (PT)", spotifyStreams: liveTrackStreams[1]?.spotifyStreams.current ?? 0, dailyStreams: dailyStreams[2]?.streams ?? 0, color: "#a78bfa" },
+                  { name: "KAWASAKI", spotifyStreams: liveTrackStreams[2]?.spotifyStreams.current ?? 0, dailyStreams: dailyStreams[1]?.streams ?? 0, color: "#ec4899" },
+                ]}
+                daysBetween={(() => { try { const d1 = new Date(reportDate); const d2 = new Date(priorDate); return Math.max(1, Math.round((d1.getTime() - d2.getTime()) / 86400000)); } catch { return undefined; } })()}
               />
             </CollapsibleSection>
           </section>
