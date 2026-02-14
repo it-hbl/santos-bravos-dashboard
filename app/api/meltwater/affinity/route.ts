@@ -45,15 +45,26 @@ export async function GET() {
       : Array.isArray(hashtagsRes?.top_tags) ? hashtagsRes.top_tags
       : Array.isArray(hashtagsRes?.data) ? hashtagsRes.data : [];
 
+    // Extract time series for volume chart
+    const timeSeries = (analyticsRes.time_series || []).map((d: any) => ({
+      date: new Date(d.date || d.timestamp).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+      mentions: d.count ?? d.volume ?? 0,
+    }));
+
+    // Unique authors
+    const uniqueAuthors = analyticsRes.unique_authors ?? 0;
+
     return NextResponse.json({
       live: true,
       data: {
         totalMentions,
+        uniqueAuthors,
         sentiment: {
           positive: parseFloat(((sent.positive || 0) / total * 100).toFixed(1)),
           negative: parseFloat(((sent.negative || 0) / total * 100).toFixed(1)),
           neutral: parseFloat(((sent.neutral || 0) / total * 100).toFixed(1)),
         },
+        timeSeries,
         topKeyphrases: rawPhrases.slice(0, 10).map((k: any) => ({
           phrase: k.phrase || k.keyphrase || k.text || "",
           count: k.count ?? k.volume ?? 0,
