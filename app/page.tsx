@@ -107,6 +107,7 @@ const RevenueEstimate = dynamic(() => import("./components/RevenueEstimate"), { 
 const HeroScoreBadge = dynamic(() => import("./components/HeroScoreBadge"), { ssr: false });
 const SentimentWeekday = dynamic(() => import("./components/SentimentWeekday"), { ssr: false });
 const GrowthStreak = dynamic(() => import("./components/GrowthStreak"), { ssr: false });
+const TrackMomentum = dynamic(() => import("./components/TrackMomentum"), { ssr: false });
 const MomentumArrows = dynamic(() => import("./components/MomentumArrows"), { ssr: false });
 
 /** Extract short date like "2/9/26" from "February 9, 2026" or ISO date */
@@ -1574,6 +1575,13 @@ function Dashboard() {
             { name: "0% (PT)", spotifyStreams: liveTrackStreams[1].spotifyStreams.current, dailyStreams: dailyStreams[2]?.streams ?? 0, tiktokCreates: audioVirality.tracks[1]?.tiktokCreates ?? 0, igCreates: audioVirality.tracks[1]?.igCreates ?? 0, saves: dailyStreams[2]?.saves ?? 0 },
             { name: "KAWASAKI", spotifyStreams: liveTrackStreams[2].spotifyStreams.current, dailyStreams: dailyStreams[1]?.streams ?? 0, tiktokCreates: audioVirality.tracks[2]?.tiktokCreates ?? 0, igCreates: audioVirality.tracks[2]?.igCreates ?? 0, saves: dailyStreams[1]?.saves ?? 0 },
           ]} />
+          <div className="mt-5">
+            <TrackMomentum tracks={[
+              { name: "0%", spotifyStreams: liveTrackStreams[0].spotifyStreams.current, priorStreams: liveTrackStreams[0].spotifyStreams.prior, dailyStreams: dailyStreams[0]?.streams ?? 0, tiktokCreates: audioVirality.tracks[0]?.tiktokCreates ?? 0, igCreates: audioVirality.tracks[0]?.igCreates ?? 0, saves: dailyStreams[0]?.saves ?? 0, listeners: dailyStreams[0]?.listeners ?? 0, releaseDate: "2026-01-31" },
+              { name: "0% (PT)", spotifyStreams: liveTrackStreams[1].spotifyStreams.current, priorStreams: liveTrackStreams[1].spotifyStreams.prior, dailyStreams: dailyStreams[2]?.streams ?? 0, tiktokCreates: audioVirality.tracks[1]?.tiktokCreates ?? 0, igCreates: audioVirality.tracks[1]?.igCreates ?? 0, saves: dailyStreams[2]?.saves ?? 0, listeners: dailyStreams[2]?.listeners ?? 0, releaseDate: "2026-02-03" },
+              { name: "KAWASAKI", spotifyStreams: liveTrackStreams[2].spotifyStreams.current, priorStreams: liveTrackStreams[2].spotifyStreams.prior, dailyStreams: dailyStreams[1]?.streams ?? 0, tiktokCreates: audioVirality.tracks[2]?.tiktokCreates ?? 0, igCreates: audioVirality.tracks[2]?.igCreates ?? 0, saves: dailyStreams[1]?.saves ?? 0, listeners: dailyStreams[1]?.listeners ?? 0, releaseDate: "2026-02-07" },
+            ]} />
+          </div>
           </CollapsibleSection>
         </section>
         </AnimatedSection>
