@@ -101,6 +101,7 @@ const PrintQR = dynamic(() => import("./components/PrintQR"), { ssr: false });
 const SectionDivider = dynamic(() => import("./components/SectionDivider"), { ssr: false });
 const RevenueEstimate = dynamic(() => import("./components/RevenueEstimate"), { ssr: false });
 const HeroScoreBadge = dynamic(() => import("./components/HeroScoreBadge"), { ssr: false });
+const SentimentWeekday = dynamic(() => import("./components/SentimentWeekday"), { ssr: false });
 
 /** Extract short date like "2/9/26" from "February 9, 2026" or ISO date */
 function shortDate(dateStr: string): string {
@@ -1881,6 +1882,13 @@ function Dashboard() {
             <div className="mb-6">
               <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-2">Sentiment Trend (Daily Breakdown)</p>
               <SentimentTimeline data={liveSentiment.sentimentTimeline!} />
+            </div>
+          )}
+
+          {/* Sentiment by Weekday Heatmap */}
+          {(liveSentiment.sentimentTimeline || []).length >= 3 && (
+            <div className="bg-white/[0.02] rounded-xl p-4 border border-white/[0.04] mb-6">
+              <SentimentWeekday timeline={liveSentiment.sentimentTimeline!} />
             </div>
           )}
 
