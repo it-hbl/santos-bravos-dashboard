@@ -1770,6 +1770,11 @@ function Dashboard() {
             saves={audienceStats.saves}
             playlistAdds={audienceStats.playlistAdds}
             followers={audienceStats.followers}
+            priorListeners={(audienceStats as any).priorListeners ?? null}
+            priorStreams={(audienceStats as any).priorStreams ?? null}
+            priorSaves={(audienceStats as any).priorSaves ?? null}
+            priorPlaylistAdds={(audienceStats as any).priorPlaylistAdds ?? null}
+            priorFollowers={(audienceStats as any).priorFollowers ?? null}
           />
           <AudienceHealth
             listeners={audienceStats.listeners}
