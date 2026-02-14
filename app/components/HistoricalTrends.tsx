@@ -22,6 +22,7 @@ interface DataPoint {
   followers: number;
   mentions: number;
   netSentiment: number;
+  popularity: number;
 }
 
 const METRICS = [
@@ -31,6 +32,7 @@ const METRICS = [
   { key: "followers", label: "Spotify Followers", color: "#f59e0b", format: formatK, axis: "left" as const },
   { key: "mentions", label: "PR Mentions", color: "#a78bfa", format: formatK, axis: "left" as const },
   { key: "netSentiment", label: "Net Sentiment", color: "#f472b6", format: formatSent, axis: "left" as const },
+  { key: "popularity", label: "Spotify Popularity", color: "#f97316", format: formatPop, axis: "left" as const },
 ] as const;
 
 function formatK(n: number) {
@@ -47,6 +49,10 @@ function formatM(n: number) {
 
 function formatSent(n: number) {
   return (n >= 0 ? "+" : "") + n.toFixed(0);
+}
+
+function formatPop(n: number) {
+  return n.toFixed(0) + "/100";
 }
 
 function CustomTooltip({ active, payload, label, normalized, rawData }: any) {
@@ -107,7 +113,7 @@ export default function HistoricalTrends() {
         ] = await Promise.all([
           supabase
             .from("daily_reports")
-            .select("report_date, spotify_monthly_listeners, total_cross_platform_streams, total_sns_footprint, spotify_followers")
+            .select("report_date, spotify_monthly_listeners, total_cross_platform_streams, total_sns_footprint, spotify_followers, spotify_popularity")
             .order("report_date", { ascending: true }),
           supabase
             .from("pr_media")
@@ -145,6 +151,7 @@ export default function HistoricalTrends() {
             followers: r.spotify_followers || 0,
             mentions: prByDate[r.report_date] || 0,
             netSentiment: sentByDate[r.report_date] || 0,
+            popularity: r.spotify_popularity || 0,
           };
         });
 
@@ -196,6 +203,7 @@ export default function HistoricalTrends() {
     followers: first.followers > 0 ? ((d.followers - first.followers) / first.followers) * 100 : 0,
     mentions: first.mentions > 0 ? ((d.mentions - first.mentions) / first.mentions) * 100 : 0,
     netSentiment: first.netSentiment !== 0 ? ((d.netSentiment - first.netSentiment) / Math.abs(first.netSentiment)) * 100 : 0,
+    popularity: first.popularity > 0 ? ((d.popularity - first.popularity) / first.popularity) * 100 : 0,
   }));
 
   const chartData = normalizedView ? normalizedData : data;
@@ -224,9 +232,9 @@ export default function HistoricalTrends() {
             </span>
             <button
               onClick={() => {
-                const header = "Date,Spotify Listeners,Cross-Platform Streams,SNS Footprint,Spotify Followers,PR Mentions,Net Sentiment\n";
+                const header = "Date,Spotify Listeners,Cross-Platform Streams,SNS Footprint,Spotify Followers,PR Mentions,Net Sentiment,Spotify Popularity\n";
                 const rows = data.map(d =>
-                  `${d.date},${d.listeners},${d.streams},${d.sns},${d.followers},${d.mentions},${d.netSentiment}`
+                  `${d.date},${d.listeners},${d.streams},${d.sns},${d.followers},${d.mentions},${d.netSentiment},${d.popularity}`
                 ).join("\n");
                 const csv = "\uFEFF" + header + rows;
                 const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
