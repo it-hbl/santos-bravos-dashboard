@@ -927,6 +927,8 @@ function Dashboard() {
             ...liveSocialMedia.platforms.map(p => ({ metric: `${p.platform} Followers`, category: "social", current: p.current, prior: p.prior, change: p.prior != null ? p.current - p.prior : null, changePct: p.prior ? ((p.current - p.prior) / p.prior) * 100 : null })),
             { metric: "Total SNS Footprint", category: "social", current: liveSocialMedia.totalFootprint.current, prior: liveSocialMedia.totalFootprint.prior, change: liveSocialMedia.totalFootprint.prior != null ? liveSocialMedia.totalFootprint.current - liveSocialMedia.totalFootprint.prior : null, changePct: liveSocialMedia.totalFootprint.prior ? ((liveSocialMedia.totalFootprint.current - liveSocialMedia.totalFootprint.prior) / liveSocialMedia.totalFootprint.prior) * 100 : null },
             { metric: "Total Audio Views", category: "virality", current: audioVirality.totalAudioViews.current, prior: audioVirality.totalAudioViews.prior, change: audioVirality.totalAudioViews.prior != null ? audioVirality.totalAudioViews.current - audioVirality.totalAudioViews.prior : null, changePct: audioVirality.totalAudioViews.prior ? ((audioVirality.totalAudioViews.current - audioVirality.totalAudioViews.prior) / audioVirality.totalAudioViews.prior) * 100 : null },
+            ...audioVirality.tracks.map((t: any) => ({ metric: `${t.name} TT Creates`, category: "virality" as const, current: t.tiktokCreates ?? 0, prior: t.priorTiktokCreates ?? null, change: t.priorTiktokCreates != null ? (t.tiktokCreates ?? 0) - t.priorTiktokCreates : null, changePct: t.priorTiktokCreates ? (((t.tiktokCreates ?? 0) - t.priorTiktokCreates) / t.priorTiktokCreates) * 100 : null })),
+            ...audioVirality.tracks.map((t: any) => ({ metric: `${t.name} IG Creates`, category: "virality" as const, current: t.igCreates ?? 0, prior: t.priorIgCreates ?? null, change: t.priorIgCreates != null ? (t.igCreates ?? 0) - t.priorIgCreates : null, changePct: t.priorIgCreates ? (((t.igCreates ?? 0) - t.priorIgCreates) / t.priorIgCreates) * 100 : null })),
             { metric: "Total Member IG Followers", category: "social", current: totalMemberFollowers.current, prior: totalMemberFollowers.prior, change: totalMemberFollowers.prior != null ? totalMemberFollowers.current - totalMemberFollowers.prior : null, changePct: totalMemberFollowers.prior ? ((totalMemberFollowers.current - totalMemberFollowers.prior) / totalMemberFollowers.prior) * 100 : null },
             { metric: "PR Mentions (7d)", category: "media", current: livePR.totalMentions, prior: null, change: null, changePct: livePR.wow?.changePct ?? null },
             { metric: "Unique PR Authors", category: "media", current: livePR.uniqueAuthors, prior: null, change: null, changePct: null },
@@ -1353,25 +1355,35 @@ function Dashboard() {
           <CollapsibleSection id="audio-virality" number="3" title="Audio Virality" subtitle={`Cobrand · TT + IG · ${sectionDate(reportDate)}`} color="bg-gradient-to-br from-purple-500 to-pink-500" collapsedSummary={`${fmt(audioVirality.totalAudioViews.current)} audio views · ${audioVirality.tracks.length} tracks · ${fmt(audioVirality.tracks.reduce((s, t) => s + (t.tiktokCreates ?? 0), 0))} TT creates`}>
           <MetricRow label={audioVirality.totalAudioViews.label} current={audioVirality.totalAudioViews.current} prior={audioVirality.totalAudioViews.prior} />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-            {audioVirality.tracks.map(t => (
+            {audioVirality.tracks.map((t: any) => {
+              const viewsChange = t.priorViews != null && t.priorViews > 0 ? ((t.views - t.priorViews) / t.priorViews * 100) : null;
+              const ttChange = t.priorTiktokCreates != null && t.priorTiktokCreates > 0 ? (((t.tiktokCreates ?? 0) - t.priorTiktokCreates) / t.priorTiktokCreates * 100) : null;
+              const igChange = t.priorIgCreates != null && t.priorIgCreates > 0 ? (((t.igCreates ?? 0) - t.priorIgCreates) / t.priorIgCreates * 100) : null;
+              const changeBadge = (pct: number | null) => pct != null ? (
+                <span className={`text-[9px] font-semibold px-1 py-0.5 rounded ml-1 ${pct >= 0 ? "text-emerald-400 bg-emerald-500/10" : "text-red-400 bg-red-500/10"}`}>
+                  {pct >= 0 ? "↑" : "↓"}{Math.abs(pct).toFixed(1)}%
+                </span>
+              ) : null;
+              return (
               <div key={t.name} className="bg-white/[0.02] rounded-xl p-4 border border-white/[0.04]">
                 <p className="font-bold text-white text-sm mb-2">{t.name}</p>
                 <div className="space-y-2">
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-center">
                     <span className="text-[10px] text-neutral-500">Audio Views</span>
-                    <span className="text-sm font-bold text-white">{fmt(t.views)}</span>
+                    <span className="flex items-center"><span className="text-sm font-bold text-white">{fmt(t.views)}</span>{changeBadge(viewsChange)}</span>
                   </div>
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-center">
                     <span className="text-[10px] text-neutral-500"><MetricTooltip term="TikTok Creates">TikTok Creates</MetricTooltip></span>
-                    <span className="text-sm font-bold text-tiktok">{t.tiktokCreates?.toLocaleString() ?? "—"}</span>
+                    <span className="flex items-center"><span className="text-sm font-bold text-tiktok">{t.tiktokCreates?.toLocaleString() ?? "—"}</span>{changeBadge(ttChange)}</span>
                   </div>
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-center">
                     <span className="text-[10px] text-neutral-500"><MetricTooltip term="IG Creates">IG Creates</MetricTooltip></span>
-                    <span className="text-sm font-bold text-pink-400">{t.igCreates?.toLocaleString() ?? "—"}</span>
+                    <span className="flex items-center"><span className="text-sm font-bold text-pink-400">{t.igCreates?.toLocaleString() ?? "—"}</span>{changeBadge(igChange)}</span>
                   </div>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
           <div className="mt-5">
             <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-2">Platform Creates Comparison</p>

@@ -86,8 +86,9 @@ export async function getDashboardData(date: string): Promise<DashboardData> {
     let priorReport: any = null;
     let priorMembers: any[] = [];
     let priorGeoCountries: any[] = [];
+    let priorTrackMetrics: any[] = [];
     if (priorDateRaw) {
-      const [{ data: pr }, { data: pm }, { data: pg }] = await Promise.all([
+      const [{ data: pr }, { data: pm }, { data: pg }, { data: pt }] = await Promise.all([
         supabase
           .from('daily_reports')
           .select('spotify_followers, total_member_followers, spl')
@@ -101,10 +102,15 @@ export async function getDashboardData(date: string): Promise<DashboardData> {
           .from('geo_countries')
           .select('country_name, listeners')
           .eq('report_date', priorDateRaw),
+        supabase
+          .from('track_metrics')
+          .select('track_name, audio_views, tiktok_creates, ig_creates')
+          .eq('report_date', priorDateRaw),
       ]);
       priorReport = pr;
       priorMembers = pm || [];
       priorGeoCountries = pg || [];
+      priorTrackMetrics = pt || [];
     }
 
     // Build businessPerformance
@@ -129,12 +135,18 @@ export async function getDashboardData(date: string): Promise<DashboardData> {
       icon: s.icon || '',
     }));
 
-    const viralityTracks = (tracks || []).map((t: any) => ({
-      name: t.track_name,
-      views: t.audio_views || 0,
-      tiktokCreates: t.tiktok_creates || 0,
-      igCreates: t.ig_creates || 0,
-    }));
+    const viralityTracks = (tracks || []).map((t: any) => {
+      const prior = priorTrackMetrics.find((p: any) => p.track_name === t.track_name);
+      return {
+        name: t.track_name,
+        views: t.audio_views || 0,
+        tiktokCreates: t.tiktok_creates || 0,
+        igCreates: t.ig_creates || 0,
+        priorViews: prior?.audio_views ?? null,
+        priorTiktokCreates: prior?.tiktok_creates ?? null,
+        priorIgCreates: prior?.ig_creates ?? null,
+      };
+    });
 
     const prData = pr ? {
       period: pr.period || '',
