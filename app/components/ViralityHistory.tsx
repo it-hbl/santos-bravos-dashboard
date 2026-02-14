@@ -32,13 +32,20 @@ const METRIC_MODES: { key: MetricMode; label: string; emoji: string; color: stri
   { key: "ig_creates", label: "IG Creates", emoji: "📸", color: "pink" },
 ];
 
+// Maps TikTok/IG creates mode to create field for ratio computation
+const CREATES_FIELD: Record<MetricMode, string> = {
+  audio_views: "audio_views",
+  tiktok_creates: "tiktok_creates",
+  ig_creates: "ig_creates",
+};
+
 function fmt(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(2) + "M";
   if (n >= 1_000) return (n / 1_000).toFixed(1) + "K";
   return n.toLocaleString();
 }
 
-function CustomTooltip({ active, payload, label }: any) {
+function CustomTooltip({ active, payload, label, isRatio }: any) {
   if (!active || !payload?.length) return null;
   const sorted = [...payload].sort((a: any, b: any) => (b.value || 0) - (a.value || 0));
   return (
@@ -46,11 +53,14 @@ function CustomTooltip({ active, payload, label }: any) {
       <p className="text-xs text-neutral-400 font-medium mb-2">{label}</p>
       {sorted.map((p: any) => {
         const track = TRACKS.find((t) => t.name === p.dataKey);
+        const val = isRatio
+          ? (p.value >= 100 ? p.value.toFixed(0) : p.value >= 10 ? p.value.toFixed(1) : p.value.toFixed(2))
+          : fmt(p.value);
         return (
           <div key={p.dataKey} className="flex items-center gap-2 text-xs py-0.5">
             <div className="w-2 h-2 rounded-full" style={{ backgroundColor: p.color }} />
             <span className="text-neutral-400">{track?.short || p.dataKey}:</span>
-            <span className="font-bold text-white">{fmt(p.value)}</span>
+            <span className="font-bold text-white">{val}{isRatio ? " /1K streams" : ""}</span>
           </div>
         );
       })}
@@ -60,39 +70,64 @@ function CustomTooltip({ active, payload, label }: any) {
 
 export default function ViralityHistory() {
   const [rawData, setRawData] = useState<any[]>([]);
+  const [streamData, setStreamData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [metricMode, setMetricMode] = useState<MetricMode>("audio_views");
   const [activeTrack, setActiveTrack] = useState<string | null>(null);
+  const [ratioMode, setRatioMode] = useState(false);
 
   useEffect(() => {
-    async function fetch() {
+    async function fetchData() {
       try {
-        const { data, error } = await supabase
-          .from("track_metrics")
-          .select("report_date, track_name, audio_views, tiktok_creates, ig_creates")
-          .order("report_date", { ascending: true });
+        const [viralityRes, streamsRes] = await Promise.all([
+          supabase
+            .from("track_metrics")
+            .select("report_date, track_name, audio_views, tiktok_creates, ig_creates")
+            .order("report_date", { ascending: true }),
+          supabase
+            .from("track_metrics")
+            .select("report_date, track_name, spotify_streams")
+            .order("report_date", { ascending: true }),
+        ]);
 
-        if (error || !data || data.length === 0) {
-          setLoading(false);
-          return;
-        }
-        setRawData(data);
+        if (!viralityRes.error && viralityRes.data) setRawData(viralityRes.data);
+        if (!streamsRes.error && streamsRes.data) setStreamData(streamsRes.data);
       } catch (err) {
         console.error("Failed to fetch virality history:", err);
       } finally {
         setLoading(false);
       }
     }
-    fetch();
+    fetchData();
   }, []);
 
   if (!loading && rawData.length === 0) return null;
+
+  // Build streams lookup for ratio mode: { date+track → spotify_streams }
+  const streamsLookup = new Map<string, number>();
+  for (const row of streamData) {
+    if (row.spotify_streams > 0) {
+      streamsLookup.set(`${row.report_date}|${row.track_name}`, row.spotify_streams);
+    }
+  }
 
   // Group by date for the current metric
   const byDate = new Map<string, Record<string, number>>();
   for (const row of rawData) {
     if (!byDate.has(row.report_date)) byDate.set(row.report_date, {});
-    byDate.get(row.report_date)![row.track_name] = row[metricMode] || 0;
+    const rawValue = row[metricMode] || 0;
+
+    if (ratioMode) {
+      // Compute creates per 1K Spotify streams
+      const streams = streamsLookup.get(`${row.report_date}|${row.track_name}`);
+      if (streams && streams > 0) {
+        byDate.get(row.report_date)![row.track_name] = parseFloat(((rawValue / streams) * 1000).toFixed(2));
+      } else {
+        byDate.get(row.report_date)![row.track_name] = 0;
+      }
+    } else {
+      byDate.get(row.report_date)![row.track_name] = rawValue;
+    }
   }
 
   const chartData: DataPoint[] = Array.from(byDate.entries()).map(([date, trackData]) => {
@@ -127,6 +162,12 @@ export default function ViralityHistory() {
   }).filter((t) => t.end > 0);
 
   const modeInfo = METRIC_MODES.find((m) => m.key === metricMode)!;
+  const hasStreams = streamData.length > 0 && streamsLookup.size > 0;
+
+  // Format value based on ratio mode
+  const fmtValue = ratioMode
+    ? (n: number) => n >= 100 ? n.toFixed(0) : n >= 10 ? n.toFixed(1) : n.toFixed(2)
+    : fmt;
 
   return (
     <div className="space-y-4">
@@ -136,7 +177,7 @@ export default function ViralityHistory() {
           <h3 className="text-sm font-bold text-white flex items-center gap-2">
             🔥 Audio Virality History
             <span className="text-[10px] text-neutral-500 font-normal">
-              Cobrand · {modeInfo.emoji} {modeInfo.label} · {chartData.length} reports
+              Cobrand · {modeInfo.emoji} {ratioMode ? `${modeInfo.label} per 1K Streams` : modeInfo.label} · {chartData.length} reports
             </span>
           </h3>
         </div>
@@ -165,6 +206,24 @@ export default function ViralityHistory() {
               {m.emoji} {m.label}
             </button>
           ))}
+
+          {/* Ratio mode toggle */}
+          {hasStreams && (
+            <>
+              <div className="w-px h-4 bg-white/[0.06] self-center mx-1" />
+              <button
+                onClick={() => setRatioMode(!ratioMode)}
+                className={`text-[10px] px-2.5 py-1 rounded-full border transition-all font-medium ${
+                  ratioMode
+                    ? "border-amber-500/40 text-amber-300 bg-amber-500/10"
+                    : "border-white/[0.05] text-neutral-600 hover:text-neutral-400"
+                }`}
+                title="Show creates per 1K Spotify streams — normalizes for audience size to reveal true virality"
+              >
+                📊 per 1K Streams
+              </button>
+            </>
+          )}
 
           <div className="w-px h-4 bg-white/[0.06] self-center mx-1" />
 
@@ -214,7 +273,7 @@ export default function ViralityHistory() {
           >
             <span className="w-2 h-2 rounded-full" style={{ backgroundColor: t.color }} />
             <span className="text-[11px] text-neutral-400">{t.short}</span>
-            <span className="text-[11px] font-bold text-white">{fmt(t.end)}</span>
+            <span className="text-[11px] font-bold text-white">{ratioMode ? fmtValue(t.end) : fmt(t.end)}{ratioMode ? "/1K" : ""}</span>
             {t.growth > 0 && (
               <span className="text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">
                 +{t.growth.toFixed(1)}%
@@ -252,10 +311,10 @@ export default function ViralityHistory() {
               tick={{ fill: "#737373", fontSize: 10 }}
               axisLine={false}
               tickLine={false}
-              tickFormatter={fmt}
+              tickFormatter={ratioMode ? fmtValue : fmt}
               width={55}
             />
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip content={<CustomTooltip isRatio={ratioMode} />} />
             {TRACKS.map((t) =>
               activeTrack === null || activeTrack === t.name ? (
                 <Area
