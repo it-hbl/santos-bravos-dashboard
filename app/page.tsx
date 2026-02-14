@@ -8,7 +8,7 @@ import {
   geoCountries as fallbackGeoCountries, geoCities as fallbackGeoCities,
   prMedia as fallbackPrMedia, fanSentiment as fallbackFanSentiment,
   audienceStats as fallbackAudienceStats, artistOverview as fallbackArtistOverview,
-  RELEASES, getTrackReleaseDate,
+  RELEASES, getTrackReleaseDate, getTrackSpotifyUrl,
 } from "./lib/data";
 import { getDashboardData, getAvailableDates } from "./lib/db";
 import { useState, useEffect, useCallback, useRef } from "react";
@@ -157,12 +157,18 @@ function DodBadge({ current, prior }: { current: number; prior: number | null })
   );
 }
 
-function MetricRow({ label, current, prior, accent, tooltip }: { label: string; current: number; prior: number | null; accent?: string; tooltip?: string }) {
+function MetricRow({ label, current, prior, accent, tooltip, href }: { label: string; current: number; prior: number | null; accent?: string; tooltip?: string; href?: string }) {
   const d = dod(current, prior);
+  const labelContent = tooltip ? <MetricTooltip term={tooltip}>{label}</MetricTooltip> : label;
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3 border-b border-white/[0.03] last:border-0 group hover:bg-white/[0.01] px-2 -mx-2 rounded gap-1 sm:gap-0">
       <span className="text-sm text-neutral-400 group-hover:text-neutral-300 transition-colors flex-1 truncate">
-        {tooltip ? <MetricTooltip term={tooltip}>{label}</MetricTooltip> : label}
+        {href ? (
+          <a href={href} target="_blank" rel="noopener noreferrer" className="hover:text-spotify transition-colors inline-flex items-center gap-1">
+            {labelContent}
+            <svg className="w-3 h-3 opacity-0 group-hover:opacity-50 transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </a>
+        ) : labelContent}
       </span>
       <div className="flex items-center gap-3 sm:gap-4 pl-0 sm:pl-4">
         <span className={`text-sm font-bold tabular-nums ${accent || "text-white"}`}>{fmt(current)}</span>
@@ -1199,7 +1205,7 @@ function Dashboard() {
           <MetricRow label={bp.spotifyFollowers.label} current={liveFollowers} prior={bp.spotifyFollowers.prior} accent="text-spotify" />
           <MetricRow label="Spotify Popularity Index" current={livePopularity} prior={bp.spotifyPopularity.prior} tooltip="Spotify Popularity Index" />
           {liveTrackStreams.map(t => (
-            <MetricRow key={t.name} label={`Spotify Total Streams: ${t.name}`} current={t.spotifyStreams.current} prior={t.spotifyStreams.prior} accent="text-spotify" />
+            <MetricRow key={t.name} label={`Spotify Total Streams: ${t.name}`} current={t.spotifyStreams.current} prior={t.spotifyStreams.prior} accent="text-spotify" href={getTrackSpotifyUrl(t.name) ?? undefined} />
           ))}
           <div className="my-3 border-t border-white/[0.05]" />
           <MetricRow label={bp.totalCrossPlatformStreams.label} current={bp.totalCrossPlatformStreams.current} prior={bp.totalCrossPlatformStreams.prior} tooltip="Cross-Platform Streams" />
@@ -1295,7 +1301,14 @@ function Dashboard() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {dailyStreams.map(t => (
               <div key={t.name} className="bg-white/[0.02] rounded-xl p-4 border border-white/[0.04]">
-                <p className="font-bold text-white text-sm mb-3">{t.name}</p>
+                <p className="font-bold text-white text-sm mb-3">
+                  {getTrackSpotifyUrl(t.name) ? (
+                    <a href={getTrackSpotifyUrl(t.name)!} target="_blank" rel="noopener noreferrer" className="hover:text-spotify transition-colors inline-flex items-center gap-1.5">
+                      {t.name}
+                      <span className="text-spotify opacity-60 text-[10px]">🟢</span>
+                    </a>
+                  ) : t.name}
+                </p>
                 <div className="grid grid-cols-3 gap-2">
                   <div>
                     <p className="text-[9px] text-neutral-500 uppercase">Streams</p>

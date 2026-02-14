@@ -3,11 +3,21 @@
 
 // === RELEASE DATES (single source of truth) ===
 export const RELEASES = [
-  { id: "debut",   name: "Santos Bravos Debut",       trackName: null,                        date: "2026-01-24", color: "#a78bfa", emoji: "🌟" },
-  { id: "0pct",    name: "0% Official MV",             trackName: "0%",                        date: "2026-01-31", color: "#22c55e", emoji: "🎬" },
-  { id: "0pct-pt", name: "0% (Portuguese Version)",    trackName: "0% (Portuguese Version)",   date: "2026-02-03", color: "#06b6d4", emoji: "🌎" },
-  { id: "kawasaki",name: "KAWASAKI",                    trackName: "KAWASAKI",                  date: "2026-02-07", color: "#ec4899", emoji: "🏍️" },
+  { id: "debut",   name: "Santos Bravos Debut",       trackName: null,                        date: "2026-01-24", color: "#a78bfa", emoji: "🌟", spotifyId: null },
+  { id: "0pct",    name: "0% Official MV",             trackName: "0%",                        date: "2026-01-31", color: "#22c55e", emoji: "🎬", spotifyId: "0V91BVy8lD7xoxQBNajPiu" },
+  { id: "0pct-pt", name: "0% (Portuguese Version)",    trackName: "0% (Portuguese Version)",   date: "2026-02-03", color: "#06b6d4", emoji: "🌎", spotifyId: "4WwOkpl2MxLCeIfDOFjziN" },
+  { id: "kawasaki",name: "KAWASAKI",                    trackName: "KAWASAKI",                  date: "2026-02-07", color: "#ec4899", emoji: "🏍️", spotifyId: "1ojKC4x3rDKoaikvEx1Lt2" },
 ] as const;
+
+/** Spotify track URL map — get the open.spotify.com link for a track by name */
+export const TRACK_SPOTIFY_URLS: Record<string, string> = Object.fromEntries(
+  RELEASES.filter(r => r.spotifyId).map(r => [r.trackName!, `https://open.spotify.com/track/${r.spotifyId}`])
+);
+
+/** Get Spotify URL for a track name, returns null if not found */
+export function getTrackSpotifyUrl(trackName: string): string | null {
+  return TRACK_SPOTIFY_URLS[trackName] ?? null;
+}
 
 /** Get release date for a track by name */
 export function getTrackReleaseDate(trackName: string): string | null {
