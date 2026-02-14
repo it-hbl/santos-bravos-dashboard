@@ -306,6 +306,12 @@ export const audienceStats = {
   saves: 120154,
   playlistAdds: 105653,
   followers: 97592,
+  priorListeners: null as number | null,
+  priorStreams: null as number | null,
+  priorStreamsPerListener: null as number | null,
+  priorSaves: null as number | null,
+  priorPlaylistAdds: null as number | null,
+  priorFollowers: null as number | null,
 };
 
 // Legacy exports for chart components

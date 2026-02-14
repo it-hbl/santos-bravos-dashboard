@@ -88,8 +88,9 @@ export async function getDashboardData(date: string): Promise<DashboardData> {
     let priorGeoCountries: any[] = [];
     let priorTrackMetrics: any[] = [];
     let priorSentiment: any = null;
+    let priorAudience: any = null;
     if (priorDateRaw) {
-      const [{ data: pr }, { data: pm }, { data: pg }, { data: pt }, { data: ps }] = await Promise.all([
+      const [{ data: pr }, { data: pm }, { data: pg }, { data: pt }, { data: ps }, { data: pa }] = await Promise.all([
         supabase
           .from('daily_reports')
           .select('spotify_followers, total_member_followers, spl')
@@ -112,12 +113,18 @@ export async function getDashboardData(date: string): Promise<DashboardData> {
           .select('positive_pct, negative_pct, neutral_pct')
           .eq('report_date', priorDateRaw)
           .single(),
+        supabase
+          .from('audience_stats')
+          .select('listeners, streams, streams_per_listener, saves, playlist_adds, followers')
+          .eq('report_date', priorDateRaw)
+          .single(),
       ]);
       priorReport = pr;
       priorMembers = pm || [];
       priorGeoCountries = pg || [];
       priorTrackMetrics = pt || [];
       priorSentiment = ps;
+      priorAudience = pa;
     }
 
     // Build businessPerformance
@@ -189,6 +196,12 @@ export async function getDashboardData(date: string): Promise<DashboardData> {
       saves: audience.saves,
       playlistAdds: audience.playlist_adds,
       followers: audience.followers,
+      priorListeners: priorAudience?.listeners ?? null,
+      priorStreams: priorAudience?.streams ?? null,
+      priorStreamsPerListener: priorAudience?.streams_per_listener ? parseFloat(priorAudience.streams_per_listener) : null,
+      priorSaves: priorAudience?.saves ?? null,
+      priorPlaylistAdds: priorAudience?.playlist_adds ?? null,
+      priorFollowers: priorAudience?.followers ?? null,
     } : fallback.audienceStats;
 
     return {

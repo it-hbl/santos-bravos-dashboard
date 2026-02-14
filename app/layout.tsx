@@ -19,7 +19,10 @@ export const metadata: Metadata = {
     images: ["/api/og"],
   },
   icons: {
-    icon: "/sb-avatar.jpg",
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/sb-avatar.jpg", sizes: "any" },
+    ],
     apple: "/icon-512.jpg",
   },
   manifest: "/manifest.json",

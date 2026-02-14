@@ -1623,18 +1623,21 @@ function Dashboard() {
           <CollapsibleSection id="audience-dive" number="📊" title="Audience Deep Dive" subtitle={`Spotify for Artists · ${audienceStats.period}`} color="bg-gradient-to-br from-amber-500 to-orange-400" collapsedSummary={`${fmt(audienceStats.listeners)} listeners · ${fmt(audienceStats.streams)} streams · ${audienceStats.streamsPerListener.toFixed(1)} SPL · ${fmt(audienceStats.saves)} saves`}>
           <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             {[
-              { label: "Listeners", value: audienceStats.listeners, accent: "" },
-              { label: "Streams", value: audienceStats.streams, accent: "" },
-              { label: "Streams / Listener", value: audienceStats.streamsPerListener, accent: "text-amber-400", isSpl: true },
-              { label: "Saves", value: audienceStats.saves, accent: "text-violet-400" },
-              { label: "Playlist Adds", value: audienceStats.playlistAdds, accent: "text-cyan-400" },
-              { label: "Followers", value: audienceStats.followers, accent: "text-spotify" },
+              { label: "Listeners", value: audienceStats.listeners, prior: (audienceStats as any).priorListeners ?? null, accent: "" },
+              { label: "Streams", value: audienceStats.streams, prior: (audienceStats as any).priorStreams ?? null, accent: "" },
+              { label: "Streams / Listener", value: audienceStats.streamsPerListener, prior: (audienceStats as any).priorStreamsPerListener ?? null, accent: "text-amber-400", isSpl: true },
+              { label: "Saves", value: audienceStats.saves, prior: (audienceStats as any).priorSaves ?? null, accent: "text-violet-400" },
+              { label: "Playlist Adds", value: audienceStats.playlistAdds, prior: (audienceStats as any).priorPlaylistAdds ?? null, accent: "text-cyan-400" },
+              { label: "Followers", value: audienceStats.followers, prior: (audienceStats as any).priorFollowers ?? null, accent: "text-spotify" },
             ].map(s => (
               <div key={s.label} className="bg-white/[0.02] rounded-xl p-3 border border-white/[0.04] text-center">
                 <p className="text-[9px] text-neutral-500 uppercase tracking-wider">{s.label}</p>
                 <p className={`text-lg font-extrabold mt-1 ${s.accent || "text-white"}`}>
                   {s.isSpl ? (s.value as number).toFixed(2) : fmt(s.value as number)}
                 </p>
+                {s.prior != null && s.prior > 0 && (
+                  <DodBadge current={s.isSpl ? s.value * 1000 : s.value} prior={s.isSpl ? s.prior * 1000 : s.prior} />
+                )}
               </div>
             ))}
           </div>
