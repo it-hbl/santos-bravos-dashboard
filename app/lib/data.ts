@@ -3,11 +3,25 @@
 
 // === RELEASE DATES (single source of truth) ===
 export const RELEASES = [
-  { id: "debut",   name: "Santos Bravos Debut",       trackName: null,                        date: "2026-01-24", color: "#a78bfa", emoji: "🌟", spotifyId: null },
-  { id: "0pct",    name: "0% Official MV",             trackName: "0%",                        date: "2026-01-31", color: "#22c55e", emoji: "🎬", spotifyId: "0V91BVy8lD7xoxQBNajPiu" },
-  { id: "0pct-pt", name: "0% (Portuguese Version)",    trackName: "0% (Portuguese Version)",   date: "2026-02-03", color: "#06b6d4", emoji: "🌎", spotifyId: "4WwOkpl2MxLCeIfDOFjziN" },
-  { id: "kawasaki",name: "KAWASAKI",                    trackName: "KAWASAKI",                  date: "2026-02-07", color: "#ec4899", emoji: "🏍️", spotifyId: "1ojKC4x3rDKoaikvEx1Lt2" },
+  { id: "debut",   name: "Santos Bravos Debut",       trackName: null,                        date: "2026-01-24", color: "#a78bfa", emoji: "🌟", spotifyId: null, youtubeVideoId: null },
+  { id: "0pct",    name: "0% Official MV",             trackName: "0%",                        date: "2026-01-31", color: "#22c55e", emoji: "🎬", spotifyId: "0V91BVy8lD7xoxQBNajPiu", youtubeVideoId: "ogmUm0xh8-w" },
+  { id: "0pct-pt", name: "0% (Portuguese Version)",    trackName: "0% (Portuguese Version)",   date: "2026-02-03", color: "#06b6d4", emoji: "🌎", spotifyId: "4WwOkpl2MxLCeIfDOFjziN", youtubeVideoId: "_9tvZ5qoH_I" },
+  { id: "kawasaki",name: "KAWASAKI",                    trackName: "KAWASAKI",                  date: "2026-02-07", color: "#ec4899", emoji: "🏍️", spotifyId: "1ojKC4x3rDKoaikvEx1Lt2", youtubeVideoId: "Cmy8CsYIUL0" },
 ] as const;
+
+// Additional YouTube video IDs not tied to a release
+export const YOUTUBE_VIDEO_IDS: Record<string, string> = {
+  "0% Official MV": "ogmUm0xh8-w",
+  "0% Debut Visualizer": "CYse_hesElw",
+  "0% (Portuguese) Lyric Video": "_9tvZ5qoH_I",
+  "KAWASAKI Performance Video": "Cmy8CsYIUL0",
+};
+
+/** Get YouTube URL for a video by its dashboard name */
+export function getVideoYoutubeUrl(videoName: string): string | null {
+  const id = YOUTUBE_VIDEO_IDS[videoName];
+  return id ? `https://youtube.com/watch?v=${id}` : null;
+}
 
 /** Spotify track URL map — get the open.spotify.com link for a track by name */
 export const TRACK_SPOTIFY_URLS: Record<string, string> = Object.fromEntries(

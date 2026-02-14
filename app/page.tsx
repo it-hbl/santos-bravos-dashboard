@@ -8,7 +8,7 @@ import {
   geoCountries as fallbackGeoCountries, geoCities as fallbackGeoCities,
   prMedia as fallbackPrMedia, fanSentiment as fallbackFanSentiment,
   audienceStats as fallbackAudienceStats, artistOverview as fallbackArtistOverview,
-  RELEASES, getTrackReleaseDate, getTrackSpotifyUrl,
+  RELEASES, getTrackReleaseDate, getTrackSpotifyUrl, getVideoYoutubeUrl,
 } from "./lib/data";
 import { getDashboardData, getAvailableDates } from "./lib/db";
 import { useState, useEffect, useCallback, useRef } from "react";
@@ -1211,7 +1211,7 @@ function Dashboard() {
           <div className="my-3 border-t border-white/[0.05]" />
           <MetricRow label={bp.totalCrossPlatformStreams.label} current={bp.totalCrossPlatformStreams.current} prior={bp.totalCrossPlatformStreams.prior} tooltip="Cross-Platform Streams" />
           {liveYTVideos.map(v => (
-            <MetricRow key={v.name} label={`YouTube Views: ${v.name}`} current={v.views.current} prior={v.views.prior} accent="text-ytred" />
+            <MetricRow key={v.name} label={`YouTube Views: ${v.name}`} current={v.views.current} prior={v.views.prior} accent="text-ytred" href={getVideoYoutubeUrl(v.name) ?? undefined} />
           ))}
 
           {/* YouTube Engagement Breakdown */}
