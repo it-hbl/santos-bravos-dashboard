@@ -110,6 +110,7 @@ const SentimentWeekday = dynamic(() => import("./components/SentimentWeekday"), 
 const GrowthStreak = dynamic(() => import("./components/GrowthStreak"), { ssr: false });
 const TrackMomentum = dynamic(() => import("./components/TrackMomentum"), { ssr: false });
 const MomentumArrows = dynamic(() => import("./components/MomentumArrows"), { ssr: false });
+const ViralMoments = dynamic(() => import("./components/ViralMoments"), { ssr: false });
 
 /** Extract short date like "2/9/26" from "February 9, 2026" or ISO date */
 function shortDate(dateStr: string): string {
@@ -1849,6 +1850,12 @@ function Dashboard() {
           </div>
           <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-2">Daily Mention Volume</p>
           <MentionsChart data={livePR.timeSeries} />
+          {/* Viral Moments — spike detection timeline */}
+          {livePR.timeSeries && livePR.timeSeries.length >= 3 && (
+            <div className="mt-4">
+              <ViralMoments timeSeries={livePR.timeSeries} />
+            </div>
+          )}
           {/* Momentum + WoW row */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
             <MentionMomentum timeSeries={livePR.timeSeries} totalMentions={livePR.totalMentions} />
