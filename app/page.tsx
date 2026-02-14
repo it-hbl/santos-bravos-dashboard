@@ -103,6 +103,7 @@ const SectionDivider = dynamic(() => import("./components/SectionDivider"), { ss
 const RevenueEstimate = dynamic(() => import("./components/RevenueEstimate"), { ssr: false });
 const HeroScoreBadge = dynamic(() => import("./components/HeroScoreBadge"), { ssr: false });
 const SentimentWeekday = dynamic(() => import("./components/SentimentWeekday"), { ssr: false });
+const GrowthStreak = dynamic(() => import("./components/GrowthStreak"), { ssr: false });
 
 /** Extract short date like "2/9/26" from "February 9, 2026" or ISO date */
 function shortDate(dateStr: string): string {
@@ -758,6 +759,7 @@ function Dashboard() {
                     </span>
                   );
                 })()}
+                <GrowthStreak />
               </div>
               {/* Social platform quick links */}
               <div className="flex gap-1.5 flex-wrap justify-center md:justify-start mt-2">
