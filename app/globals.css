@@ -978,8 +978,36 @@ a:focus-visible {
   100% { transform: translateX(-50%); }
 }
 
+/* Date transition — cinematic slide + fade when switching report dates */
+.date-transition {
+  transition: opacity 0.35s cubic-bezier(0.25, 0.1, 0.25, 1),
+              transform 0.35s cubic-bezier(0.25, 0.1, 0.25, 1),
+              filter 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
+  will-change: opacity, transform, filter;
+}
+.date-enter {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+  filter: blur(0);
+  pointer-events: auto;
+}
+.date-exit-right {
+  opacity: 0;
+  transform: translateX(-24px) scale(0.985);
+  filter: blur(3px);
+  pointer-events: none;
+}
+.date-exit-left {
+  opacity: 0;
+  transform: translateX(24px) scale(0.985);
+  filter: blur(3px);
+  pointer-events: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ticker-scroll { animation: none !important; }
+  .date-transition { transition: opacity 0.15s ease !important; }
+  .date-exit-right, .date-exit-left { transform: none !important; filter: none !important; }
 }
 
 @media print {

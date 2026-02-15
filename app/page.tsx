@@ -323,6 +323,7 @@ function Dashboard() {
   const [selectedDate, setSelectedDate] = useState(getInitialDate);
   const [availableDates, setAvailableDates] = useState<string[]>(["2026-02-09"]);
   const [dateLoading, setDateLoading] = useState(false);
+  const [transitionDir, setTransitionDir] = useState<"left" | "right">("right");
   const initialLoadDone = useRef(false);
 
   // Data state — defaults to fallback (hardcoded)
@@ -378,6 +379,8 @@ function Dashboard() {
 
   // Fetch data when date changes
   const handleDateChange = useCallback(async (date: string) => {
+    // Determine transition direction based on date comparison
+    setTransitionDir(date > selectedDate ? "right" : "left");
     setSelectedDate(date);
     setDateLoading(true);
     // Scroll to top so the user sees fresh data from the beginning
@@ -801,12 +804,12 @@ function Dashboard() {
         })()} />
 
         {/* Skeleton loading state when switching dates */}
-        <div className={`transition-all duration-300 ease-out ${dateLoading ? "opacity-100 max-h-none" : "opacity-0 max-h-0 overflow-hidden pointer-events-none"}`}>
+        <div className={`transition-all duration-400 ease-out ${dateLoading ? "opacity-100 max-h-none" : "opacity-0 max-h-0 overflow-hidden pointer-events-none"}`}>
           <SkeletonLoader />
         </div>
 
-        {/* Main dashboard content — fades in/out during date loading */}
-        <div className={`transition-opacity duration-300 ease-out ${dateLoading ? "opacity-0 pointer-events-none" : "opacity-100"} space-y-10`}>
+        {/* Main dashboard content — cinematic slide + fade transition on date change */}
+        <div className={`date-transition space-y-10 ${dateLoading ? `date-exit-${transitionDir}` : "date-enter"}`}>
 
         {/* Stale Data Warning Banner */}
         <StaleDataBanner
