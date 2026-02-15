@@ -79,6 +79,7 @@ const MediaVsAudience = dynamic(() => import("./components/MediaVsAudience"), { 
 const MentionMomentum = dynamic(() => import("./components/MentionMomentum"), { ssr: false });
 const WeekdayHeatmap = dynamic(() => import("./components/WeekdayHeatmap"), { ssr: false });
 const ActivityFeed = dynamic(() => import("./components/ActivityFeed"), { ssr: false });
+const NextMilestoneCountdown = dynamic(() => import("./components/NextMilestoneCountdown"), { ssr: false });
 const SentimentByPlatform = dynamic(() => import("./components/SentimentByPlatform"), { ssr: false });
 const WordCloud = dynamic(() => import("./components/WordCloud"), { ssr: false });
 const HistoricalTrends = dynamic(() => import("./components/HistoricalTrends"), { ssr: false });
@@ -1064,6 +1065,16 @@ function Dashboard() {
             reportDate={reportDate}
           />
         </AnimatedSection>
+
+        {/* Next Milestone Countdown — live ticking ETA */}
+        <NextMilestoneCountdown milestones={[
+          { label: "Spotify Monthly Listeners", current: liveListeners, target: 500000, emoji: "🎧", color: "#1DB954", dailyGrowth: bp.spotifyMonthlyListeners.prior ? (liveListeners - bp.spotifyMonthlyListeners.prior) / 5 : null },
+          { label: "0% — 10M Streams", current: liveTrackStreams[0]?.spotifyStreams.current ?? 0, target: 10000000, emoji: "💿", color: "#8b5cf6", dailyGrowth: bp.tracks[0]?.spotifyStreams.prior ? ((liveTrackStreams[0]?.spotifyStreams.current ?? 0) - bp.tracks[0].spotifyStreams.prior) / 5 : null },
+          { label: "KAWASAKI — 2M Streams", current: liveTrackStreams[2]?.spotifyStreams.current ?? 0, target: 2000000, emoji: "🏍️", color: "#ec4899", dailyGrowth: bp.tracks[2]?.spotifyStreams.prior ? ((liveTrackStreams[2]?.spotifyStreams.current ?? 0) - bp.tracks[2].spotifyStreams.prior) / 5 : null },
+          { label: "SNS Footprint — 2M", current: liveSocialMedia.totalFootprint.current, target: 2000000, emoji: "📱", color: "#06b6d4", dailyGrowth: liveSocialMedia.totalFootprint.prior ? (liveSocialMedia.totalFootprint.current - liveSocialMedia.totalFootprint.prior) / 5 : null },
+          { label: "YouTube Subscribers — 500K", current: liveYTSubscribers, target: 500000, emoji: "▶️", color: "#ef4444", dailyGrowth: null },
+          { label: "Cross-Platform — 50M", current: bp.totalCrossPlatformStreams.current, target: 50000000, emoji: "🌎", color: "#f59e0b", dailyGrowth: bp.totalCrossPlatformStreams.prior ? (bp.totalCrossPlatformStreams.current - bp.totalCrossPlatformStreams.prior) / 5 : null },
+        ]} />
 
         {/* Key Highlights - Executive Summary */}
         <div id="highlights" className="scroll-mt-16" />
