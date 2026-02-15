@@ -58,6 +58,7 @@ const GrowthVelocity = dynamic(() => import("./components/GrowthVelocity"), { ss
 const SectionNav = dynamic(() => import("./components/SectionNav"), { ssr: false });
 const PlatformDistribution = dynamic(() => import("./components/PlatformDistribution"), { ssr: false });
 const PlatformSync = dynamic(() => import("./components/PlatformSync"), { ssr: false });
+const PlatformGrowthRace = dynamic(() => import("./components/PlatformGrowthRace"), { ssr: false });
 const SentimentGauge = dynamic(() => import("./components/SentimentGauge"), { ssr: false });
 const TrackRadar = dynamic(() => import("./components/TrackRadar"), { ssr: false });
 const ContentHeatmap = dynamic(() => import("./components/ContentHeatmap"), { ssr: false });
@@ -1831,6 +1832,21 @@ function Dashboard() {
                 }));
             })()} />
           </div>
+          <PlatformGrowthRace platforms={(() => {
+            const platformMeta: Record<string, { emoji: string; color: string }> = {
+              TikTok: { emoji: "🎵", color: "#00F2EA" },
+              YouTube: { emoji: "▶️", color: "#FF0000" },
+              Instagram: { emoji: "📷", color: "#E1306C" },
+              Weverse: { emoji: "💚", color: "#10B981" },
+            };
+            return liveSocialMedia.platforms.map(p => ({
+              name: p.platform,
+              current: p.current,
+              prior: p.prior,
+              color: platformMeta[p.platform]?.color || "#8B5CF6",
+              emoji: platformMeta[p.platform]?.emoji || "📱",
+            }));
+          })()} />
           </CollapsibleSection>
         </section>
         </GrowthGlow>

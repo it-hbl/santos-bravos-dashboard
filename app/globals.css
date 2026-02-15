@@ -245,6 +245,11 @@ a:focus-visible {
   50% { background-position: 0% 0; }
 }
 
+@keyframes shimmer {
+  0%, 100% { opacity: 0; transform: translateX(-100%); }
+  50% { opacity: 1; transform: translateX(100%); }
+}
+
 /* Staggered hero card entrance */
 .hero-card-enter {
   animation: heroCardIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
