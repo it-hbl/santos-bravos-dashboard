@@ -41,6 +41,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="antialiased min-h-screen">
         <div className="ambient-orbs" aria-hidden="true"><div className="ambient-orb-3" /></div>
+        <div className="starfield" aria-hidden="true" /><div className="starfield-depth" aria-hidden="true" />
         <div className="relative z-10">
           <AuthProvider>{children}</AuthProvider>
         </div>
