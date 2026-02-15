@@ -361,10 +361,14 @@ function Dashboard() {
   const o = artistOverview;
   const { refresh } = useLiveData();
 
-  // Meltwater live refresh state
+  // Meltwater live refresh state with auto-polling every 5 minutes
+  const MW_REFRESH_INTERVAL = 5 * 60; // seconds
   const [mwLiveData, setMwLiveData] = useState<{ prMedia: any; fanSentiment: any; fetchedAt: string } | null>(null);
   const [mwLoading, setMwLoading] = useState(false);
   const [mwError, setMwError] = useState<string | null>(null);
+  const [mwCountdown, setMwCountdown] = useState(MW_REFRESH_INTERVAL);
+  const [mwAutoRefresh, setMwAutoRefresh] = useState(true);
+  const mwCountdownRef = useRef(MW_REFRESH_INTERVAL);
 
   const refreshMeltwater = useCallback(async () => {
     setMwLoading(true);
@@ -385,8 +389,29 @@ function Dashboard() {
       setMwError(err.message || "Network error");
     } finally {
       setMwLoading(false);
+      // Reset countdown after each fetch
+      mwCountdownRef.current = MW_REFRESH_INTERVAL;
+      setMwCountdown(MW_REFRESH_INTERVAL);
     }
   }, []);
+
+  // Auto-fetch on mount
+  useEffect(() => {
+    refreshMeltwater();
+  }, [refreshMeltwater]);
+
+  // Countdown timer + auto-refresh
+  useEffect(() => {
+    if (!mwAutoRefresh) return;
+    const interval = setInterval(() => {
+      mwCountdownRef.current -= 1;
+      setMwCountdown(mwCountdownRef.current);
+      if (mwCountdownRef.current <= 0) {
+        refreshMeltwater();
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [mwAutoRefresh, refreshMeltwater]);
 
   // Use live Meltwater data if available, otherwise fall back to Supabase/hardcoded
   const livePR = (mwLiveData?.prMedia || prMedia) as any;
@@ -2020,18 +2045,34 @@ function Dashboard() {
               )}
               {mwError && <span className="text-[9px] text-red-400">· {mwError}</span>}
             </div>
-            <button
-              onClick={refreshMeltwater}
-              disabled={mwLoading}
-              className={`text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md transition-all ${mwLoading ? "text-neutral-600 bg-white/[0.02] cursor-wait" : "text-violet-400 bg-violet-500/10 hover:bg-violet-500/20 hover:text-violet-300"}`}
-            >
-              {mwLoading ? (
-                <span className="flex items-center gap-1">
-                  <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" /></svg>
-                  Fetching…
+            <div className="flex items-center gap-2">
+              {/* Auto-refresh toggle */}
+              <button
+                onClick={() => setMwAutoRefresh(prev => !prev)}
+                className={`text-[8px] font-bold uppercase tracking-wider px-2 py-1 rounded-md transition-all ${mwAutoRefresh ? "text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20" : "text-neutral-500 bg-white/[0.02] hover:bg-white/[0.04]"}`}
+                title={mwAutoRefresh ? "Auto-refresh ON (every 5 min)" : "Auto-refresh OFF"}
+              >
+                {mwAutoRefresh ? "🔄 Auto" : "⏸ Auto"}
+              </button>
+              {/* Countdown indicator */}
+              {mwAutoRefresh && !mwLoading && mwLiveData && (
+                <span className="text-[8px] text-neutral-600 tabular-nums font-mono w-8 text-center">
+                  {Math.floor(mwCountdown / 60)}:{(mwCountdown % 60).toString().padStart(2, "0")}
                 </span>
-              ) : "⚡ Refresh Live"}
-            </button>
+              )}
+              <button
+                onClick={refreshMeltwater}
+                disabled={mwLoading}
+                className={`text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md transition-all ${mwLoading ? "text-neutral-600 bg-white/[0.02] cursor-wait" : "text-violet-400 bg-violet-500/10 hover:bg-violet-500/20 hover:text-violet-300"}`}
+              >
+                {mwLoading ? (
+                  <span className="flex items-center gap-1">
+                    <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" /></svg>
+                    Fetching…
+                  </span>
+                ) : "⚡ Refresh"}
+              </button>
+            </div>
           </div>
           <div className="grid grid-cols-3 gap-3 mb-5">
             {[
