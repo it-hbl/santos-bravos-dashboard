@@ -319,16 +319,23 @@ function Dashboard() {
     window.history.replaceState({}, "", url.toString());
   }, [selectedDate]);
 
-  // Fetch available dates on mount, then load URL date if present
+  // Fetch available dates on mount, then auto-load the latest (or URL-specified) date
   useEffect(() => {
     getAvailableDates().then(dates => {
       if (dates.length > 0) {
         setAvailableDates(dates);
-        // If URL had a date param, load that date's data on mount
+        if (initialLoadDone.current) return;
+        initialLoadDone.current = true;
         const urlDate = getInitialDate();
-        if (urlDate !== "2026-02-09" && dates.includes(urlDate) && !initialLoadDone.current) {
-          initialLoadDone.current = true;
+        if (urlDate !== "2026-02-09" && dates.includes(urlDate)) {
+          // URL had a specific date param — load that
           handleDateChange(urlDate);
+        } else {
+          // No URL date (or default) — auto-load the latest available report
+          const latestDate = dates[0]; // dates are sorted descending
+          if (latestDate && latestDate !== "2026-02-09") {
+            handleDateChange(latestDate);
+          }
         }
       }
     });
@@ -2061,7 +2068,7 @@ function Dashboard() {
               ) : (
                 <>
                   <div className="w-1.5 h-1.5 rounded-full bg-neutral-600" />
-                  <span className="text-[9px] text-neutral-500 font-semibold uppercase tracking-wider">{selectedDate === "2026-02-09" ? "Cached Data" : `Snapshot · ${selectedDate}`}</span>
+                  <span className="text-[9px] text-neutral-500 font-semibold uppercase tracking-wider">{mwLiveData ? "Offline" : `Snapshot · ${selectedDate}`}</span>
                 </>
               )}
               {mwError && <span className="text-[9px] text-red-400">· {mwError}</span>}
