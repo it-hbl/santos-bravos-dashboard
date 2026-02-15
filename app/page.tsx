@@ -61,6 +61,7 @@ const MilestonesTracker = dynamic(() => import("./components/MilestonesTracker")
 const KeyboardShortcuts = dynamic(() => import("./components/KeyboardShortcuts"), { ssr: false });
 const GeoTreemap = dynamic(() => import("./components/GeoTreemap"), { ssr: false });
 const DailyComparisonChart = dynamic(() => import("./components/DailyComparisonChart"), { ssr: false });
+const DailyRevenue = dynamic(() => import("./components/DailyRevenue"), { ssr: false });
 const TopInfluencers = dynamic(() => import("./components/TopInfluencers"), { ssr: false });
 const AnalystNote = dynamic(() => import("./components/AnalystNote"), { ssr: false });
 const ExportCSV = dynamic(() => import("./components/ExportCSV"), { ssr: false });
@@ -1506,6 +1507,7 @@ function Dashboard() {
             ))}
           </div>
           <EngagementDepth tracks={dailyStreams} />
+          <DailyRevenue tracks={dailyStreams.map(d => ({ name: d.name, streams: d.streams }))} />
           <DailyComparisonChart tracks={dailyStreams} />
           </CollapsibleSection>
         </section>
