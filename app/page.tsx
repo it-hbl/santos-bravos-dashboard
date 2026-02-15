@@ -136,6 +136,7 @@ const GeoMap = dynamic(() => import("./components/GeoMap"), { ssr: false });
 const NavBreadcrumb = dynamic(() => import("./components/NavBreadcrumb"), { ssr: false });
 const SentimentShift = dynamic(() => import("./components/SentimentShift"), { ssr: false });
 const SectionMinimap = dynamic(() => import("./components/SectionMinimap"), { ssr: false });
+const QuickPeek = dynamic(() => import("./components/QuickPeek"), { ssr: false });
 
 /** Extract short date like "2/9/26" from "February 9, 2026" or ISO date */
 function shortDate(dateStr: string): string {
@@ -2736,6 +2737,16 @@ function Dashboard() {
         </footer>
         </div>{/* end dateLoading wrapper */}
       </div>
+      <QuickPeek kpis={[
+        { label: "Listeners", value: fmt(liveListeners), change: bp.spotifyMonthlyListeners.prior ? dod(liveListeners, bp.spotifyMonthlyListeners.prior).pct : undefined, positive: bp.spotifyMonthlyListeners.prior ? liveListeners >= bp.spotifyMonthlyListeners.prior : true, emoji: "🎧", color: "text-spotify", sectionId: "business" },
+        { label: "Followers", value: fmt(liveFollowers), change: bp.spotifyFollowers?.prior ? dod(liveFollowers, bp.spotifyFollowers.prior).pct : undefined, positive: bp.spotifyFollowers?.prior ? liveFollowers >= bp.spotifyFollowers.prior : true, emoji: "💚", color: "text-spotify", sectionId: "business" },
+        { label: "Total Streams", value: fmt(bp.totalCrossPlatformStreams.current), change: bp.totalCrossPlatformStreams.prior ? dod(bp.totalCrossPlatformStreams.current, bp.totalCrossPlatformStreams.prior).pct : undefined, positive: bp.totalCrossPlatformStreams.prior ? bp.totalCrossPlatformStreams.current >= bp.totalCrossPlatformStreams.prior : true, emoji: "🎵", color: "text-white", sectionId: "charts" },
+        { label: "SNS Footprint", value: fmt(liveSocialMedia.totalFootprint.current), change: liveSocialMedia.totalFootprint.prior ? dod(liveSocialMedia.totalFootprint.current, liveSocialMedia.totalFootprint.prior).pct : undefined, positive: liveSocialMedia.totalFootprint.prior ? liveSocialMedia.totalFootprint.current >= liveSocialMedia.totalFootprint.prior : true, emoji: "📱", color: "text-tiktok", sectionId: "social" },
+        { label: "YT Subscribers", value: fmt(liveYTSubscribers), emoji: "▶️", color: "text-ytred", sectionId: "social" },
+        { label: "Mentions", value: fmt(livePR.totalMentions), change: livePR.wow ? `${Math.abs(livePR.wow.changePct).toFixed(0)}% WoW` : undefined, positive: livePR.wow ? livePR.wow.changePct >= 0 : true, emoji: "📰", color: "text-violet-400", sectionId: "pr" },
+        { label: "Sentiment", value: `+${(liveSentiment.positive.pct - liveSentiment.negative.pct).toFixed(0)} net`, emoji: "💬", color: liveSentiment.positive.pct > liveSentiment.negative.pct ? "text-emerald-400" : "text-red-400", sectionId: "sentiment" },
+        { label: "Popularity", value: String(livePopularity), change: bp.spotifyPopularity.prior ? dod(livePopularity, bp.spotifyPopularity.prior).pct : undefined, positive: bp.spotifyPopularity.prior ? livePopularity >= bp.spotifyPopularity.prior : true, emoji: "📊", color: "text-amber-400", sectionId: "business" },
+      ]} />
       <KeyboardShortcuts onRefresh={refresh} />
       <CommandPalette onRefresh={refresh} />
       <MobileNav />
