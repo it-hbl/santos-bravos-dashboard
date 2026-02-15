@@ -28,6 +28,7 @@ import DataFreshness from "./components/DataFreshness";
 import SkeletonLoader from "./components/SkeletonLoader";
 import BackToTop from "./components/BackToTop";
 import DebutTimer from "./components/DebutTimer";
+import HeroParallax from "./components/HeroParallax";
 import SentimentAura from "./components/SentimentAura";
 import TopMoverBadge, { Mover } from "./components/TopMoverBadge";
 import { ErrorBoundary, SectionErrorBoundary } from "./components/ErrorBoundary";
@@ -749,6 +750,7 @@ function Dashboard() {
         <div className={`transition-opacity duration-300 ease-out ${dateLoading ? "opacity-0 pointer-events-none" : "opacity-100"} space-y-10`}>
 
         {/* Hero */}
+        <HeroParallax>
         <section id="hero" tabIndex={-1} className="hero-bg rounded-3xl p-5 sm:p-8 md:p-10 scroll-mt-16"><span id="main-content" />
           <SentimentAura positivePct={liveSentiment.positive.pct} negativePct={liveSentiment.negative.pct} neutralPct={liveSentiment.neutral.pct} />
           {/* Report Date Banner */}
@@ -1084,6 +1086,7 @@ function Dashboard() {
             </div>
           </div>
         </section>
+        </HeroParallax>
 
         {/* Data Freshness Warning */}
         <DataFreshness reportDate={reportDate} />
