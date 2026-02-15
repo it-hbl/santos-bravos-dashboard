@@ -51,6 +51,7 @@ const PlatformDistribution = dynamic(() => import("./components/PlatformDistribu
 const PlatformSync = dynamic(() => import("./components/PlatformSync"), { ssr: false });
 const SentimentGauge = dynamic(() => import("./components/SentimentGauge"), { ssr: false });
 const TrackRadar = dynamic(() => import("./components/TrackRadar"), { ssr: false });
+const ContentHeatmap = dynamic(() => import("./components/ContentHeatmap"), { ssr: false });
 const MemberBuzz = dynamic(() => import("./components/MemberBuzz"), { ssr: false });
 const CopySummary = dynamic(() => import("./components/CopySummary"), { ssr: false });
 const SentimentTimeline = dynamic(() => import("./components/SentimentTimeline"), { ssr: false });
@@ -1718,6 +1719,11 @@ function Dashboard() {
               { name: "KAWASAKI", spotifyStreams: liveTrackStreams[2].spotifyStreams.current, priorStreams: liveTrackStreams[2].spotifyStreams.prior, dailyStreams: dailyStreams[1]?.streams ?? 0, tiktokCreates: audioVirality.tracks[2]?.tiktokCreates ?? 0, igCreates: audioVirality.tracks[2]?.igCreates ?? 0, saves: dailyStreams[1]?.saves ?? 0, listeners: dailyStreams[1]?.listeners ?? 0, releaseDate: "2026-02-07" },
             ]} />
           </div>
+          <ContentHeatmap tracks={[
+            { name: "0%", metrics: { totalStreams: liveTrackStreams[0].spotifyStreams.current, dailyStreams: dailyStreams[0]?.streams ?? 0, dailySaves: dailyStreams[0]?.saves ?? 0, tiktokCreates: audioVirality.tracks[0]?.tiktokCreates ?? 0, igCreates: audioVirality.tracks[0]?.igCreates ?? 0, ytViews: businessPerformance.youtubeVideos[1]?.views.current ?? 0 } },
+            { name: "0% (PT)", metrics: { totalStreams: liveTrackStreams[1].spotifyStreams.current, dailyStreams: dailyStreams[2]?.streams ?? 0, dailySaves: dailyStreams[2]?.saves ?? 0, tiktokCreates: audioVirality.tracks[1]?.tiktokCreates ?? 0, igCreates: audioVirality.tracks[1]?.igCreates ?? 0, ytViews: businessPerformance.youtubeVideos[2]?.views.current ?? 0 } },
+            { name: "KAWASAKI", metrics: { totalStreams: liveTrackStreams[2].spotifyStreams.current, dailyStreams: dailyStreams[1]?.streams ?? 0, dailySaves: dailyStreams[1]?.saves ?? 0, tiktokCreates: audioVirality.tracks[2]?.tiktokCreates ?? 0, igCreates: audioVirality.tracks[2]?.igCreates ?? 0, ytViews: businessPerformance.youtubeVideos[0]?.views.current ?? 0 } },
+          ]} />
           </CollapsibleSection>
         </section>
         </AnimatedSection>
