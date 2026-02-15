@@ -783,6 +783,118 @@ a:focus-visible {
   animation: starDrift1 70s ease-in-out infinite reverse, starTwinkle 10s ease-in-out infinite 2s;
 }
 
+/* ─── Growth Glow Borders ─── */
+/* Animated gradient borders that reflect metric growth direction */
+@keyframes growthGlowPulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@keyframes growthGlowShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.growth-glow-strong-positive {
+  position: relative;
+  z-index: 0;
+}
+.growth-glow-strong-positive::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, #10b981, #34d399, #06b6d4, #10b981);
+  background-size: 300% 300%;
+  animation: growthGlowShift 4s ease infinite, growthGlowPulse 3s ease-in-out infinite;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: calc(0.5 * var(--glow-intensity, 1));
+}
+
+.growth-glow-strong-negative {
+  position: relative;
+  z-index: 0;
+}
+.growth-glow-strong-negative::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, #ef4444, #f87171, #fb923c, #ef4444);
+  background-size: 300% 300%;
+  animation: growthGlowShift 4s ease infinite, growthGlowPulse 3s ease-in-out infinite;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: calc(0.4 * var(--glow-intensity, 1));
+}
+
+.growth-glow-moderate-positive {
+  position: relative;
+  z-index: 0;
+}
+.growth-glow-moderate-positive::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.6), rgba(52, 211, 153, 0.4));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: calc(0.35 * var(--glow-intensity, 1));
+}
+
+.growth-glow-moderate-negative {
+  position: relative;
+  z-index: 0;
+}
+.growth-glow-moderate-negative::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.5), rgba(248, 113, 113, 0.3));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: calc(0.3 * var(--glow-intensity, 1));
+}
+
+.growth-glow-flat {
+  /* No glow for flat metrics */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .growth-glow-strong-positive::before,
+  .growth-glow-strong-negative::before {
+    animation: none;
+  }
+}
+
+@media print {
+  .growth-glow-strong-positive::before,
+  .growth-glow-strong-negative::before,
+  .growth-glow-moderate-positive::before,
+  .growth-glow-moderate-negative::before {
+    display: none;
+  }
+}
+
 /* Geo map pulse animation */
 @keyframes geo-pulse {
   0%, 100% { opacity: 0.3; r: inherit; }

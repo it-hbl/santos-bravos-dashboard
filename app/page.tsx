@@ -32,6 +32,7 @@ import SentimentAura from "./components/SentimentAura";
 import TopMoverBadge, { Mover } from "./components/TopMoverBadge";
 import { ErrorBoundary, SectionErrorBoundary } from "./components/ErrorBoundary";
 import GlowCard from "./components/GlowCard";
+import GrowthGlow from "./components/GrowthGlow";
 import useSectionHash from "./components/useSectionHash";
 import { useFocusMode, FocusOverlay } from "./components/FocusMode";
 import { useSession } from "next-auth/react";
@@ -1428,6 +1429,7 @@ function Dashboard() {
         <div id="business" className="scroll-mt-16 print-page-break" />
         <SectionErrorBoundary sectionName="Business Performance">
         <AnimatedSection>
+        <GrowthGlow growthPct={bp.spotifyMonthlyListeners.prior ? ((liveListeners - bp.spotifyMonthlyListeners.prior) / bp.spotifyMonthlyListeners.prior) * 100 : null} className="rounded-2xl">
         <section className="glass-hybe rounded-2xl p-6">
           <CollapsibleSection id="business" number="1" title="Business Performance Snapshot" subtitle="Spotify + YouTube" color="bg-spotify" trend={trendListeners} collapsedSummary={`${fmt(liveListeners)} listeners · ${fmt(liveFollowers)} followers · ${liveTrackStreams.length} tracks · ${fmt(bp.totalCrossPlatformStreams.current)} total streams · ${liveYTVideos.length} videos`}>
           <div className="mb-3 hidden sm:flex items-center gap-6 text-[9px] text-neutral-600 uppercase tracking-wider px-2 py-2 bg-white/[0.015] rounded-lg">
@@ -1556,6 +1558,7 @@ function Dashboard() {
           <MetricRow label={bp.spl.label} current={bp.spl.current} prior={bp.spl.prior ?? null} accent="text-amber-400" />
           </CollapsibleSection>
         </section>
+        </GrowthGlow>
         </AnimatedSection>
         </SectionErrorBoundary>
 
@@ -1682,6 +1685,7 @@ function Dashboard() {
         <div id="social" className="scroll-mt-16 print-page-break" />
         <SectionErrorBoundary sectionName="Social Media">
         <AnimatedSection>
+        <GrowthGlow growthPct={liveSocialMedia.totalFootprint.prior ? ((liveSocialMedia.totalFootprint.current - liveSocialMedia.totalFootprint.prior) / liveSocialMedia.totalFootprint.prior) * 100 : null} className="rounded-2xl">
         <section className="glass-hybe rounded-2xl p-6">
           <CollapsibleSection id="social-media" number="2" title="Social Media Performance" subtitle={`SNS · ${sectionDate(reportDate)}`} color="bg-gradient-to-br from-tiktok to-cyan-300" trend={trendSNS} collapsedSummary={`${fmt(liveSocialMedia.totalFootprint.current)} total · ${liveSocialMedia.platforms.map(p => `${p.platform} ${fmt(p.current)}`).join(' · ')}`}>
           <SocialMediaCards
@@ -1712,6 +1716,7 @@ function Dashboard() {
           </div>
           </CollapsibleSection>
         </section>
+        </GrowthGlow>
         </AnimatedSection>
         </SectionErrorBoundary>
 
@@ -1719,6 +1724,7 @@ function Dashboard() {
         <div id="virality" className="scroll-mt-16" />
         <SectionErrorBoundary sectionName="Audio Virality">
         <AnimatedSection>
+        <GrowthGlow growthPct={audioVirality.totalAudioViews.prior ? ((audioVirality.totalAudioViews.current - audioVirality.totalAudioViews.prior) / audioVirality.totalAudioViews.prior) * 100 : null} className="rounded-2xl">
         <section className="glass-hybe rounded-2xl p-6">
           <CollapsibleSection id="audio-virality" number="3" title="Audio Virality" subtitle={`Cobrand · TT + IG · ${sectionDate(reportDate)}`} color="bg-gradient-to-br from-purple-500 to-pink-500" collapsedSummary={`${fmt(audioVirality.totalAudioViews.current)} audio views · ${audioVirality.tracks.length} tracks · ${fmt(audioVirality.tracks.reduce((s, t) => s + (t.tiktokCreates ?? 0), 0))} TT creates`}>
           <MetricRow label={audioVirality.totalAudioViews.label} current={audioVirality.totalAudioViews.current} prior={audioVirality.totalAudioViews.prior} />
@@ -1806,6 +1812,7 @@ function Dashboard() {
           </div>
           </CollapsibleSection>
         </section>
+        </GrowthGlow>
         </AnimatedSection>
         </SectionErrorBoundary>
 
@@ -2037,6 +2044,7 @@ function Dashboard() {
         <div id="pr" className="scroll-mt-16 print-page-break" />
         <SectionErrorBoundary sectionName="PR & Media">
         <AnimatedSection>
+        <GrowthGlow growthPct={livePR.wow?.changePct ?? null} className="rounded-2xl">
         <section className="glass-hybe rounded-2xl p-6">
           <CollapsibleSection id="pr-media" number="6" title="PR & Media Exposure" subtitle={`Meltwater · ${livePR.period}`} color="bg-gradient-to-br from-violet-500 to-indigo-400" trend={livePR.wow ? { value: `${Math.abs(livePR.wow.changePct)}% WoW`, positive: livePR.wow.changePct >= 0 } : null} collapsedSummary={`${fmt(livePR.totalMentions)} mentions · ${fmt(livePR.perDay)}/day · ${fmt(livePR.uniqueAuthors)} authors · ${livePR.topSources?.[0]?.name ?? ''} leads`}>
           {/* Live Meltwater refresh bar */}
@@ -2286,6 +2294,7 @@ function Dashboard() {
           </div>
           </CollapsibleSection>
         </section>
+        </GrowthGlow>
         </AnimatedSection>
         </SectionErrorBoundary>
 
@@ -2293,6 +2302,7 @@ function Dashboard() {
         <div id="sentiment" className="scroll-mt-16 print-page-break" />
         <SectionErrorBoundary sectionName="Fan Sentiment">
         <AnimatedSection>
+        <GrowthGlow growthPct={(() => { const net = liveSentiment.positive.pct - liveSentiment.negative.pct; return net > 10 ? net : net > 0 ? net * 0.5 : net; })()} className="rounded-2xl">
         <section className="glass-hybe rounded-2xl p-6">
           <CollapsibleSection id="fan-sentiment" number="7" title="Fan Sentiment & Conversation" subtitle={`Meltwater · ${liveSentiment.period}`} color="bg-gradient-to-br from-rose-500 to-pink-400" trend={trendSentiment} collapsedSummary={`${liveSentiment.positive.pct}% positive · ${liveSentiment.neutral.pct}% neutral · ${liveSentiment.negative.pct}% negative · Net +${(liveSentiment.positive.pct - liveSentiment.negative.pct).toFixed(0)}`}>
 
@@ -2456,6 +2466,7 @@ function Dashboard() {
           )}
           </CollapsibleSection>
         </section>
+        </GrowthGlow>
         </AnimatedSection>
         </SectionErrorBoundary>
 
