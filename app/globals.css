@@ -961,6 +961,16 @@ a:focus-visible {
   outline: none;
 }
 
+/* Ticker marquee scroll animation */
+@keyframes ticker-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker-scroll { animation: none !important; }
+}
+
 @media print {
   ::-webkit-scrollbar {
     display: none;
