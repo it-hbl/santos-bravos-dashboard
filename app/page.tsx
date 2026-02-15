@@ -17,6 +17,7 @@ import DatePicker from "./components/DatePicker";
 import { AnimatedSection, CountUpValue, StaggerChildren, StaggerItem } from "./components/AnimatedSection";
 import Image from "next/image";
 import { LiveDataProvider, LiveBadge, useLiveData } from "./components/LiveDataProvider";
+import useHistoricalSparklines from "./hooks/useHistoricalSparklines";
 import UserMenu from "./components/UserMenu";
 import CollapsibleSection from "./components/CollapsibleSection";
 import ScrollProgress from "./components/ScrollProgress";
@@ -361,6 +362,7 @@ function Dashboard() {
   const bp = businessPerformance;
   const o = artistOverview;
   const { refresh } = useLiveData();
+  const historicalSparklines = useHistoricalSparklines();
 
   // Meltwater live refresh state with auto-polling every 5 minutes
   const MW_REFRESH_INTERVAL = 5 * 60; // seconds
@@ -482,21 +484,21 @@ function Dashboard() {
           change: bp.spotifyMonthlyListeners.prior ? dod(liveListeners, bp.spotifyMonthlyListeners.prior).pct : undefined,
           positive: bp.spotifyMonthlyListeners.prior ? dod(liveListeners, bp.spotifyMonthlyListeners.prior).positive : true,
           sectionId: "business",
-          sparkData: trendPoints(bp.spotifyMonthlyListeners.prior, liveListeners, 5),
+          sparkData: historicalSparklines.listeners.length >= 2 ? historicalSparklines.listeners : trendPoints(bp.spotifyMonthlyListeners.prior, liveListeners, 5),
         },
         {
           label: "Followers",
           value: fmt(liveFollowers),
           color: "text-spotify",
           sectionId: "business",
-          sparkData: bp.spotifyFollowers?.prior ? trendPoints(bp.spotifyFollowers.prior, liveFollowers, 5) : undefined,
+          sparkData: historicalSparklines.followers.length >= 2 ? historicalSparklines.followers : (bp.spotifyFollowers?.prior ? trendPoints(bp.spotifyFollowers.prior, liveFollowers, 5) : undefined),
         },
         {
           label: "Streams",
           value: fmt(bp.totalCrossPlatformStreams.current),
           color: "text-white",
           sectionId: "charts",
-          sparkData: trendPoints(bp.totalCrossPlatformStreams.prior, bp.totalCrossPlatformStreams.current, 5),
+          sparkData: historicalSparklines.streams.length >= 2 ? historicalSparklines.streams : trendPoints(bp.totalCrossPlatformStreams.prior, bp.totalCrossPlatformStreams.current, 5),
         },
         {
           label: "SNS",
@@ -505,7 +507,7 @@ function Dashboard() {
           change: liveSocialMedia.totalFootprint.prior ? dod(liveSocialMedia.totalFootprint.current, liveSocialMedia.totalFootprint.prior).pct : undefined,
           positive: liveSocialMedia.totalFootprint.prior ? dod(liveSocialMedia.totalFootprint.current, liveSocialMedia.totalFootprint.prior).positive : true,
           sectionId: "social",
-          sparkData: trendPoints(liveSocialMedia.totalFootprint.prior, liveSocialMedia.totalFootprint.current, 5),
+          sparkData: historicalSparklines.sns.length >= 2 ? historicalSparklines.sns : trendPoints(liveSocialMedia.totalFootprint.prior, liveSocialMedia.totalFootprint.current, 5),
         },
         {
           label: "YT Subs",
@@ -944,10 +946,10 @@ function Dashboard() {
             </div>
             <div className="grid grid-cols-2 gap-3 flex-shrink-0">
               {[
-                { label: "Listeners", value: liveListeners, prior: bp.spotifyMonthlyListeners.prior, color: "#1DB954", accent: "text-spotify", tooltip: "Monthly Listeners", target: 500000, targetLabel: "500K", sectionId: "business" },
-                { label: "SNS", value: liveSocialMedia.totalFootprint.current, prior: liveSocialMedia.totalFootprint.prior, color: "#00F2EA", accent: "text-tiktok", tooltip: "SNS Footprint", target: 2000000, targetLabel: "2M", sectionId: "social" },
-                { label: "Streams", value: bp.totalCrossPlatformStreams.current, prior: bp.totalCrossPlatformStreams.prior, color: "#FFFFFF", accent: "text-white", tooltip: "Cross-Platform Streams", target: 50000000, targetLabel: "50M", sectionId: "charts" },
-                { label: "SPL", value: bp.spl.current, prior: bp.spl.prior ?? null, color: "#FBBF24", accent: "text-amber-400", isSpl: true, tooltip: "SPL", target: null, targetLabel: null, sectionId: "audience" },
+                { label: "Listeners", value: liveListeners, prior: bp.spotifyMonthlyListeners.prior, color: "#1DB954", accent: "text-spotify", tooltip: "Monthly Listeners", target: 500000, targetLabel: "500K", sectionId: "business", sparkKey: "listeners" as const },
+                { label: "SNS", value: liveSocialMedia.totalFootprint.current, prior: liveSocialMedia.totalFootprint.prior, color: "#00F2EA", accent: "text-tiktok", tooltip: "SNS Footprint", target: 2000000, targetLabel: "2M", sectionId: "social", sparkKey: "sns" as const },
+                { label: "Streams", value: bp.totalCrossPlatformStreams.current, prior: bp.totalCrossPlatformStreams.prior, color: "#FFFFFF", accent: "text-white", tooltip: "Cross-Platform Streams", target: 50000000, targetLabel: "50M", sectionId: "charts", sparkKey: "streams" as const },
+                { label: "SPL", value: bp.spl.current, prior: bp.spl.prior ?? null, color: "#FBBF24", accent: "text-amber-400", isSpl: true, tooltip: "SPL", target: null, targetLabel: null, sectionId: "audience", sparkKey: "spl" as const },
               ].map(card => {
                 const targetPct = card.target ? Math.min(100, (card.value / card.target) * 100) : null;
                 // Compute daily velocity between prior and current report dates
@@ -977,7 +979,7 @@ function Dashboard() {
                 >
                   <div className="absolute bottom-0 right-0 opacity-40 pointer-events-none">
                     <Sparkline
-                      data={trendPoints(card.prior, card.isSpl ? card.value * 1000 : card.value)}
+                      data={historicalSparklines[card.sparkKey]?.length >= 2 ? historicalSparklines[card.sparkKey] : trendPoints(card.prior, card.isSpl ? card.value * 1000 : card.value)}
                       width={80}
                       height={28}
                       color={card.color}
