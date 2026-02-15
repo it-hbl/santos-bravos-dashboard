@@ -27,6 +27,7 @@ import StickyTicker from "./components/StickyTicker";
 import DataFreshness from "./components/DataFreshness";
 import SkeletonLoader from "./components/SkeletonLoader";
 import BackToTop from "./components/BackToTop";
+import SentimentAura from "./components/SentimentAura";
 import TopMoverBadge, { Mover } from "./components/TopMoverBadge";
 import { ErrorBoundary, SectionErrorBoundary } from "./components/ErrorBoundary";
 import GlowCard from "./components/GlowCard";
@@ -709,6 +710,7 @@ function Dashboard() {
 
         {/* Hero */}
         <section id="hero" tabIndex={-1} className="hero-bg rounded-3xl p-5 sm:p-8 md:p-10 scroll-mt-16"><span id="main-content" />
+          <SentimentAura positivePct={liveSentiment.positive.pct} negativePct={liveSentiment.negative.pct} neutralPct={liveSentiment.neutral.pct} />
           {/* Report Date Banner */}
           <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/[0.05]">
             <div className="flex items-center gap-3">

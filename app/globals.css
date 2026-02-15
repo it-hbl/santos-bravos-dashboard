@@ -273,6 +273,15 @@ a:focus-visible {
   to { transform: rotate(360deg); }
 }
 
+@keyframes sentimentPulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+.animate-sentiment-pulse {
+  animation: sentimentPulse 4s ease-in-out infinite;
+}
+
 /* Animated gradient ring around avatar */
 @keyframes avatarRingSpin {
   from { --angle: 0deg; }
