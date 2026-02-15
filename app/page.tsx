@@ -124,6 +124,7 @@ const MomentumArrows = dynamic(() => import("./components/MomentumArrows"), { ss
 const ViralMoments = dynamic(() => import("./components/ViralMoments"), { ssr: false });
 const PulseGrid = dynamic(() => import("./components/PulseGrid"), { ssr: false });
 const GeoMap = dynamic(() => import("./components/GeoMap"), { ssr: false });
+const NavBreadcrumb = dynamic(() => import("./components/NavBreadcrumb"), { ssr: false });
 
 /** Extract short date like "2/9/26" from "February 9, 2026" or ISO date */
 function shortDate(dateStr: string): string {
@@ -571,6 +572,7 @@ function Dashboard() {
           <span className="text-[10px] font-semibold text-neutral-400 uppercase tracking-[0.2em] hidden sm:inline">Latin America</span>
           <div className="w-px h-4 bg-white/10 hidden md:block" />
           <span className="text-[10px] font-bold text-violet-400 uppercase tracking-[0.15em] hidden md:inline">Artist Intelligence</span>
+          <NavBreadcrumb />
         </div>
         <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
           <DatePicker
