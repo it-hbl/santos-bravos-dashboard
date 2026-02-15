@@ -4,6 +4,10 @@ const MW_TOKEN = "CwyOVYu0hn3hdXQ1CFPCqr5LLRVkuPNjn6tSAGtZ";
 const CULTURAL_SEARCH_ID = "27940963"; // HBL - Cultural Affinity
 const BASE = "https://api.meltwater.com";
 
+// Server-side cache (3-min TTL)
+const CACHE_TTL_MS = 3 * 60 * 1000;
+let cachedResponse: { data: any; timestamp: number } | null = null;
+
 function getDateRange() {
   const end = new Date();
   const start = new Date();
@@ -26,6 +30,14 @@ async function mwGet(path: string, params: Record<string, string> = {}) {
 }
 
 export async function GET() {
+  // Return cached response if fresh
+  if (cachedResponse && (Date.now() - cachedResponse.timestamp) < CACHE_TTL_MS) {
+    const res = NextResponse.json(cachedResponse.data);
+    res.headers.set("X-Cache", "HIT");
+    res.headers.set("Cache-Control", "public, s-maxage=180, stale-while-revalidate=60");
+    return res;
+  }
+
   try {
     const [analyticsRes, keyphrasesRes, hashtagsRes] = await Promise.all([
       mwGet(`/v3/analytics/${CULTURAL_SEARCH_ID}`),
@@ -54,7 +66,7 @@ export async function GET() {
     // Unique authors
     const uniqueAuthors = analyticsRes.unique_authors ?? 0;
 
-    return NextResponse.json({
+    const responseData = {
       live: true,
       data: {
         totalMentions,
@@ -77,7 +89,13 @@ export async function GET() {
           };
         }),
       },
-    });
+    };
+
+    cachedResponse = { data: responseData, timestamp: Date.now() };
+    const res = NextResponse.json(responseData);
+    res.headers.set("X-Cache", "MISS");
+    res.headers.set("Cache-Control", "public, s-maxage=180, stale-while-revalidate=60");
+    return res;
   } catch (err: any) {
     console.error("Meltwater Cultural Affinity error:", err.message);
     return NextResponse.json({ live: false, error: err.message });

@@ -4,6 +4,10 @@ import {
   businessPerformance,
 } from "@/app/lib/data";
 
+// Server-side cache (5-min TTL — Chartmetric data updates less frequently)
+const CACHE_TTL_MS = 5 * 60 * 1000;
+let cachedResponse: { data: any; timestamp: number } | null = null;
+
 const CM_KEY = "D3dkDB915eXHxZd56jcBNdFkhqcrNmm2kdZy7VrryBbW1z0ELS5Mu7D9p5x9Atex";
 const ARTIST_ID = 14502018;
 const TRACK_IDS = [154858393, 156546722, 158459427]; // 0%, 0% PT, KAWASAKI
@@ -28,6 +32,13 @@ async function cmGet(token: string, path: string) {
 }
 
 export async function GET() {
+  if (cachedResponse && (Date.now() - cachedResponse.timestamp) < CACHE_TTL_MS) {
+    const res = NextResponse.json(cachedResponse.data);
+    res.headers.set("X-Cache", "HIT");
+    res.headers.set("Cache-Control", "public, s-maxage=300, stale-while-revalidate=60");
+    return res;
+  }
+
   try {
     const token = await getToken();
 
@@ -58,7 +69,12 @@ export async function GET() {
       fetchedAt: new Date().toISOString(),
     };
 
-    return NextResponse.json({ live: true, data: liveData });
+    const responseData = { live: true, data: liveData };
+    cachedResponse = { data: responseData, timestamp: Date.now() };
+    const res = NextResponse.json(responseData);
+    res.headers.set("X-Cache", "MISS");
+    res.headers.set("Cache-Control", "public, s-maxage=300, stale-while-revalidate=60");
+    return res;
   } catch (err: any) {
     console.error("Chartmetric API error:", err.message);
     // Fallback to hardcoded data

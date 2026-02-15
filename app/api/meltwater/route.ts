@@ -6,6 +6,12 @@ const SEARCH_ID = "27861227";
 const HYBE_LATIN_SEARCH_ID = "27924306"; // HBL | Hybe Latin America (parent brand)
 const BASE = "https://api.meltwater.com";
 
+// ── Server-side in-memory cache (3-min TTL) ──
+// Prevents redundant Meltwater API calls when multiple clients poll simultaneously
+// or when the same client polls within the cache window.
+const CACHE_TTL_MS = 3 * 60 * 1000; // 3 minutes
+let cachedResponse: { data: any; timestamp: number } | null = null;
+
 // Rolling 7-day window
 function getDateRange() {
   const end = new Date();
@@ -55,6 +61,16 @@ const COUNTRY_NAMES: Record<string, string> = {
 };
 
 export async function GET() {
+  // Return cached response if still fresh
+  if (cachedResponse && (Date.now() - cachedResponse.timestamp) < CACHE_TTL_MS) {
+    const age = Math.round((Date.now() - cachedResponse.timestamp) / 1000);
+    const res = NextResponse.json(cachedResponse.data);
+    res.headers.set("X-Cache", "HIT");
+    res.headers.set("X-Cache-Age", `${age}s`);
+    res.headers.set("Cache-Control", "public, s-maxage=180, stale-while-revalidate=60");
+    return res;
+  }
+
   try {
     // Fetch analytics + keyphrases + hashtags + sources in parallel
     // Also fetch 14-day analytics for WoW comparison
@@ -318,7 +334,7 @@ export async function GET() {
       parseSourceSentiment(redditRes, "Reddit", "🟠", "#FF4500"),
     ].filter(Boolean);
 
-    return NextResponse.json({
+    const responseData = {
       live: true,
       data: {
         prMedia: { period, totalMentions, perDay, uniqueAuthors, timeSeries, topCountries, topKeyphrases, topSources, topMentions, topTopics, topCities, topLanguages, wow },
@@ -326,7 +342,15 @@ export async function GET() {
         hybeLatin,
         fetchedAt: new Date().toISOString(),
       },
-    });
+    };
+
+    // Cache successful response
+    cachedResponse = { data: responseData, timestamp: Date.now() };
+
+    const res = NextResponse.json(responseData);
+    res.headers.set("X-Cache", "MISS");
+    res.headers.set("Cache-Control", "public, s-maxage=180, stale-while-revalidate=60");
+    return res;
   } catch (err: any) {
     console.error("Meltwater API error:", err.message);
     return NextResponse.json({

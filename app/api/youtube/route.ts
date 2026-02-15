@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { businessPerformance } from "@/app/lib/data";
 
+// Server-side cache (5-min TTL)
+const CACHE_TTL_MS = 5 * 60 * 1000;
+let cachedResponse: { data: any; timestamp: number } | null = null;
+
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID || "";
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || "";
 const REFRESH_TOKEN = process.env.GOOGLE_REFRESH_TOKEN || "";
@@ -30,6 +34,13 @@ async function getAccessToken(): Promise<string> {
 }
 
 export async function GET() {
+  if (cachedResponse && (Date.now() - cachedResponse.timestamp) < CACHE_TTL_MS) {
+    const res = NextResponse.json(cachedResponse.data);
+    res.headers.set("X-Cache", "HIT");
+    res.headers.set("Cache-Control", "public, s-maxage=300, stale-while-revalidate=60");
+    return res;
+  }
+
   try {
     const token = await getAccessToken();
     const ids = Object.values(VIDEO_IDS).join(",");
@@ -68,7 +79,7 @@ export async function GET() {
     const subscribers = channel ? parseInt(channel.subscriberCount, 10) : null;
     const totalChannelViews = channel ? parseInt(channel.viewCount, 10) : null;
 
-    return NextResponse.json({
+    const responseData = {
       live: true,
       data: {
         videos,
@@ -76,7 +87,12 @@ export async function GET() {
         totalChannelViews,
         fetchedAt: new Date().toISOString(),
       },
-    });
+    };
+    cachedResponse = { data: responseData, timestamp: Date.now() };
+    const res = NextResponse.json(responseData);
+    res.headers.set("X-Cache", "MISS");
+    res.headers.set("Cache-Control", "public, s-maxage=300, stale-while-revalidate=60");
+    return res;
   } catch (err: any) {
     console.error("YouTube API error:", err.message);
     // Fallback to hardcoded data
