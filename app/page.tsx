@@ -78,6 +78,7 @@ const MediaVsAudience = dynamic(() => import("./components/MediaVsAudience"), { 
 const MentionMomentum = dynamic(() => import("./components/MentionMomentum"), { ssr: false });
 const WeekdayHeatmap = dynamic(() => import("./components/WeekdayHeatmap"), { ssr: false });
 const SentimentByPlatform = dynamic(() => import("./components/SentimentByPlatform"), { ssr: false });
+const WordCloud = dynamic(() => import("./components/WordCloud"), { ssr: false });
 const HistoricalTrends = dynamic(() => import("./components/HistoricalTrends"), { ssr: false });
 const TrackHistory = dynamic(() => import("./components/TrackHistory"), { ssr: false });
 const YouTubeHistory = dynamic(() => import("./components/YouTubeHistory"), { ssr: false });
@@ -2086,22 +2087,9 @@ function Dashboard() {
                 </div>
               </div>
             )}
-            {/* Trending Keyphrases */}
+            {/* Trending Keyphrases — Word Cloud */}
             <div className="bg-white/[0.02] rounded-xl p-4 border border-white/[0.04]">
-              <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3">🔥 Trending Keyphrases</p>
-              <div className="space-y-2.5">
-                {livePR.topKeyphrases.slice(0, 8).map((k: any) => (
-                  <div key={k.phrase}>
-                    <div className="flex items-center gap-3 mb-1">
-                      <span className="text-sm text-neutral-300 flex-1 truncate">{k.phrase}</span>
-                      <span className="text-[10px] font-bold tabular-nums text-violet-400">{k.count}</span>
-                    </div>
-                    <div className="w-full bg-white/[0.04] rounded-full h-1 overflow-hidden">
-                      <div className="bg-violet-500 h-full rounded-full transition-all duration-700" style={{ width: `${(k.count / (livePR.topKeyphrases[0]?.count || 1)) * 100}%` }} />
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <WordCloud phrases={livePR.topKeyphrases} maxItems={15} />
             </div>
             {/* Top Mentions / Influencers */}
             <div className="bg-white/[0.02] rounded-xl p-4 border border-white/[0.04]">
