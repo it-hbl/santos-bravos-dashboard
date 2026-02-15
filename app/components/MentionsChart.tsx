@@ -1,10 +1,36 @@
 "use client";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
+import { RELEASES } from "../lib/data";
 
 function fmt(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
   if (n >= 1_000) return (n / 1_000).toFixed(1) + "K";
   return (n == null || isNaN(n)) ? "—" : n.toLocaleString();
+}
+
+/**
+ * Match release dates to chart date labels.
+ * Chart dates are formatted like "Feb 8", so we convert release dates to the same format
+ * and check if they fall within the chart's date range.
+ */
+function getReleaseAnnotations(chartDates: string[]) {
+  if (!chartDates || chartDates.length === 0) return [];
+  
+  return RELEASES.map(r => {
+    const rDate = new Date(r.date + "T12:00:00");
+    // Format to match chart format: "Mon DD" e.g. "Feb 8"
+    const formatted = rDate.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    // Check if this date exists in chart data
+    if (chartDates.includes(formatted)) {
+      return {
+        date: formatted,
+        label: r.trackName || r.name.replace("Santos Bravos ", ""),
+        emoji: r.emoji,
+        color: r.color,
+      };
+    }
+    return null;
+  }).filter(Boolean) as { date: string; label: string; emoji: string; color: string }[];
 }
 
 const CustomTooltip = ({ active, payload, label }: any) => {
@@ -37,6 +63,7 @@ export default function MentionsChart({ data }: { data: { date: string; mentions
   const maxMentions = Math.max(...data.map(d => d.mentions), 1);
   const avgMentions = data.length ? Math.round(data.reduce((s, d) => s + d.mentions, 0) / data.length) : 0;
   const peakDay = data.reduce((max, d) => d.mentions > max.mentions ? d : max, data[0]);
+  const annotations = getReleaseAnnotations(data.map(d => d.date));
 
   return (
     <div className="space-y-3">
@@ -85,6 +112,39 @@ export default function MentionsChart({ data }: { data: { date: string; mentions
               tickFormatter={(v) => fmt(v)}
             />
             <Tooltip content={<CustomTooltip />} cursor={{ stroke: "rgba(167,139,250,0.2)", strokeWidth: 1, strokeDasharray: "4 4" }} />
+            {/* Release event annotations */}
+            {annotations.map(a => (
+              <ReferenceLine
+                key={a.date}
+                x={a.date}
+                stroke={a.color}
+                strokeWidth={1.5}
+                strokeDasharray="4 3"
+                strokeOpacity={0.6}
+                label={{
+                  value: `${a.emoji} ${a.label}`,
+                  position: "top",
+                  fill: a.color,
+                  fontSize: 9,
+                  fontWeight: 600,
+                  offset: 8,
+                }}
+              />
+            ))}
+            {/* Average line */}
+            <ReferenceLine
+              y={avgMentions}
+              stroke="#525252"
+              strokeWidth={1}
+              strokeDasharray="6 4"
+              strokeOpacity={0.5}
+              label={{
+                value: `avg ${fmt(avgMentions)}`,
+                position: "right",
+                fill: "#525252",
+                fontSize: 9,
+              }}
+            />
             <Area
               type="monotone"
               dataKey="mentions"

@@ -1,6 +1,7 @@
 "use client";
 
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
+import { RELEASES } from "../lib/data";
 
 interface DaySentiment {
   date: string;
@@ -57,8 +58,22 @@ interface SentimentTimelineProps {
   data: DaySentiment[];
 }
 
+function getReleaseAnnotations(chartDates: string[]) {
+  if (!chartDates || chartDates.length === 0) return [];
+  return RELEASES.map(r => {
+    const rDate = new Date(r.date + "T12:00:00");
+    const formatted = rDate.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    if (chartDates.includes(formatted)) {
+      return { date: formatted, label: r.trackName || r.name.replace("Santos Bravos ", ""), emoji: r.emoji, color: r.color };
+    }
+    return null;
+  }).filter(Boolean) as { date: string; label: string; emoji: string; color: string }[];
+}
+
 export default function SentimentTimeline({ data }: SentimentTimelineProps) {
   if (!data || data.length === 0) return null;
+
+  const annotations = getReleaseAnnotations(data.map(d => d.date));
 
   // Calculate trend direction
   const firstHalf = data.slice(0, Math.ceil(data.length / 2));
@@ -111,6 +126,25 @@ export default function SentimentTimeline({ data }: SentimentTimelineProps) {
               tickFormatter={(v) => `${(v * 100).toFixed(0)}%`}
             />
             <Tooltip content={<CustomTooltip />} cursor={{ stroke: "rgba(255,255,255,0.05)", strokeWidth: 1 }} />
+            {/* Release event annotations */}
+            {annotations.map(a => (
+              <ReferenceLine
+                key={a.date}
+                x={a.date}
+                stroke={a.color}
+                strokeWidth={1.5}
+                strokeDasharray="4 3"
+                strokeOpacity={0.5}
+                label={{
+                  value: `${a.emoji} ${a.label}`,
+                  position: "top",
+                  fill: a.color,
+                  fontSize: 9,
+                  fontWeight: 600,
+                  offset: 8,
+                }}
+              />
+            ))}
             <Area
               type="monotone"
               dataKey="positive"
