@@ -100,6 +100,7 @@ const MemberHistory = dynamic(() => import("./components/MemberHistory"), { ssr:
 const ViralityHistory = dynamic(() => import("./components/ViralityHistory"), { ssr: false });
 const ReportCalendar = dynamic(() => import("./components/ReportCalendar"), { ssr: false });
 const QuickShare = dynamic(() => import("./components/QuickShare"), { ssr: false });
+const ScreenshotButton = dynamic(() => import("./components/ScreenshotButton"), { ssr: false });
 const EngagementDepth = dynamic(() => import("./components/EngagementDepth"), { ssr: false });
 const StreamProjections = dynamic(() => import("./components/StreamProjections"), { ssr: false });
 const ContentEfficiency = dynamic(() => import("./components/ContentEfficiency"), { ssr: false });
@@ -503,7 +504,7 @@ function Dashboard() {
   }, [liveListeners, bp.totalCrossPlatformStreams.current, liveSentiment.positive.pct, liveSentiment.negative.pct]);
 
   return (
-    <main className="min-h-screen">
+    <main id="dashboard-root" className="min-h-screen">
       {/* Focus mode overlay */}
       <FocusOverlay active={focus.active} sectionId={focus.sectionId} title={focus.title} onExit={focus.exit} />
       {/* Dynamic favicon — shows composite score in browser tab */}
@@ -703,6 +704,7 @@ function Dashboard() {
             sentimentNet: liveSentiment.positive.pct - liveSentiment.negative.pct,
             selectedDate,
           }} />
+          <ScreenshotButton reportDate={reportDate} />
           <a
             href="/guide"
             className="bg-white/[0.04] border border-white/[0.06] rounded-lg px-2 sm:px-3 py-1.5 hover:bg-white/[0.08] transition-colors hidden sm:inline-flex items-center gap-1"
