@@ -114,6 +114,7 @@ const RiskRadar = dynamic(() => import("./components/RiskRadar"), { ssr: false }
 const ActionItems = dynamic(() => import("./components/ActionItems"), { ssr: false });
 const ComparisonTable = dynamic(() => import("./components/ComparisonTable"), { ssr: false });
 const ShareOfVoice = dynamic(() => import("./components/ShareOfVoice"), { ssr: false });
+const PrInsights = dynamic(() => import("./components/PrInsights"), { ssr: false });
 const CulturalAffinity = dynamic(() => import("./components/CulturalAffinity"), { ssr: false });
 const DebutBenchmark = dynamic(() => import("./components/DebutBenchmark"), { ssr: false });
 const MetricAlerts = dynamic(() => import("./components/MetricAlerts"), { ssr: false });
@@ -2209,6 +2210,22 @@ function Dashboard() {
               </div>
             ))}
           </div>
+          {/* Auto-Generated PR Insights */}
+          <PrInsights
+            totalMentions={livePR.totalMentions}
+            perDay={livePR.perDay}
+            uniqueAuthors={livePR.uniqueAuthors}
+            topCountries={livePR.topCountries}
+            topSources={livePR.topSources}
+            topKeyphrases={livePR.topKeyphrases}
+            timeSeries={livePR.timeSeries}
+            wow={livePR.wow}
+            sentimentPositive={liveSentiment.positive.pct}
+            sentimentNegative={liveSentiment.negative.pct}
+            sentimentNeutral={liveSentiment.neutral.pct}
+            sentimentByPlatform={(liveSentiment as any).sentimentByPlatform || []}
+            topHashtags={liveSentiment.topHashtags}
+          />
           {/* Share of Voice vs HYBE Latin America */}
           <div className="bg-white/[0.02] rounded-xl p-4 border border-white/[0.04] mb-5">
             <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-3">📊 Share of Voice — Santos Bravos vs HYBE Latin America</p>
