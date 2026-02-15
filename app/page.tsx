@@ -34,6 +34,7 @@ import TopMoverBadge, { Mover } from "./components/TopMoverBadge";
 import { ErrorBoundary, SectionErrorBoundary } from "./components/ErrorBoundary";
 import GlowCard from "./components/GlowCard";
 import GrowthGlow from "./components/GrowthGlow";
+import StaleDataBanner from "./components/StaleDataBanner";
 import useSectionHash from "./components/useSectionHash";
 import { useFocusMode, FocusOverlay } from "./components/FocusMode";
 import { useSession } from "next-auth/react";
@@ -748,6 +749,13 @@ function Dashboard() {
 
         {/* Main dashboard content — fades in/out during date loading */}
         <div className={`transition-opacity duration-300 ease-out ${dateLoading ? "opacity-0 pointer-events-none" : "opacity-100"} space-y-10`}>
+
+        {/* Stale Data Warning Banner */}
+        <StaleDataBanner
+          reportDate={reportDate}
+          latestDate={availableDates.length > 0 ? availableDates[0] : null}
+          onLoadLatest={() => { if (availableDates.length > 0) handleDateChange(availableDates[0]); }}
+        />
 
         {/* Hero */}
         <HeroParallax>
