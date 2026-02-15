@@ -129,6 +129,7 @@ const ViralMoments = dynamic(() => import("./components/ViralMoments"), { ssr: f
 const PulseGrid = dynamic(() => import("./components/PulseGrid"), { ssr: false });
 const GeoMap = dynamic(() => import("./components/GeoMap"), { ssr: false });
 const NavBreadcrumb = dynamic(() => import("./components/NavBreadcrumb"), { ssr: false });
+const SentimentShift = dynamic(() => import("./components/SentimentShift"), { ssr: false });
 
 /** Extract short date like "2/9/26" from "February 9, 2026" or ISO date */
 function shortDate(dateStr: string): string {
@@ -2410,6 +2411,15 @@ function Dashboard() {
               <span className="text-[9px] text-neutral-600">· {new Date(mwLiveData.fetchedAt).toLocaleTimeString()}</span>
             </div>
           )}
+
+          {/* Sentiment Shift — period-over-period comparison */}
+          <SentimentShift
+            currentNss={(liveSentiment as any).currentNss ?? (liveSentiment.positive.pct - liveSentiment.negative.pct)}
+            priorSentiment={(liveSentiment as any).priorSentiment ?? null}
+            currentPositive={liveSentiment.positive.pct}
+            currentNegative={liveSentiment.negative.pct}
+            currentNeutral={liveSentiment.neutral.pct}
+          />
 
           {/* Sentiment summary cards */}
           <div className="grid grid-cols-3 gap-3 mb-6">

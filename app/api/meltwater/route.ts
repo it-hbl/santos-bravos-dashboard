@@ -338,11 +338,32 @@ export async function GET(request: Request) {
       parseSourceSentiment(redditRes, "Reddit", "🟠", "#FF4500"),
     ].filter(Boolean);
 
+    // Compute prior-period sentiment from the comparison window for NSS shift
+    let priorSentiment: { positive: number; negative: number; neutral: number; nss: number } | null = null;
+    if (analytics14Res) {
+      // The comparison window covers 2x the range; the first half is the "prior" period
+      const priorSent = analytics14Res.sentiment || {};
+      const currentSent = analytics.sentiment || {};
+      // We need to subtract current sentiment counts from the full 2x window to get prior
+      const priorPos = Math.max(0, (priorSent.positive || 0) - (currentSent.positive || 0));
+      const priorNeg = Math.max(0, (priorSent.negative || 0) - (currentSent.negative || 0));
+      const priorNeu = Math.max(0, (priorSent.neutral || 0) - (currentSent.neutral || 0));
+      const priorTotal = priorPos + priorNeg + priorNeu || 1;
+      priorSentiment = {
+        positive: parseFloat((priorPos / priorTotal * 100).toFixed(1)),
+        negative: parseFloat((priorNeg / priorTotal * 100).toFixed(1)),
+        neutral: parseFloat((priorNeu / priorTotal * 100).toFixed(1)),
+        nss: parseFloat(((priorPos - priorNeg) / priorTotal * 100).toFixed(1)),
+      };
+    }
+
+    const currentNss = parseFloat(((positive.pct - negative.pct)).toFixed(1));
+
     const responseData = {
       live: true,
       data: {
         prMedia: { period, totalMentions, perDay, uniqueAuthors, timeSeries, topCountries, topKeyphrases, topSources, topMentions, topTopics, topCities, topLanguages, wow },
-        fanSentiment: { period, positive, negative, neutral, topHashtags, topEntities, topSharedLinks, sentimentTimeline, sentimentByPlatform },
+        fanSentiment: { period, positive, negative, neutral, topHashtags, topEntities, topSharedLinks, sentimentTimeline, sentimentByPlatform, priorSentiment, currentNss },
         hybeLatin,
         fetchedAt: new Date().toISOString(),
       },
