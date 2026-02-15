@@ -78,6 +78,7 @@ const SocialMediaCards = dynamic(() => import("./components/SocialMediaCards"), 
 const MediaVsAudience = dynamic(() => import("./components/MediaVsAudience"), { ssr: false });
 const MentionMomentum = dynamic(() => import("./components/MentionMomentum"), { ssr: false });
 const WeekdayHeatmap = dynamic(() => import("./components/WeekdayHeatmap"), { ssr: false });
+const ActivityFeed = dynamic(() => import("./components/ActivityFeed"), { ssr: false });
 const SentimentByPlatform = dynamic(() => import("./components/SentimentByPlatform"), { ssr: false });
 const WordCloud = dynamic(() => import("./components/WordCloud"), { ssr: false });
 const HistoricalTrends = dynamic(() => import("./components/HistoricalTrends"), { ssr: false });
@@ -1045,6 +1046,24 @@ function Dashboard() {
           netSentiment={liveSentiment.positive.pct - liveSentiment.negative.pct}
           topHashtag={liveSentiment.topHashtags?.[0]?.tag ?? null}
         />
+
+        {/* Activity Feed — timeline of key events */}
+        <AnimatedSection>
+          <ActivityFeed
+            listeners={liveListeners}
+            listenersPrior={bp.spotifyMonthlyListeners.prior}
+            tracks={liveTrackStreams.map(t => ({ name: t.name, streams: t.spotifyStreams.current, prior: t.spotifyStreams.prior }))}
+            ytSubscribers={liveYTSubscribers}
+            snsFootprint={liveSocialMedia.totalFootprint.current}
+            snsPrior={liveSocialMedia.totalFootprint.prior}
+            prMentions={livePR.totalMentions}
+            prPerDay={livePR.perDay}
+            sentimentPositive={liveSentiment.positive.pct}
+            sentimentNegative={liveSentiment.negative.pct}
+            topHashtag={liveSentiment.topHashtags?.[0]?.tag ?? null}
+            reportDate={reportDate}
+          />
+        </AnimatedSection>
 
         {/* Key Highlights - Executive Summary */}
         <div id="highlights" className="scroll-mt-16" />
