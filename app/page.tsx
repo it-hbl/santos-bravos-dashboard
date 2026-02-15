@@ -14,6 +14,7 @@ import { getDashboardData, getAvailableDates } from "./lib/db";
 import { useState, useEffect, useCallback, useRef } from "react";
 import dynamic from "next/dynamic";
 import DatePicker from "./components/DatePicker";
+import ReportCompleteness from "./components/ReportCompleteness";
 import { AnimatedSection, CountUpValue, StaggerChildren, StaggerItem } from "./components/AnimatedSection";
 import Image from "next/image";
 import { LiveDataProvider, LiveBadge, useLiveData } from "./components/LiveDataProvider";
@@ -642,6 +643,20 @@ function Dashboard() {
             availableDates={availableDates}
             onDateChange={handleDateChange}
             loading={dateLoading}
+          />
+          <ReportCompleteness
+            listeners={bp.spotifyMonthlyListeners.current}
+            followers={bp.spotifyFollowers.current}
+            trackCount={liveTrackStreams.length}
+            hasTrackStreams={liveTrackStreams.some((t: any) => (t.current ?? t.streams ?? 0) > 0)}
+            ytSubscribers={liveYTSubscribers}
+            ytVideoCount={liveYTVideos.length}
+            snsFootprint={liveSocialMedia.totalFootprint.current}
+            audioViews={audioVirality.totalAudioViews.current}
+            memberCount={members.length}
+            geoCountryCount={geoCountries.length}
+            audienceListeners={audienceStats.listeners}
+            dailyStreamCount={dailyStreams.length}
           />
           <button
             onClick={() => window.print()}
