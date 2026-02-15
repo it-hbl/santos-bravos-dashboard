@@ -115,6 +115,7 @@ const ActionItems = dynamic(() => import("./components/ActionItems"), { ssr: fal
 const ComparisonTable = dynamic(() => import("./components/ComparisonTable"), { ssr: false });
 const ShareOfVoice = dynamic(() => import("./components/ShareOfVoice"), { ssr: false });
 const PrInsights = dynamic(() => import("./components/PrInsights"), { ssr: false });
+const MentionCalendar = dynamic(() => import("./components/MentionCalendar"), { ssr: false });
 const CulturalAffinity = dynamic(() => import("./components/CulturalAffinity"), { ssr: false });
 const DebutBenchmark = dynamic(() => import("./components/DebutBenchmark"), { ssr: false });
 const MetricAlerts = dynamic(() => import("./components/MetricAlerts"), { ssr: false });
@@ -2250,6 +2251,12 @@ function Dashboard() {
               <MentionsChart data={livePR.timeSeries} />
             </div>
           </div>
+          {/* Mention Activity Calendar — GitHub-style heatmap */}
+          {livePR.timeSeries && livePR.timeSeries.length >= 3 && (
+            <div className="mt-4">
+              <MentionCalendar timeSeries={livePR.timeSeries} rangeLabel={`${mwRange}d`} />
+            </div>
+          )}
           {/* Viral Moments — spike detection timeline */}
           {livePR.timeSeries && livePR.timeSeries.length >= 3 && (
             <div className="mt-4">
