@@ -900,3 +900,69 @@ a:focus-visible {
   0%, 100% { opacity: 0.3; r: inherit; }
   50% { opacity: 0.6; }
 }
+
+/* ── Custom Scrollbar (dark theme) ── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+}
+
+*:hover {
+  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  transition: background 0.2s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: rgba(139, 92, 246, 0.4);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* ── Text Selection ── */
+::selection {
+  background: rgba(139, 92, 246, 0.35);
+  color: #fff;
+}
+
+::-moz-selection {
+  background: rgba(139, 92, 246, 0.35);
+  color: #fff;
+}
+
+/* ── Focus-visible ring (accessibility) ── */
+:focus-visible {
+  outline: 2px solid rgba(139, 92, 246, 0.6);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Suppress focus ring for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+@media print {
+  ::-webkit-scrollbar {
+    display: none;
+  }
+}
