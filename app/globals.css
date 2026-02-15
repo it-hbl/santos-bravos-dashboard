@@ -1010,6 +1010,41 @@ a:focus-visible {
   .date-exit-right, .date-exit-left { transform: none !important; filter: none !important; }
 }
 
+/* ─── Swipe Date Navigation Toast ─── */
+.swipe-toast {
+  position: fixed;
+  top: 72px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  z-index: 9999;
+  background: rgba(15, 15, 20, 0.92);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #d4d4d8;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+  white-space: nowrap;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+.swipe-toast-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+.swipe-toast-edge {
+  border-color: rgba(251, 113, 133, 0.3);
+  color: #fb7185;
+}
+.swipe-toast-arrow {
+  color: #8b5cf6;
+  font-weight: 800;
+  margin-right: 4px;
+}
+
 @media print {
   ::-webkit-scrollbar {
     display: none;

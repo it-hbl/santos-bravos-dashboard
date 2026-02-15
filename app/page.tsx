@@ -19,6 +19,7 @@ import { AnimatedSection, CountUpValue, StaggerChildren, StaggerItem } from "./c
 import Image from "next/image";
 import { LiveDataProvider, LiveBadge, useLiveData } from "./components/LiveDataProvider";
 import useHistoricalSparklines from "./hooks/useHistoricalSparklines";
+import useSwipeDateNav from "./hooks/useSwipeDateNav";
 import UserMenu from "./components/UserMenu";
 import CollapsibleSection from "./components/CollapsibleSection";
 import ScrollProgress from "./components/ScrollProgress";
@@ -408,6 +409,9 @@ function Dashboard() {
       setDateLoading(false);
     }
   }, []);
+
+  // Swipe left/right to navigate between report dates on mobile
+  useSwipeDateNav(selectedDate, availableDates, handleDateChange);
 
   const bp = businessPerformance;
   const o = artistOverview;
