@@ -1999,15 +1999,20 @@ function Dashboard() {
           </div>
           <div className="grid grid-cols-3 gap-3 mb-5">
             {[
-              { label: "Total Mentions", value: livePR.totalMentions, accent: "text-violet-400" },
-              { label: "Avg / Day", value: livePR.perDay, accent: "text-white" },
-              { label: "Unique Authors", value: livePR.uniqueAuthors, accent: "text-cyan-400", tooltip: "Unique Authors" },
+              { label: "Total Mentions", value: livePR.totalMentions, accent: "text-violet-400", sparkColor: "#8b5cf6", sparkData: livePR.timeSeries?.map((d: any) => d.mentions) },
+              { label: "Avg / Day", value: livePR.perDay, accent: "text-white", sparkColor: "#e5e5e5", sparkData: livePR.timeSeries?.map((d: any) => d.mentions) },
+              { label: "Unique Authors", value: livePR.uniqueAuthors, accent: "text-cyan-400", tooltip: "Unique Authors", sparkColor: "#22d3ee", sparkData: null },
             ].map(s => (
-              <div key={s.label} className="bg-white/[0.02] rounded-xl p-3 border border-white/[0.04] text-center">
-                <p className="text-[9px] text-neutral-500 uppercase tracking-wider">
+              <div key={s.label} className="bg-white/[0.02] rounded-xl p-3 border border-white/[0.04] text-center relative overflow-hidden">
+                {s.sparkData && s.sparkData.length >= 2 && (
+                  <div className="absolute bottom-0 left-0 right-0 opacity-30">
+                    <Sparkline data={s.sparkData} width={200} height={32} color={s.sparkColor!} fill animate />
+                  </div>
+                )}
+                <p className="text-[9px] text-neutral-500 uppercase tracking-wider relative z-10">
                   {s.tooltip ? <MetricTooltip term={s.tooltip}>{s.label}</MetricTooltip> : s.label}
                 </p>
-                <p className={`text-xl font-extrabold mt-1 ${s.accent}`}><CountUpValue value={s.value} /></p>
+                <p className={`text-xl font-extrabold mt-1 ${s.accent} relative z-10`}><CountUpValue value={s.value} /></p>
               </div>
             ))}
           </div>
@@ -2195,21 +2200,29 @@ function Dashboard() {
           {/* Sentiment summary cards */}
           <div className="grid grid-cols-3 gap-3 mb-6">
             {[
-              { label: "Positive", count: liveSentiment.positive.count, pct: liveSentiment.positive.pct, color: "text-emerald-400", bg: "bg-emerald-500", barBg: "bg-emerald-500/20", emoji: "😊" },
-              { label: "Neutral", count: liveSentiment.neutral.count, pct: liveSentiment.neutral.pct, color: "text-neutral-400", bg: "bg-neutral-500", barBg: "bg-neutral-500/20", emoji: "😐" },
-              { label: "Negative", count: liveSentiment.negative.count, pct: liveSentiment.negative.pct, color: "text-red-400", bg: "bg-red-500", barBg: "bg-red-500/20", emoji: "😟" },
-            ].map(s => (
-              <div key={s.label} className="bg-white/[0.02] rounded-xl p-4 border border-white/[0.04]">
-                <div className="flex items-center justify-between mb-2">
+              { label: "Positive", count: liveSentiment.positive.count, pct: liveSentiment.positive.pct, color: "text-emerald-400", bg: "bg-emerald-500", barBg: "bg-emerald-500/20", emoji: "😊", sparkColor: "#34d399", sparkKey: "positive" as const },
+              { label: "Neutral", count: liveSentiment.neutral.count, pct: liveSentiment.neutral.pct, color: "text-neutral-400", bg: "bg-neutral-500", barBg: "bg-neutral-500/20", emoji: "😐", sparkColor: "#737373", sparkKey: "neutral" as const },
+              { label: "Negative", count: liveSentiment.negative.count, pct: liveSentiment.negative.pct, color: "text-red-400", bg: "bg-red-500", barBg: "bg-red-500/20", emoji: "😟", sparkColor: "#f87171", sparkKey: "negative" as const },
+            ].map(s => {
+              const sparkData = (liveSentiment.sentimentTimeline || []).map((d: any) => d[s.sparkKey] ?? 0);
+              return (
+              <div key={s.label} className="bg-white/[0.02] rounded-xl p-4 border border-white/[0.04] relative overflow-hidden">
+                {sparkData.length >= 2 && (
+                  <div className="absolute bottom-0 left-0 right-0 opacity-25 pointer-events-none">
+                    <Sparkline data={sparkData} width={200} height={40} color={s.sparkColor} fill animate />
+                  </div>
+                )}
+                <div className="flex items-center justify-between mb-2 relative z-10">
                   <span className="text-[10px] text-neutral-500 uppercase tracking-wider">{s.emoji} {s.label}</span>
                   <span className={`text-xs font-bold ${s.color}`}>{s.pct}%</span>
                 </div>
-                <p className={`text-xl font-extrabold ${s.color} tabular-nums`}>{s.count != null ? <CountUpValue value={s.count} /> : "—"}</p>
-                <div className={`w-full ${s.barBg} rounded-full h-1.5 mt-2 overflow-hidden`}>
+                <p className={`text-xl font-extrabold ${s.color} tabular-nums relative z-10`}>{s.count != null ? <CountUpValue value={s.count} /> : "—"}</p>
+                <div className={`w-full ${s.barBg} rounded-full h-1.5 mt-2 overflow-hidden relative z-10`}>
                   <div className={`h-full ${s.bg} rounded-full transition-all duration-1000`} style={{ width: `${s.pct}%` }} />
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Sentiment Timeline */}
