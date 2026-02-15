@@ -1612,6 +1612,45 @@ function Dashboard() {
         <section className="glass-hybe rounded-2xl p-6">
           <CollapsibleSection id="audio-virality" number="3" title="Audio Virality" subtitle={`Cobrand · TT + IG · ${sectionDate(reportDate)}`} color="bg-gradient-to-br from-purple-500 to-pink-500" collapsedSummary={`${fmt(audioVirality.totalAudioViews.current)} audio views · ${audioVirality.tracks.length} tracks · ${fmt(audioVirality.tracks.reduce((s, t) => s + (t.tiktokCreates ?? 0), 0))} TT creates`}>
           <MetricRow label={audioVirality.totalAudioViews.label} current={audioVirality.totalAudioViews.current} prior={audioVirality.totalAudioViews.prior} />
+          {/* Virality Summary Strip — aggregate creates with platform split */}
+          {(() => {
+            const totalTT = audioVirality.tracks.reduce((s: number, t: any) => s + (t.tiktokCreates ?? 0), 0);
+            const totalIG = audioVirality.tracks.reduce((s: number, t: any) => s + (t.igCreates ?? 0), 0);
+            const totalCreates = totalTT + totalIG;
+            const ttPct = totalCreates > 0 ? (totalTT / totalCreates * 100) : 50;
+            const igPct = totalCreates > 0 ? (totalIG / totalCreates * 100) : 50;
+            // Find which track leads TikTok creates
+            const ttLeader = audioVirality.tracks.reduce((best: any, t: any) => (t.tiktokCreates ?? 0) > (best.tiktokCreates ?? 0) ? t : best, audioVirality.tracks[0]);
+            const igLeader = audioVirality.tracks.reduce((best: any, t: any) => (t.igCreates ?? 0) > (best.igCreates ?? 0) ? t : best, audioVirality.tracks[0]);
+            return totalCreates > 0 ? (
+              <div className="mt-3 mb-1 bg-white/[0.02] rounded-xl p-4 border border-white/[0.04]">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
+                  {/* Total Creates */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] text-neutral-500 uppercase tracking-wider font-medium">Total Creates</span>
+                    <span className="text-lg font-black text-white tabular-nums">{fmt(totalCreates)}</span>
+                  </div>
+                  {/* Platform split bar */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-[9px] font-semibold text-tiktok">🎵 TikTok {ttPct.toFixed(0)}%</span>
+                      <div className="flex-1" />
+                      <span className="text-[9px] font-semibold text-pink-400">📸 Instagram {igPct.toFixed(0)}%</span>
+                    </div>
+                    <div className="h-2 rounded-full overflow-hidden flex bg-white/[0.03]">
+                      <div className="bg-gradient-to-r from-cyan-500 to-teal-400 rounded-l-full transition-all duration-1000" style={{ width: `${ttPct}%` }} />
+                      <div className="bg-gradient-to-r from-pink-500 to-rose-400 rounded-r-full transition-all duration-1000" style={{ width: `${igPct}%` }} />
+                    </div>
+                  </div>
+                  {/* Leaders */}
+                  <div className="flex gap-3 text-[9px] text-neutral-500">
+                    <span>TT lead: <span className="text-tiktok font-semibold">{ttLeader?.name}</span></span>
+                    <span>IG lead: <span className="text-pink-400 font-semibold">{igLeader?.name}</span></span>
+                  </div>
+                </div>
+              </div>
+            ) : null;
+          })()}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
             {audioVirality.tracks.map((t: any) => {
               const viewsChange = t.priorViews != null && t.priorViews > 0 ? ((t.views - t.priorViews) / t.priorViews * 100) : null;
