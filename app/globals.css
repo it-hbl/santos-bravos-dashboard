@@ -2,6 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Aurora Nav Accent ─── */
+/* Animated gradient line under the sticky nav bar */
+@keyframes auroraShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.aurora-line {
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    #7c3aed,
+    #06b6d4,
+    #ec4899,
+    #f59e0b,
+    #7c3aed
+  );
+  background-size: 300% 100%;
+  animation: auroraShift 8s ease-in-out infinite;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }

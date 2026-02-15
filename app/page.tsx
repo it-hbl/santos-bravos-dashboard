@@ -27,6 +27,7 @@ import StickyTicker from "./components/StickyTicker";
 import DataFreshness from "./components/DataFreshness";
 import SkeletonLoader from "./components/SkeletonLoader";
 import BackToTop from "./components/BackToTop";
+import DebutTimer from "./components/DebutTimer";
 import SentimentAura from "./components/SentimentAura";
 import TopMoverBadge, { Mover } from "./components/TopMoverBadge";
 import { ErrorBoundary, SectionErrorBoundary } from "./components/ErrorBoundary";
@@ -558,7 +559,9 @@ function Dashboard() {
       {/* Skip to content — keyboard accessibility */}
       <a href="#main-content" className="skip-to-content">Skip to dashboard content</a>
       {/* Nav */}
-      <nav className="sticky top-0 z-50 glass border-b border-white/5 px-3 sm:px-6 py-3 flex items-center justify-between gap-2">
+      <nav className="sticky top-0 z-50 glass border-b border-white/5 relative">
+        <div className="aurora-line absolute bottom-0 left-0 right-0 z-10" />
+        <div className="px-3 sm:px-6 py-3 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 sm:gap-4 min-w-0">
           <svg viewBox="0 0 100 24" className="h-4 text-white flex-shrink-0" fill="currentColor">
             <text x="0" y="20" fontFamily="Inter, system-ui, sans-serif" fontWeight="900" fontSize="22" letterSpacing="3">HYBE</text>
@@ -660,6 +663,7 @@ function Dashboard() {
           })()} />
           <UserMenu />
         </div>
+        </div>
       </nav>
 
       <div className="max-w-7xl mx-auto px-4 py-8 space-y-10">
@@ -756,6 +760,7 @@ function Dashboard() {
                   return "Auto-updated via API pipeline";
                 })()}
               </p>
+              <DebutTimer />
             </div>
           </div>
 
