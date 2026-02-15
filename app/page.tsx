@@ -85,6 +85,7 @@ const ActivityFeed = dynamic(() => import("./components/ActivityFeed"), { ssr: f
 const NextMilestoneCountdown = dynamic(() => import("./components/NextMilestoneCountdown"), { ssr: false });
 const SentimentByPlatform = dynamic(() => import("./components/SentimentByPlatform"), { ssr: false });
 const WordCloud = dynamic(() => import("./components/WordCloud"), { ssr: false });
+const VelocityMeter = dynamic(() => import("./components/VelocityMeter"), { ssr: false });
 const HistoricalTrends = dynamic(() => import("./components/HistoricalTrends"), { ssr: false });
 const TrackHistory = dynamic(() => import("./components/TrackHistory"), { ssr: false });
 const YouTubeHistory = dynamic(() => import("./components/YouTubeHistory"), { ssr: false });
@@ -2128,10 +2129,13 @@ function Dashboard() {
               <ViralMoments timeSeries={livePR.timeSeries} />
             </div>
           )}
-          {/* Momentum + WoW row */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
+          {/* Momentum + WoW + Velocity row */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
             <MentionMomentum timeSeries={livePR.timeSeries} totalMentions={livePR.totalMentions} />
             {livePR.wow && <div><WowComparison data={livePR.wow} /></div>}
+            {livePR.timeSeries && livePR.timeSeries.length >= 3 && (
+              <VelocityMeter timeSeries={livePR.timeSeries} />
+            )}
           </div>
           {/* Conversation Topics */}
           {((livePR as any).topTopics || []).length > 0 && (
