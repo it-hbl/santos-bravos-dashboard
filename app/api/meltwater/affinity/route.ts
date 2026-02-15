@@ -4,22 +4,22 @@ const MW_TOKEN = "CwyOVYu0hn3hdXQ1CFPCqr5LLRVkuPNjn6tSAGtZ";
 const CULTURAL_SEARCH_ID = "27940963"; // HBL - Cultural Affinity
 const BASE = "https://api.meltwater.com";
 
-// Server-side cache (3-min TTL)
+// Server-side cache (3-min TTL, keyed by days)
 const CACHE_TTL_MS = 3 * 60 * 1000;
-let cachedResponse: { data: any; timestamp: number } | null = null;
+const cacheByDays: Record<number, { data: any; timestamp: number }> = {};
 
-function getDateRange() {
+function getDateRange(days = 7) {
   const end = new Date();
   const start = new Date();
-  start.setDate(start.getDate() - 7);
+  start.setDate(start.getDate() - days);
   return {
     start: start.toISOString().split("T")[0] + "T00:00:00",
     end: end.toISOString().split("T")[0] + "T23:59:59",
   };
 }
 
-async function mwGet(path: string, params: Record<string, string> = {}) {
-  const { start, end } = getDateRange();
+async function mwGet(path: string, params: Record<string, string> = {}, days = 7) {
+  const { start, end } = getDateRange(days);
   const qs = new URLSearchParams({ start, end, tz: "America/Mexico_City", ...params });
   const url = `${BASE}${path}?${qs}`;
   const res = await fetch(url, {
@@ -29,10 +29,15 @@ async function mwGet(path: string, params: Record<string, string> = {}) {
   return res.json();
 }
 
-export async function GET() {
-  // Return cached response if fresh
-  if (cachedResponse && (Date.now() - cachedResponse.timestamp) < CACHE_TTL_MS) {
-    const res = NextResponse.json(cachedResponse.data);
+export async function GET(request: Request) {
+  const url = new URL(request.url);
+  const daysParam = parseInt(url.searchParams.get("days") || "7", 10);
+  const days = [7, 14, 30].includes(daysParam) ? daysParam : 7;
+
+  // Return cached response if fresh for this range
+  const cached = cacheByDays[days];
+  if (cached && (Date.now() - cached.timestamp) < CACHE_TTL_MS) {
+    const res = NextResponse.json(cached.data);
     res.headers.set("X-Cache", "HIT");
     res.headers.set("Cache-Control", "public, s-maxage=180, stale-while-revalidate=60");
     return res;
@@ -40,9 +45,9 @@ export async function GET() {
 
   try {
     const [analyticsRes, keyphrasesRes, hashtagsRes] = await Promise.all([
-      mwGet(`/v3/analytics/${CULTURAL_SEARCH_ID}`),
-      mwGet(`/v3/analytics/${CULTURAL_SEARCH_ID}/top_keyphrases`, { source: "twitter" }).catch(() => null),
-      mwGet(`/v3/analytics/${CULTURAL_SEARCH_ID}/top_tags`, { source: "twitter" }).catch(() => null),
+      mwGet(`/v3/analytics/${CULTURAL_SEARCH_ID}`, {}, days),
+      mwGet(`/v3/analytics/${CULTURAL_SEARCH_ID}/top_keyphrases`, { source: "twitter" }, days).catch(() => null),
+      mwGet(`/v3/analytics/${CULTURAL_SEARCH_ID}/top_tags`, { source: "twitter" }, days).catch(() => null),
     ]);
 
     const totalMentions = analyticsRes.volume ?? 0;
@@ -91,7 +96,7 @@ export async function GET() {
       },
     };
 
-    cachedResponse = { data: responseData, timestamp: Date.now() };
+    cacheByDays[days] = { data: responseData, timestamp: Date.now() };
     const res = NextResponse.json(responseData);
     res.headers.set("X-Cache", "MISS");
     res.headers.set("Cache-Control", "public, s-maxage=180, stale-while-revalidate=60");

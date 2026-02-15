@@ -58,30 +58,35 @@ function CustomTooltip({ active, payload, label }: any) {
   );
 }
 
-export default function CulturalAffinity() {
+export default function CulturalAffinity({ days = 7 }: { days?: number }) {
   const [data, setData] = useState<AffinityData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    setError(false);
     async function fetchAffinity() {
       try {
-        const res = await fetch("/api/meltwater/affinity");
+        const res = await fetch(`/api/meltwater/affinity?days=${days}`);
         if (!res.ok) throw new Error("Failed");
         const json = await res.json();
+        if (cancelled) return;
         if (json.live && json.data) {
           setData(json.data);
         } else {
           setError(true);
         }
       } catch {
-        setError(true);
+        if (!cancelled) setError(true);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     }
     fetchAffinity();
-  }, []);
+    return () => { cancelled = true; };
+  }, [days]);
 
   if (loading) {
     return (

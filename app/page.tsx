@@ -2606,8 +2606,8 @@ function Dashboard() {
         <SectionErrorBoundary sectionName="Cultural Affinity">
         <AnimatedSection>
         <section id="section-cultural" className="scroll-mt-16">
-          <CollapsibleSection id="cultural-affinity" number="8" title="Cultural Affinity" subtitle="Meltwater · Cultural context & audience themes" color="bg-gradient-to-br from-fuchsia-500 to-purple-400" collapsedSummary="Cultural themes, hashtags & sentiment from dedicated affinity search">
-            <CulturalAffinity />
+          <CollapsibleSection id="cultural-affinity" number="8" title="Cultural Affinity" subtitle={`Meltwater · Cultural context & audience themes · ${mwRange}d`} color="bg-gradient-to-br from-fuchsia-500 to-purple-400" collapsedSummary="Cultural themes, hashtags & sentiment from dedicated affinity search">
+            <CulturalAffinity days={mwRange} />
           </CollapsibleSection>
         </section>
         </AnimatedSection>
