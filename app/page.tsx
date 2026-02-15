@@ -134,6 +134,7 @@ const PulseGrid = dynamic(() => import("./components/PulseGrid"), { ssr: false }
 const GeoMap = dynamic(() => import("./components/GeoMap"), { ssr: false });
 const NavBreadcrumb = dynamic(() => import("./components/NavBreadcrumb"), { ssr: false });
 const SentimentShift = dynamic(() => import("./components/SentimentShift"), { ssr: false });
+const SectionMinimap = dynamic(() => import("./components/SectionMinimap"), { ssr: false });
 
 /** Extract short date like "2/9/26" from "February 9, 2026" or ISO date */
 function shortDate(dateStr: string): string {
@@ -2720,6 +2721,7 @@ function Dashboard() {
       <CommandPalette onRefresh={refresh} />
       <MobileNav />
       <BackToTop />
+      <SectionMinimap />
       {/* Bottom padding for mobile nav */}
       <div className="h-16 lg:hidden print:hidden" />
     </main>

@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Section Minimap ─── */
+@keyframes minimap-tooltip-in {
+  from { opacity: 0; transform: translateY(-50%) translateX(4px); }
+  to   { opacity: 1; transform: translateY(-50%) translateX(0); }
+}
+
 /* ─── Aurora Nav Accent ─── */
 /* Animated gradient line under the sticky nav bar */
 @keyframes auroraShift {
