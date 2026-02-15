@@ -181,9 +181,31 @@ function DodBadge({ current, prior }: { current: number; prior: number | null })
   );
 }
 
+function InlineSparkline({ points, positive }: { points: number[]; positive: boolean }) {
+  if (points.length < 2) return null;
+  const w = 48, h = 16, pad = 1;
+  const min = Math.min(...points);
+  const max = Math.max(...points);
+  const range = max - min || 1;
+  const coords = points.map((v, i) => {
+    const x = pad + (i / (points.length - 1)) * (w - pad * 2);
+    const y = pad + (1 - (v - min) / range) * (h - pad * 2);
+    return `${x},${y}`;
+  });
+  const color = positive ? "#34d399" : "#f87171";
+  return (
+    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="flex-shrink-0 hidden sm:block opacity-60 group-hover:opacity-100 transition-opacity">
+      <polyline points={coords.join(" ")} fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx={coords[coords.length - 1].split(",")[0]} cy={coords[coords.length - 1].split(",")[1]} r="2" fill={color} />
+    </svg>
+  );
+}
+
 function MetricRow({ label, current, prior, accent, tooltip, href }: { label: string; current: number; prior: number | null; accent?: string; tooltip?: string; href?: string }) {
   const d = dod(current, prior);
   const labelContent = tooltip ? <MetricTooltip term={tooltip}>{label}</MetricTooltip> : label;
+  const trend = trendPoints(prior, current);
+  const isPositive = prior !== null ? current >= prior : true;
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3 border-b border-white/[0.03] last:border-0 group hover:bg-white/[0.01] px-2 -mx-2 rounded gap-1 sm:gap-0">
       <span className="text-sm text-neutral-400 group-hover:text-neutral-300 transition-colors flex-1 truncate">
@@ -195,6 +217,7 @@ function MetricRow({ label, current, prior, accent, tooltip, href }: { label: st
         ) : labelContent}
       </span>
       <div className="flex items-center gap-3 sm:gap-4 pl-0 sm:pl-4">
+        <InlineSparkline points={trend} positive={isPositive} />
         <span className={`text-sm font-bold tabular-nums ${accent || "text-white"}`}>{fmt(current)}</span>
         {prior !== null && (
           <>
