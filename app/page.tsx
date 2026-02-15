@@ -33,6 +33,7 @@ import SentimentAura from "./components/SentimentAura";
 import TopMoverBadge, { Mover } from "./components/TopMoverBadge";
 import { ErrorBoundary, SectionErrorBoundary } from "./components/ErrorBoundary";
 import GlowCard from "./components/GlowCard";
+import DynamicFavicon from "./components/DynamicFavicon";
 import GrowthGlow from "./components/GrowthGlow";
 import StaleDataBanner from "./components/StaleDataBanner";
 import MetricSpotlight from "./components/MetricSpotlight";
@@ -502,6 +503,28 @@ function Dashboard() {
     <main className="min-h-screen">
       {/* Focus mode overlay */}
       <FocusOverlay active={focus.active} sectionId={focus.sectionId} title={focus.title} onExit={focus.exit} />
+      {/* Dynamic favicon — shows composite score in browser tab */}
+      <DynamicFavicon score={(() => {
+        const listenerGrowth = bp.spotifyMonthlyListeners.prior
+          ? ((liveListeners - bp.spotifyMonthlyListeners.prior) / bp.spotifyMonthlyListeners.prior) * 100 : 0;
+        const streamingS = Math.min(100, Math.max(0, 50 + listenerGrowth * 8));
+        const snsS = Math.min(100, (liveSocialMedia.totalFootprint.current / 2000000) * 100);
+        const tGrowths = liveTrackStreams.filter(t => t.spotifyStreams.prior).map(t =>
+          ((t.spotifyStreams.current - t.spotifyStreams.prior!) / t.spotifyStreams.prior!) * 100);
+        const avgTG = tGrowths.length > 0 ? tGrowths.reduce((a, b) => a + b, 0) / tGrowths.length : 0;
+        const contentS = Math.min(100, Math.max(0, 40 + avgTG * 4));
+        const mediaS = Math.min(100, (livePR.perDay / 1000) * 100);
+        const netSent = liveSentiment.positive.pct - liveSentiment.negative.pct;
+        const sentS = Math.min(100, Math.max(0, 50 + netSent));
+        const milestoneTargets = [
+          { current: liveListeners, target: 500000 },
+          { current: liveTrackStreams[0]?.spotifyStreams.current ?? 0, target: 10000000 },
+          { current: liveSocialMedia.totalFootprint.current, target: 2000000 },
+          { current: liveYTSubscribers, target: 500000 },
+        ];
+        const milestoneS = Math.round(milestoneTargets.reduce((s, m) => s + Math.min(100, (m.current / m.target) * 100), 0) / milestoneTargets.length);
+        return Math.round(streamingS * 0.25 + snsS * 0.20 + contentS * 0.20 + mediaS * 0.15 + sentS * 0.10 + milestoneS * 0.10);
+      })()} />
       {/* Print-only header */}
       <div className="print-header hidden" style={{ display: 'none' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #7C3AED', paddingBottom: '8px', marginBottom: '16px' }}>
