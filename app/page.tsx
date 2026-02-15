@@ -553,6 +553,9 @@ function Dashboard() {
           positive: bp.spotifyMonthlyListeners.prior ? dod(liveListeners, bp.spotifyMonthlyListeners.prior).positive : true,
           sectionId: "business",
           sparkData: historicalSparklines.listeners.length >= 2 ? historicalSparklines.listeners : trendPoints(bp.spotifyMonthlyListeners.prior, liveListeners, 5),
+          rawValue: liveListeners,
+          target: 500000,
+          targetLabel: "500K",
         },
         {
           label: "Followers",
@@ -567,6 +570,9 @@ function Dashboard() {
           color: "text-white",
           sectionId: "charts",
           sparkData: historicalSparklines.streams.length >= 2 ? historicalSparklines.streams : trendPoints(bp.totalCrossPlatformStreams.prior, bp.totalCrossPlatformStreams.current, 5),
+          rawValue: bp.totalCrossPlatformStreams.current,
+          target: 50000000,
+          targetLabel: "50M",
         },
         {
           label: "SNS",
@@ -576,12 +582,18 @@ function Dashboard() {
           positive: liveSocialMedia.totalFootprint.prior ? dod(liveSocialMedia.totalFootprint.current, liveSocialMedia.totalFootprint.prior).positive : true,
           sectionId: "social",
           sparkData: historicalSparklines.sns.length >= 2 ? historicalSparklines.sns : trendPoints(liveSocialMedia.totalFootprint.prior, liveSocialMedia.totalFootprint.current, 5),
+          rawValue: liveSocialMedia.totalFootprint.current,
+          target: 2000000,
+          targetLabel: "2M",
         },
         {
           label: "YT Subs",
           value: fmt(liveYTSubscribers),
           color: "text-ytred",
           sectionId: "social",
+          rawValue: liveYTSubscribers,
+          target: 500000,
+          targetLabel: "500K",
         },
         {
           label: "Mentions",

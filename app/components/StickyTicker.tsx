@@ -10,6 +10,12 @@ interface TickerMetric {
   positive?: boolean;
   sectionId?: string;
   sparkData?: number[];
+  /** Optional milestone target — shows a tiny progress bar under the value */
+  target?: number;
+  /** Current raw numeric value (needed for progress calculation) */
+  rawValue?: number;
+  /** Label for the target (e.g., "500K") */
+  targetLabel?: string;
 }
 
 const TICKER_SECTIONS = [
@@ -93,6 +99,21 @@ function MetricChip({ m, index }: { m: TickerMetric; index: number }) {
         }`}>
           {m.change}
         </span>
+      )}
+      {/* Milestone progress bar */}
+      {m.target != null && m.rawValue != null && m.rawValue < m.target && (
+        <div className="flex items-center gap-1 flex-shrink-0" title={`Target: ${m.targetLabel || m.target.toLocaleString()}`}>
+          <div className="w-10 h-1 bg-white/[0.06] rounded-full overflow-hidden">
+            <div
+              className="h-full rounded-full transition-all duration-700"
+              style={{
+                width: `${Math.min(100, (m.rawValue / m.target) * 100)}%`,
+                background: `linear-gradient(90deg, ${m.positive === false ? '#f87171' : '#8b5cf6'}, ${m.positive === false ? '#ef4444' : '#a78bfa'})`,
+              }}
+            />
+          </div>
+          <span className="text-[7px] text-neutral-600 tabular-nums whitespace-nowrap">{m.targetLabel || ''}</span>
+        </div>
       )}
     </Wrapper>
   );
