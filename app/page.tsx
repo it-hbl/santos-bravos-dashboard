@@ -117,6 +117,7 @@ const TrackMomentum = dynamic(() => import("./components/TrackMomentum"), { ssr:
 const MomentumArrows = dynamic(() => import("./components/MomentumArrows"), { ssr: false });
 const ViralMoments = dynamic(() => import("./components/ViralMoments"), { ssr: false });
 const PulseGrid = dynamic(() => import("./components/PulseGrid"), { ssr: false });
+const GeoMap = dynamic(() => import("./components/GeoMap"), { ssr: false });
 
 /** Extract short date like "2/9/26" from "February 9, 2026" or ISO date */
 function shortDate(dateStr: string): string {
@@ -1916,6 +1917,11 @@ function Dashboard() {
           <div className="mb-6">
             <MarketPenetration countries={geoCountries} />
           </div>
+          {/* Global Listener Map */}
+          <div className="mb-6">
+            <GeoMap countries={geoCountries} />
+          </div>
+
           {/* Geographic Treemap */}
           <div className="mb-6">
             <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-3">Listener Distribution by Country</p>

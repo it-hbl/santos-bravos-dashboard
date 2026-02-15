@@ -644,3 +644,9 @@ a:focus-visible {
     animation: none !important;
   }
 }
+
+/* Geo map pulse animation */
+@keyframes geo-pulse {
+  0%, 100% { opacity: 0.3; r: inherit; }
+  50% { opacity: 0.6; }
+}
