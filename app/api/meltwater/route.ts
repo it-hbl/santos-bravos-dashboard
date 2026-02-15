@@ -6,36 +6,34 @@ const SEARCH_ID = "27861227";
 const HYBE_LATIN_SEARCH_ID = "27924306"; // HBL | Hybe Latin America (parent brand)
 const BASE = "https://api.meltwater.com";
 
-// ── Server-side in-memory cache (3-min TTL) ──
-// Prevents redundant Meltwater API calls when multiple clients poll simultaneously
-// or when the same client polls within the cache window.
+// ── Server-side in-memory cache (3-min TTL, keyed by days) ──
 const CACHE_TTL_MS = 3 * 60 * 1000; // 3 minutes
-let cachedResponse: { data: any; timestamp: number } | null = null;
+const cacheByDays: Record<number, { data: any; timestamp: number }> = {};
 
-// Rolling 7-day window
-function getDateRange() {
+// Rolling N-day window (default 7)
+function getDateRange(days = 7) {
   const end = new Date();
   const start = new Date();
-  start.setDate(start.getDate() - 7);
+  start.setDate(start.getDate() - days);
   return {
     start: start.toISOString().split("T")[0] + "T00:00:00",
     end: end.toISOString().split("T")[0] + "T23:59:59",
   };
 }
 
-// Rolling 14-day window for WoW comparison
-function get14DayRange() {
+// Rolling comparison window (2x the requested range for WoW)
+function getComparisonRange(days = 7) {
   const end = new Date();
   const start = new Date();
-  start.setDate(start.getDate() - 14);
+  start.setDate(start.getDate() - days * 2);
   return {
     start: start.toISOString().split("T")[0] + "T00:00:00",
     end: end.toISOString().split("T")[0] + "T23:59:59",
   };
 }
 
-async function mwGet(path: string, params: Record<string, string> = {}) {
-  const { start, end } = getDateRange();
+async function mwGet(path: string, params: Record<string, string> = {}, days = 7) {
+  const { start, end } = getDateRange(days);
   const qs = new URLSearchParams({ start, end, tz: "America/Mexico_City", ...params });
   const url = `${BASE}${path}?${qs}`;
   const res = await fetch(url, {
@@ -60,11 +58,17 @@ const COUNTRY_NAMES: Record<string, string> = {
   VE: "Venezuela", BO: "Bolivia", PY: "Paraguay", UY: "Uruguay", CR: "Costa Rica",
 };
 
-export async function GET() {
-  // Return cached response if still fresh
-  if (cachedResponse && (Date.now() - cachedResponse.timestamp) < CACHE_TTL_MS) {
-    const age = Math.round((Date.now() - cachedResponse.timestamp) / 1000);
-    const res = NextResponse.json(cachedResponse.data);
+export async function GET(request: Request) {
+  // Parse days param (7, 14, or 30)
+  const url = new URL(request.url);
+  const daysParam = parseInt(url.searchParams.get("days") || "7", 10);
+  const days = [7, 14, 30].includes(daysParam) ? daysParam : 7;
+
+  // Return cached response if still fresh for this range
+  const cached = cacheByDays[days];
+  if (cached && (Date.now() - cached.timestamp) < CACHE_TTL_MS) {
+    const age = Math.round((Date.now() - cached.timestamp) / 1000);
+    const res = NextResponse.json(cached.data);
     res.headers.set("X-Cache", "HIT");
     res.headers.set("X-Cache-Age", `${age}s`);
     res.headers.set("Cache-Control", "public, s-maxage=180, stale-while-revalidate=60");
@@ -73,28 +77,28 @@ export async function GET() {
 
   try {
     // Fetch analytics + keyphrases + hashtags + sources in parallel
-    // Also fetch 14-day analytics for WoW comparison
-    const { start: start14, end: end14 } = get14DayRange();
+    // Also fetch comparison window for WoW
+    const { start: startCmp, end: endCmp } = getComparisonRange(days);
     const [analyticsRes, keyphrasesRes, hashtagsRes, sourcesRes, entitiesRes, sharedLinksRes, mentionsRes, topicsRes, locationsRes, analytics14Res, hybeLatinRes, twitterRes, instagramRes, newsRes, tiktokRes, redditRes] = await Promise.all([
-      mwGet(`/v3/analytics/${SEARCH_ID}`),
-      mwGet(`/v3/analytics/${SEARCH_ID}/top_keyphrases`, { source: "twitter" }),
-      mwGet(`/v3/analytics/${SEARCH_ID}/top_tags`, { source: "twitter" }),
-      mwGet(`/v3/analytics/${SEARCH_ID}/top_sources`).catch(() => null),
-      mwGet(`/v3/analytics/${SEARCH_ID}/top_entities`).catch(() => null),
-      mwGet(`/v3/analytics/${SEARCH_ID}/top_shared_links`).catch(() => null),
-      mwGet(`/v3/analytics/${SEARCH_ID}/top_mentions`, { source: "twitter" }).catch(() => null),
-      mwGet(`/v3/analytics/${SEARCH_ID}/top_topics`).catch(() => null),
-      mwGet(`/v3/analytics/${SEARCH_ID}/top_locations`).catch(() => null),
-      fetch(`${BASE}/v3/analytics/${SEARCH_ID}?start=${start14}&end=${end14}&tz=America/Mexico_City`, {
+      mwGet(`/v3/analytics/${SEARCH_ID}`, {}, days),
+      mwGet(`/v3/analytics/${SEARCH_ID}/top_keyphrases`, { source: "twitter" }, days),
+      mwGet(`/v3/analytics/${SEARCH_ID}/top_tags`, { source: "twitter" }, days),
+      mwGet(`/v3/analytics/${SEARCH_ID}/top_sources`, {}, days).catch(() => null),
+      mwGet(`/v3/analytics/${SEARCH_ID}/top_entities`, {}, days).catch(() => null),
+      mwGet(`/v3/analytics/${SEARCH_ID}/top_shared_links`, {}, days).catch(() => null),
+      mwGet(`/v3/analytics/${SEARCH_ID}/top_mentions`, { source: "twitter" }, days).catch(() => null),
+      mwGet(`/v3/analytics/${SEARCH_ID}/top_topics`, {}, days).catch(() => null),
+      mwGet(`/v3/analytics/${SEARCH_ID}/top_locations`, {}, days).catch(() => null),
+      fetch(`${BASE}/v3/analytics/${SEARCH_ID}?start=${startCmp}&end=${endCmp}&tz=America/Mexico_City`, {
         headers: { apikey: MW_TOKEN, Accept: "application/json" },
       }).then(r => r.ok ? r.json() : null).catch(() => null),
-      mwGet(`/v3/analytics/${HYBE_LATIN_SEARCH_ID}`).catch(() => null),
+      mwGet(`/v3/analytics/${HYBE_LATIN_SEARCH_ID}`, {}, days).catch(() => null),
       // Per-source sentiment for platform breakdown
-      mwGet(`/v3/analytics/${SEARCH_ID}`, { source: "twitter" }).catch(() => null),
-      mwGet(`/v3/analytics/${SEARCH_ID}`, { source: "instagram" }).catch(() => null),
-      mwGet(`/v3/analytics/${SEARCH_ID}`, { source: "news" }).catch(() => null),
-      mwGet(`/v3/analytics/${SEARCH_ID}`, { source: "tiktok" }).catch(() => null),
-      mwGet(`/v3/analytics/${SEARCH_ID}`, { source: "reddit" }).catch(() => null),
+      mwGet(`/v3/analytics/${SEARCH_ID}`, { source: "twitter" }, days).catch(() => null),
+      mwGet(`/v3/analytics/${SEARCH_ID}`, { source: "instagram" }, days).catch(() => null),
+      mwGet(`/v3/analytics/${SEARCH_ID}`, { source: "news" }, days).catch(() => null),
+      mwGet(`/v3/analytics/${SEARCH_ID}`, { source: "tiktok" }, days).catch(() => null),
+      mwGet(`/v3/analytics/${SEARCH_ID}`, { source: "reddit" }, days).catch(() => null),
     ]);
 
     const analytics = analyticsRes;
@@ -105,8 +109,8 @@ export async function GET() {
       date: new Date(d.date || d.timestamp).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
       mentions: d.count ?? d.volume ?? 0,
     }));
-    const days = timeSeries.length || 7;
-    const perDay = Math.round(totalMentions / days);
+    const numDays = timeSeries.length || 7;
+    const perDay = Math.round(totalMentions / numDays);
     const uniqueAuthors = analytics.unique_authors ?? prMedia.uniqueAuthors;
 
     // Sentiment
@@ -344,8 +348,8 @@ export async function GET() {
       },
     };
 
-    // Cache successful response
-    cachedResponse = { data: responseData, timestamp: Date.now() };
+    // Cache successful response keyed by days
+    cacheByDays[days] = { data: responseData, timestamp: Date.now() };
 
     const res = NextResponse.json(responseData);
     res.headers.set("X-Cache", "MISS");

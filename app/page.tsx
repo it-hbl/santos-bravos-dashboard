@@ -384,12 +384,14 @@ function Dashboard() {
   const [mwCountdown, setMwCountdown] = useState(MW_REFRESH_INTERVAL);
   const [mwAutoRefresh, setMwAutoRefresh] = useState(true);
   const mwCountdownRef = useRef(MW_REFRESH_INTERVAL);
+  const [mwRange, setMwRange] = useState<7 | 14 | 30>(7);
 
-  const refreshMeltwater = useCallback(async () => {
+  const refreshMeltwater = useCallback(async (range?: number) => {
+    const days = range ?? mwRange;
     setMwLoading(true);
     setMwError(null);
     try {
-      const res = await fetch("/api/meltwater");
+      const res = await fetch(`/api/meltwater?days=${days}`);
       const json = await res.json();
       if (json.live && json.data) {
         setMwLiveData({
@@ -408,7 +410,7 @@ function Dashboard() {
       mwCountdownRef.current = MW_REFRESH_INTERVAL;
       setMwCountdown(MW_REFRESH_INTERVAL);
     }
-  }, []);
+  }, [mwRange]);
 
   // Auto-fetch on mount
   useEffect(() => {
@@ -2057,7 +2059,7 @@ function Dashboard() {
         <section className="glass-hybe rounded-2xl p-6">
           <CollapsibleSection id="pr-media" number="6" title="PR & Media Exposure" subtitle={`Meltwater · ${livePR.period}`} color="bg-gradient-to-br from-violet-500 to-indigo-400" trend={livePR.wow ? { value: `${Math.abs(livePR.wow.changePct)}% WoW`, positive: livePR.wow.changePct >= 0 } : null} collapsedSummary={`${fmt(livePR.totalMentions)} mentions · ${fmt(livePR.perDay)}/day · ${fmt(livePR.uniqueAuthors)} authors · ${livePR.topSources?.[0]?.name ?? ''} leads`}>
           {/* Live Meltwater refresh bar */}
-          <div className="flex items-center justify-between mb-4 bg-white/[0.02] rounded-lg px-3 py-2 border border-white/[0.04]">
+          <div className="flex items-center justify-between mb-4 bg-white/[0.02] rounded-lg px-3 py-2 border border-white/[0.04] flex-wrap gap-2">
             <div className="flex items-center gap-2">
               {mwLiveData ? (
                 <>
@@ -2074,6 +2076,18 @@ function Dashboard() {
               {mwError && <span className="text-[9px] text-red-400">· {mwError}</span>}
             </div>
             <div className="flex items-center gap-2">
+              {/* Time range selector */}
+              <div className="flex items-center bg-white/[0.03] rounded-md border border-white/[0.06] overflow-hidden">
+                {([7, 14, 30] as const).map(d => (
+                  <button
+                    key={d}
+                    onClick={() => { setMwRange(d); refreshMeltwater(d); }}
+                    className={`text-[8px] font-bold uppercase tracking-wider px-2 py-1 transition-all ${mwRange === d ? "text-violet-300 bg-violet-500/20" : "text-neutral-500 hover:text-neutral-300 hover:bg-white/[0.04]"}`}
+                  >
+                    {d}d
+                  </button>
+                ))}
+              </div>
               {/* Auto-refresh toggle */}
               <button
                 onClick={() => setMwAutoRefresh(prev => !prev)}
@@ -2089,7 +2103,7 @@ function Dashboard() {
                 </span>
               )}
               <button
-                onClick={refreshMeltwater}
+                onClick={() => refreshMeltwater()}
                 disabled={mwLoading}
                 className={`text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md transition-all ${mwLoading ? "text-neutral-600 bg-white/[0.02] cursor-wait" : "text-violet-400 bg-violet-500/10 hover:bg-violet-500/20 hover:text-violet-300"}`}
               >
