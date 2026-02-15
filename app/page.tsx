@@ -2484,19 +2484,77 @@ function Dashboard() {
         </SectionErrorBoundary>
 
         {/* Footer */}
-        <footer className="text-center py-10 border-t border-white/[0.03] space-y-2">
-          <div className="flex items-center justify-center gap-3">
-            <svg viewBox="0 0 60 14" className="h-3 text-neutral-600" fill="currentColor">
-              <text x="0" y="12" fontFamily="Inter, system-ui, sans-serif" fontWeight="900" fontSize="13" letterSpacing="2">HYBE</text>
-            </svg>
-            <span className="text-neutral-700">·</span>
-            <span className="text-[10px] font-medium tracking-[0.15em] text-neutral-600 uppercase">Latin America</span>
+        <footer className="relative py-12 border-t border-white/[0.04] overflow-hidden">
+          {/* Subtle gradient glow */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-gradient-to-t from-violet-600/[0.03] via-transparent to-transparent rounded-full blur-3xl" />
           </div>
-          <p className="text-neutral-700 text-[10px] uppercase tracking-[0.3em]">Artist Intelligence Platform · {reportDate}</p>
-          <p className="text-neutral-800 text-[10px]">Chartmetric · Spotify for Artists · YouTube Data API · Cobrand · Weverse · Instagram · Meltwater</p>
-          <PrintQR reportDate={reportDate} />
-          <div className="mt-4">
-            <DataSourcesStatus />
+
+          <div className="relative max-w-5xl mx-auto px-4 space-y-8">
+            {/* Brand block */}
+            <div className="flex flex-col items-center gap-3">
+              <div className="flex items-center gap-3">
+                <svg viewBox="0 0 60 14" className="h-4 text-neutral-500" fill="currentColor">
+                  <text x="0" y="12" fontFamily="Inter, system-ui, sans-serif" fontWeight="900" fontSize="13" letterSpacing="2">HYBE</text>
+                </svg>
+                <div className="w-px h-4 bg-white/[0.06]" />
+                <span className="text-[10px] font-semibold tracking-[0.2em] text-neutral-500 uppercase">Latin America</span>
+              </div>
+              <p className="text-neutral-600 text-[10px] uppercase tracking-[0.3em] font-medium">Artist Intelligence Platform</p>
+            </div>
+
+            {/* Data sources grid */}
+            <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
+              {[
+                { name: "Spotify", icon: "🟢", color: "text-emerald-600" },
+                { name: "YouTube", icon: "🔴", color: "text-red-700" },
+                { name: "Chartmetric", icon: "📊", color: "text-blue-600" },
+                { name: "Meltwater", icon: "📰", color: "text-violet-600" },
+                { name: "Cobrand", icon: "🎵", color: "text-pink-600" },
+                { name: "Instagram", icon: "📸", color: "text-fuchsia-600" },
+                { name: "Weverse", icon: "💚", color: "text-emerald-600" },
+              ].map(src => (
+                <div key={src.name} className="flex items-center gap-1.5 group">
+                  <span className="text-[10px] opacity-60 group-hover:opacity-100 transition-opacity">{src.icon}</span>
+                  <span className={`text-[9px] font-medium tracking-wider uppercase ${src.color} opacity-40 group-hover:opacity-70 transition-opacity`}>{src.name}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Keyboard shortcuts hint */}
+            <div className="flex flex-wrap items-center justify-center gap-3 text-[9px] text-neutral-700">
+              <span className="flex items-center gap-1.5">
+                <kbd className="px-1.5 py-0.5 rounded bg-white/[0.03] border border-white/[0.06] text-neutral-500 font-mono text-[8px]">⌘K</kbd>
+                <span>Search</span>
+              </span>
+              <span className="text-neutral-800">·</span>
+              <span className="flex items-center gap-1.5">
+                <kbd className="px-1.5 py-0.5 rounded bg-white/[0.03] border border-white/[0.06] text-neutral-500 font-mono text-[8px]">?</kbd>
+                <span>Shortcuts</span>
+              </span>
+              <span className="text-neutral-800">·</span>
+              <span className="flex items-center gap-1.5">
+                <kbd className="px-1.5 py-0.5 rounded bg-white/[0.03] border border-white/[0.06] text-neutral-500 font-mono text-[8px]">F</kbd>
+                <span>Focus Mode</span>
+              </span>
+              <span className="text-neutral-800">·</span>
+              <span className="flex items-center gap-1.5">
+                <kbd className="px-1.5 py-0.5 rounded bg-white/[0.03] border border-white/[0.06] text-neutral-500 font-mono text-[8px]">↑</kbd>
+                <span>Back to Top</span>
+              </span>
+            </div>
+
+            {/* Report date + QR + Data sources status */}
+            <div className="flex flex-col items-center gap-3">
+              <p className="text-neutral-700 text-[9px] uppercase tracking-[0.3em]">Report Data · {reportDate}</p>
+              <PrintQR reportDate={reportDate} />
+              <DataSourcesStatus />
+            </div>
+
+            {/* Copyright line */}
+            <p className="text-center text-neutral-800 text-[8px] tracking-[0.2em] uppercase">
+              © {new Date().getFullYear()} HYBE Latin America · Confidential
+            </p>
           </div>
         </footer>
         </div>{/* end dateLoading wrapper */}
