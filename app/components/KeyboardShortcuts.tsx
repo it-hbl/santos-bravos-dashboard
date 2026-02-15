@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 
 interface KeyboardShortcutsProps {
   onRefresh?: () => void;
@@ -16,7 +16,31 @@ const SECTION_SHORTCUTS: { key: string; label: string; target: string }[] = [
   { key: "7", label: "Fan Sentiment", target: "sentiment" },
 ];
 
+/** Ordered list of all navigable section IDs for J/K cycling */
+const ALL_SECTIONS = [
+  { id: "hero", label: "Hero", emoji: "🏠" },
+  { id: "highlights", label: "Key Highlights", emoji: "⭐" },
+  { id: "growth-velocity", label: "Growth Velocity", emoji: "📈" },
+  { id: "business", label: "Business Performance", emoji: "💼" },
+  { id: "daily", label: "Daily Snapshot", emoji: "📊" },
+  { id: "social", label: "Social Media", emoji: "📱" },
+  { id: "charts", label: "Streaming Charts", emoji: "🎵" },
+  { id: "virality", label: "Audio Virality", emoji: "🔥" },
+  { id: "members", label: "Band Members", emoji: "👥" },
+  { id: "geo", label: "Geo Signals", emoji: "🌍" },
+  { id: "audience", label: "Audience Deep Dive", emoji: "🎧" },
+  { id: "pr-media", label: "PR & Media", emoji: "📰" },
+  { id: "fan-sentiment", label: "Fan Sentiment", emoji: "💚" },
+  { id: "milestones", label: "Milestones", emoji: "🏆" },
+  { id: "score", label: "Performance Score", emoji: "⚡" },
+  { id: "track-radar", label: "Track Comparison", emoji: "🎯" },
+  { id: "benchmark", label: "Debut Benchmark", emoji: "📐" },
+  { id: "cultural-affinity", label: "Cultural Affinity", emoji: "🌎" },
+];
+
 const ACTION_SHORTCUTS: { key: string; label: string; action: string }[] = [
+  { key: "j", label: "Next Section", action: "next-section" },
+  { key: "k", label: "Previous Section", action: "prev-section" },
   { key: "h", label: "Go to Top", action: "home" },
   { key: "m", label: "Milestones", action: "milestones" },
   { key: "f", label: "Focus Current Section", action: "focus" },
@@ -27,8 +51,52 @@ const ACTION_SHORTCUTS: { key: string; label: string; action: string }[] = [
   { key: "?", label: "Toggle Shortcuts", action: "help" },
 ];
 
+/** Find the current section index based on scroll position */
+function getCurrentSectionIndex(): number {
+  const viewTop = window.scrollY + window.innerHeight * 0.3;
+  let bestIdx = 0;
+  let bestDist = Infinity;
+  for (let i = 0; i < ALL_SECTIONS.length; i++) {
+    const el = document.getElementById(ALL_SECTIONS[i].id);
+    if (!el) continue;
+    const rect = el.getBoundingClientRect();
+    const elTop = rect.top + window.scrollY;
+    const dist = Math.abs(elTop - viewTop);
+    if (dist < bestDist) { bestDist = dist; bestIdx = i; }
+  }
+  return bestIdx;
+}
+
 export default function KeyboardShortcuts({ onRefresh }: KeyboardShortcutsProps) {
   const [showHelp, setShowHelp] = useState(false);
+  const [toast, setToast] = useState<{ emoji: string; label: string; index: number; total: number } | null>(null);
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const showToast = useCallback((sectionInfo: typeof ALL_SECTIONS[0], index: number) => {
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    setToast({ emoji: sectionInfo.emoji, label: sectionInfo.label, index, total: ALL_SECTIONS.length });
+    toastTimer.current = setTimeout(() => setToast(null), 1500);
+  }, []);
+
+  const navigateSection = useCallback((direction: 1 | -1) => {
+    const currentIdx = getCurrentSectionIndex();
+    // Find next valid section (one that exists in the DOM)
+    let nextIdx = currentIdx + direction;
+    let attempts = 0;
+    while (attempts < ALL_SECTIONS.length) {
+      if (nextIdx < 0) nextIdx = ALL_SECTIONS.length - 1;
+      if (nextIdx >= ALL_SECTIONS.length) nextIdx = 0;
+      const el = document.getElementById(ALL_SECTIONS[nextIdx].id);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        window.dispatchEvent(new CustomEvent("sb-scroll-to-section", { detail: { sectionId: ALL_SECTIONS[nextIdx].id } }));
+        showToast(ALL_SECTIONS[nextIdx], nextIdx);
+        return;
+      }
+      nextIdx += direction;
+      attempts++;
+    }
+  }, [showToast]);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -48,6 +116,18 @@ export default function KeyboardShortcuts({ onRefresh }: KeyboardShortcutsProps)
       // Escape closes help
       if (key === "escape" && showHelp) {
         setShowHelp(false);
+        return;
+      }
+
+      // J/K section navigation
+      if (key === "j") {
+        e.preventDefault();
+        navigateSection(1);
+        return;
+      }
+      if (key === "k") {
+        e.preventDefault();
+        navigateSection(-1);
         return;
       }
 
@@ -114,7 +194,7 @@ export default function KeyboardShortcuts({ onRefresh }: KeyboardShortcutsProps)
         window.open("/guide", "_blank");
       }
     },
-    [showHelp, onRefresh]
+    [showHelp, onRefresh, navigateSection]
   );
 
   useEffect(() => {
@@ -122,17 +202,38 @@ export default function KeyboardShortcuts({ onRefresh }: KeyboardShortcutsProps)
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
+  // Toast for J/K navigation
+  const toastEl = toast ? (
+    <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[90] print:hidden pointer-events-none animate-in fade-in slide-in-from-top-2 duration-200">
+      <div className="bg-black/90 backdrop-blur-xl border border-white/[0.12] rounded-xl px-4 py-2.5 shadow-2xl shadow-black/60 flex items-center gap-3">
+        <span className="text-lg">{toast.emoji}</span>
+        <div>
+          <p className="text-xs font-bold text-white">{toast.label}</p>
+          <p className="text-[9px] text-neutral-500 tabular-nums">{toast.index + 1} / {toast.total}</p>
+        </div>
+        <div className="flex gap-0.5 ml-2">
+          {ALL_SECTIONS.map((_, i) => (
+            <div key={i} className={`w-1 h-1 rounded-full transition-all ${i === toast.index ? "bg-violet-400 scale-150" : "bg-white/10"}`} />
+          ))}
+        </div>
+      </div>
+    </div>
+  ) : null;
+
   if (!showHelp) {
     return (
-      <div className="fixed bottom-4 right-4 z-40 print:hidden">
-        <button
-          onClick={() => setShowHelp(true)}
-          className="w-8 h-8 rounded-lg bg-white/[0.06] border border-white/[0.08] text-neutral-500 hover:text-white hover:bg-white/[0.1] transition-all text-xs font-bold backdrop-blur-sm"
-          title="Keyboard shortcuts (?)"
-        >
-          ?
-        </button>
-      </div>
+      <>
+        {toastEl}
+        <div className="fixed bottom-4 right-4 z-40 print:hidden">
+          <button
+            onClick={() => setShowHelp(true)}
+            className="w-8 h-8 rounded-lg bg-white/[0.06] border border-white/[0.08] text-neutral-500 hover:text-white hover:bg-white/[0.1] transition-all text-xs font-bold backdrop-blur-sm"
+            title="Keyboard shortcuts (?)"
+          >
+            ?
+          </button>
+        </div>
+      </>
     );
   }
 
