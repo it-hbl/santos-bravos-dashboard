@@ -35,6 +35,7 @@ import { ErrorBoundary, SectionErrorBoundary } from "./components/ErrorBoundary"
 import GlowCard from "./components/GlowCard";
 import GrowthGlow from "./components/GrowthGlow";
 import StaleDataBanner from "./components/StaleDataBanner";
+import MetricSpotlight from "./components/MetricSpotlight";
 import useSectionHash from "./components/useSectionHash";
 import { useFocusMode, FocusOverlay } from "./components/FocusMode";
 import { useSession } from "next-auth/react";
@@ -825,6 +826,21 @@ function Dashboard() {
             tracks={liveTrackStreams.map(t => ({ name: t.name, current: t.spotifyStreams.current, prior: t.spotifyStreams.prior }))}
             ytVideos={liveYTVideos.map(v => ({ name: v.name, current: v.views.current, prior: v.views.prior }))}
             dailyTopTrack={dailyStreams.length > 0 ? { name: dailyStreams[0].name, streams: dailyStreams[0].streams } : null}
+          />
+
+          {/* Metric Spotlight — headline card for the most noteworthy metric change */}
+          <MetricSpotlight
+            reportDate={reportDate}
+            metrics={[
+              { label: "Spotify Listeners", current: liveListeners, prior: bp.spotifyMonthlyListeners.prior, category: "streaming", sectionId: "business" },
+              { label: "Total Streams", current: bp.totalCrossPlatformStreams.current, prior: bp.totalCrossPlatformStreams.prior, category: "streaming", sectionId: "business" },
+              { label: "SNS Footprint", current: liveSocialMedia.totalFootprint.current, prior: liveSocialMedia.totalFootprint.prior, category: "social", sectionId: "social" },
+              { label: "YT Subscribers", current: liveYTSubscribers, prior: null, category: "youtube", sectionId: "charts" },
+              ...liveTrackStreams.map(t => ({ label: t.name + " Streams", current: t.spotifyStreams.current, prior: t.spotifyStreams.prior, category: "streaming" as const, sectionId: "business" })),
+              ...liveYTVideos.slice(0, 4).map(v => ({ label: v.name + " Views", current: v.views.current, prior: v.views.prior, category: "youtube" as const, sectionId: "charts" })),
+              { label: "Media Mentions", current: livePR.totalMentions, prior: livePR.wowChange != null && livePR.totalMentions > 0 ? Math.round(livePR.totalMentions / (1 + livePR.wowChange / 100)) : null, category: "media", sectionId: "pr" },
+              { label: "Audio Virality", current: audioVirality.totalAudioViews.current, prior: audioVirality.totalAudioViews.prior, category: "virality", sectionId: "virality" },
+            ]}
           />
 
           {/* Momentum Arrows — pillar trajectory indicators */}
