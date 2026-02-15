@@ -358,13 +358,40 @@ function Dashboard() {
   const o = artistOverview;
   const { refresh } = useLiveData();
 
-  // All data now comes from Supabase via date picker — no more live API overlays
-  const livePR = prMedia as any;
+  // Meltwater live refresh state
+  const [mwLiveData, setMwLiveData] = useState<{ prMedia: any; fanSentiment: any; fetchedAt: string } | null>(null);
+  const [mwLoading, setMwLoading] = useState(false);
+  const [mwError, setMwError] = useState<string | null>(null);
+
+  const refreshMeltwater = useCallback(async () => {
+    setMwLoading(true);
+    setMwError(null);
+    try {
+      const res = await fetch("/api/meltwater");
+      const json = await res.json();
+      if (json.live && json.data) {
+        setMwLiveData({
+          prMedia: json.data.prMedia,
+          fanSentiment: json.data.fanSentiment,
+          fetchedAt: json.data.fetchedAt,
+        });
+      } else {
+        setMwError(json.error || "Failed to fetch live data");
+      }
+    } catch (err: any) {
+      setMwError(err.message || "Network error");
+    } finally {
+      setMwLoading(false);
+    }
+  }, []);
+
+  // Use live Meltwater data if available, otherwise fall back to Supabase/hardcoded
+  const livePR = (mwLiveData?.prMedia || prMedia) as any;
   // Compute wowChange shorthand from wow.changePct for MomentumArrows, PulseGrid, SectionNav
   if (livePR.wow && livePR.wowChange == null) {
     livePR.wowChange = livePR.wow.changePct;
   }
-  const liveSentiment = fanSentiment as any;
+  const liveSentiment = (mwLiveData?.fanSentiment || fanSentiment) as any;
   const liveListeners = bp.spotifyMonthlyListeners.current;
   const liveFollowers = bp.spotifyFollowers?.current ?? 0;
   const livePopularity = bp.spotifyPopularity.current;
@@ -1940,6 +1967,36 @@ function Dashboard() {
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
           <CollapsibleSection id="pr-media" number="6" title="PR & Media Exposure" subtitle={`Meltwater · ${livePR.period}`} color="bg-gradient-to-br from-violet-500 to-indigo-400" trend={livePR.wow ? { value: `${Math.abs(livePR.wow.changePct)}% WoW`, positive: livePR.wow.changePct >= 0 } : null} collapsedSummary={`${fmt(livePR.totalMentions)} mentions · ${fmt(livePR.perDay)}/day · ${fmt(livePR.uniqueAuthors)} authors · ${livePR.topSources?.[0]?.name ?? ''} leads`}>
+          {/* Live Meltwater refresh bar */}
+          <div className="flex items-center justify-between mb-4 bg-white/[0.02] rounded-lg px-3 py-2 border border-white/[0.04]">
+            <div className="flex items-center gap-2">
+              {mwLiveData ? (
+                <>
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-[9px] text-emerald-400 font-semibold uppercase tracking-wider">Live from Meltwater</span>
+                  <span className="text-[9px] text-neutral-600">· {new Date(mwLiveData.fetchedAt).toLocaleTimeString()}</span>
+                </>
+              ) : (
+                <>
+                  <div className="w-1.5 h-1.5 rounded-full bg-neutral-600" />
+                  <span className="text-[9px] text-neutral-500 font-semibold uppercase tracking-wider">{selectedDate === "2026-02-09" ? "Cached Data" : `Snapshot · ${selectedDate}`}</span>
+                </>
+              )}
+              {mwError && <span className="text-[9px] text-red-400">· {mwError}</span>}
+            </div>
+            <button
+              onClick={refreshMeltwater}
+              disabled={mwLoading}
+              className={`text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md transition-all ${mwLoading ? "text-neutral-600 bg-white/[0.02] cursor-wait" : "text-violet-400 bg-violet-500/10 hover:bg-violet-500/20 hover:text-violet-300"}`}
+            >
+              {mwLoading ? (
+                <span className="flex items-center gap-1">
+                  <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" /></svg>
+                  Fetching…
+                </span>
+              ) : "⚡ Refresh Live"}
+            </button>
+          </div>
           <div className="grid grid-cols-3 gap-3 mb-5">
             {[
               { label: "Total Mentions", value: livePR.totalMentions, accent: "text-violet-400" },
@@ -2125,6 +2182,15 @@ function Dashboard() {
         <AnimatedSection>
         <section className="glass-hybe rounded-2xl p-6">
           <CollapsibleSection id="fan-sentiment" number="7" title="Fan Sentiment & Conversation" subtitle={`Meltwater · ${liveSentiment.period}`} color="bg-gradient-to-br from-rose-500 to-pink-400" trend={trendSentiment} collapsedSummary={`${liveSentiment.positive.pct}% positive · ${liveSentiment.neutral.pct}% neutral · ${liveSentiment.negative.pct}% negative · Net +${(liveSentiment.positive.pct - liveSentiment.negative.pct).toFixed(0)}`}>
+
+          {/* Live indicator for section 7 */}
+          {mwLiveData && (
+            <div className="flex items-center gap-2 mb-4 bg-white/[0.02] rounded-lg px-3 py-2 border border-white/[0.04]">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-[9px] text-emerald-400 font-semibold uppercase tracking-wider">Live from Meltwater</span>
+              <span className="text-[9px] text-neutral-600">· {new Date(mwLiveData.fetchedAt).toLocaleTimeString()}</span>
+            </div>
+          )}
 
           {/* Sentiment summary cards */}
           <div className="grid grid-cols-3 gap-3 mb-6">
