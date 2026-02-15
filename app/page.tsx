@@ -78,6 +78,7 @@ const SocialMediaCards = dynamic(() => import("./components/SocialMediaCards"), 
 const MediaVsAudience = dynamic(() => import("./components/MediaVsAudience"), { ssr: false });
 const MentionMomentum = dynamic(() => import("./components/MentionMomentum"), { ssr: false });
 const WeekdayHeatmap = dynamic(() => import("./components/WeekdayHeatmap"), { ssr: false });
+const PrReachScore = dynamic(() => import("./components/PrReachScore"), { ssr: false });
 const ActivityFeed = dynamic(() => import("./components/ActivityFeed"), { ssr: false });
 const NextMilestoneCountdown = dynamic(() => import("./components/NextMilestoneCountdown"), { ssr: false });
 const SentimentByPlatform = dynamic(() => import("./components/SentimentByPlatform"), { ssr: false });
@@ -2098,8 +2099,25 @@ function Dashboard() {
             <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-3">📊 Share of Voice — Santos Bravos vs HYBE Latin America</p>
             <ShareOfVoice />
           </div>
-          <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-2">Daily Mention Volume</p>
-          <MentionsChart data={livePR.timeSeries} />
+          {/* PR Reach Score */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-5">
+            <div className="bg-white/[0.02] rounded-xl p-4 border border-white/[0.04] flex flex-col items-center">
+              <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-medium mb-3 self-start">🎯 PR Reach Score</p>
+              <PrReachScore
+                totalMentions={livePR.totalMentions}
+                perDay={livePR.perDay}
+                uniqueAuthors={livePR.uniqueAuthors}
+                topCountries={livePR.topCountries}
+                positivePct={liveSentiment.positive.pct}
+                negativePct={liveSentiment.negative.pct}
+                wow={livePR.wow}
+              />
+            </div>
+            <div className="lg:col-span-2">
+              <p className="text-[10px] text-neutral-500 uppercase tracking-[0.15em] font-medium mb-2">Daily Mention Volume</p>
+              <MentionsChart data={livePR.timeSeries} />
+            </div>
+          </div>
           {/* Viral Moments — spike detection timeline */}
           {livePR.timeSeries && livePR.timeSeries.length >= 3 && (
             <div className="mt-4">
