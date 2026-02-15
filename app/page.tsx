@@ -786,8 +786,20 @@ function Dashboard() {
                   <span key={tag} className="text-[10px] bg-white/[0.03] border border-white/[0.06] rounded-full px-3 py-1 text-neutral-500">{tag}</span>
                 ))}
               </div>
-              {/* Contextual info pills — latest release age + nearest milestone */}
+              {/* Contextual info pills — days active, latest release age, nearest milestone */}
               <div className="flex gap-2 flex-wrap justify-center md:justify-start mt-1">
+                {/* Days since debut */}
+                {(() => {
+                  const debutDate = new Date("2026-01-24T12:00:00");
+                  const now = new Date();
+                  const daysSinceDebut = Math.floor((now.getTime() - debutDate.getTime()) / 86400000);
+                  if (daysSinceDebut < 0) return null;
+                  return (
+                    <span className="text-[10px] bg-amber-500/10 border border-amber-500/20 rounded-full px-3 py-1 text-amber-400 font-semibold tabular-nums">
+                      📅 Day {daysSinceDebut}
+                    </span>
+                  );
+                })()}
                 {(() => {
                   const releases = RELEASES.slice().reverse().map(r => ({
                     name: r.trackName ? (r.trackName === "0% (Portuguese Version)" ? "0% (PT)" : r.trackName) : r.name.split(" ").pop()!,
