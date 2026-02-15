@@ -43,6 +43,7 @@ import useSectionHash from "./components/useSectionHash";
 import { useFocusMode, FocusOverlay } from "./components/FocusMode";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import TopLoadingBar from "./components/TopLoadingBar";
 
 // Dynamic imports — lazy-loaded below-fold components for faster initial page load
 const StreamingCharts = dynamic(() => import("./components/StreamingCharts"), { ssr: false });
@@ -516,6 +517,8 @@ function Dashboard() {
 
   return (
     <main id="dashboard-root" className="min-h-screen">
+      {/* Top loading bar — shows during date transitions and data fetches */}
+      <TopLoadingBar loading={dateLoading} />
       {/* Focus mode overlay */}
       <FocusOverlay active={focus.active} sectionId={focus.sectionId} title={focus.title} onExit={focus.exit} />
       {/* Dynamic favicon — shows composite score in browser tab */}

@@ -1050,3 +1050,13 @@ a:focus-visible {
     display: none;
   }
 }
+
+/* Top Loading Bar — indeterminate progress animation */
+@keyframes top-loading-bar {
+  0% { transform: translateX(-100%); width: 40%; }
+  50% { width: 60%; }
+  100% { transform: translateX(300%); width: 40%; }
+}
+.animate-top-loading-bar {
+  animation: top-loading-bar 1.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}

@@ -38,6 +38,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <head>
         <meta name="theme-color" content="#7c3aed" />
+        {/* Resource hints for faster external API connections */}
+        <link rel="preconnect" href="https://api.chartmetric.com" />
+        <link rel="preconnect" href="https://api.meltwater.com" />
+        <link rel="preconnect" href="https://qaplxlmlxsfhloxfhhhy.supabase.co" />
+        <link rel="preconnect" href="https://open.spotify.com" />
+        <link rel="dns-prefetch" href="https://api.chartmetric.com" />
+        <link rel="dns-prefetch" href="https://api.meltwater.com" />
+        <link rel="dns-prefetch" href="https://qaplxlmlxsfhloxfhhhy.supabase.co" />
+        <link rel="dns-prefetch" href="https://www.googleapis.com" />
+        <link rel="dns-prefetch" href="https://open.spotify.com" />
       </head>
       <body className="antialiased min-h-screen">
         <div className="ambient-orbs" aria-hidden="true"><div className="ambient-orb-3" /></div>
