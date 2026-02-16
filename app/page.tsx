@@ -47,7 +47,6 @@ import { useRouter } from "next/navigation";
 import TopLoadingBar from "./components/TopLoadingBar";
 
 // Dynamic imports — lazy-loaded below-fold components for faster initial page load
-const StreamingCharts = dynamic(() => import("./components/StreamingCharts"), { ssr: false });
 const SocialChart = dynamic(() => import("./components/SocialChart"), { ssr: false });
 const GeoChart = dynamic(() => import("./components/GeoChart").then(m => ({ default: m.default })), { ssr: false });
 const GeoProgressBarsLazy = dynamic(() => import("./components/GeoChart").then(m => ({ default: m.GeoProgressBars })), { ssr: false });
@@ -56,88 +55,50 @@ const SentimentDonut = dynamic(() => import("./components/SentimentDonut"), { ss
 const ViralityChart = dynamic(() => import("./components/ViralityChart"), { ssr: false });
 const ViralityRatio = dynamic(() => import("./components/ViralityRatio"), { ssr: false });
 const SourceDonut = dynamic(() => import("./components/SourceDonut"), { ssr: false });
-const KeyHighlights = dynamic(() => import("./components/KeyHighlights"), { ssr: false });
-const GrowthVelocity = dynamic(() => import("./components/GrowthVelocity"), { ssr: false });
 const SectionNav = dynamic(() => import("./components/SectionNav"), { ssr: false });
-const PlatformDistribution = dynamic(() => import("./components/PlatformDistribution"), { ssr: false });
+const ExecutiveOneLiner = dynamic(() => import("./components/ExecutiveOneLiner"), { ssr: false });
+const MomentumArrows = dynamic(() => import("./components/MomentumArrows"), { ssr: false });
+const SocialMediaCards = dynamic(() => import("./components/SocialMediaCards"), { ssr: false });
+const MemberBuzz = dynamic(() => import("./components/MemberBuzz"), { ssr: false });
+const PrInsights = dynamic(() => import("./components/PrInsights"), { ssr: false });
+const PrReachScore = dynamic(() => import("./components/PrReachScore"), { ssr: false });
+const SentimentShift = dynamic(() => import("./components/SentimentShift"), { ssr: false });
 const PlatformSync = dynamic(() => import("./components/PlatformSync"), { ssr: false });
 const PlatformGrowthRace = dynamic(() => import("./components/PlatformGrowthRace"), { ssr: false });
 const SentimentGauge = dynamic(() => import("./components/SentimentGauge"), { ssr: false });
-const TrackRadar = dynamic(() => import("./components/TrackRadar"), { ssr: false });
-const ContentHeatmap = dynamic(() => import("./components/ContentHeatmap"), { ssr: false });
-const MemberBuzz = dynamic(() => import("./components/MemberBuzz"), { ssr: false });
 const CopySummary = dynamic(() => import("./components/CopySummary"), { ssr: false });
 const SentimentTimeline = dynamic(() => import("./components/SentimentTimeline"), { ssr: false });
-const AudienceFunnel = dynamic(() => import("./components/AudienceFunnel"), { ssr: false });
 const DataSourcesStatus = dynamic(() => import("./components/DataSourcesStatus"), { ssr: false });
-const MilestonesTracker = dynamic(() => import("./components/MilestonesTracker"), { ssr: false });
 const KeyboardShortcuts = dynamic(() => import("./components/KeyboardShortcuts"), { ssr: false });
 const GeoTreemap = dynamic(() => import("./components/GeoTreemap"), { ssr: false });
-const DailyComparisonChart = dynamic(() => import("./components/DailyComparisonChart"), { ssr: false });
-const DailyRevenue = dynamic(() => import("./components/DailyRevenue"), { ssr: false });
 const TopInfluencers = dynamic(() => import("./components/TopInfluencers"), { ssr: false });
-const AnalystNote = dynamic(() => import("./components/AnalystNote"), { ssr: false });
 const ExportCSV = dynamic(() => import("./components/ExportCSV"), { ssr: false });
 const RegionalBreakdown = dynamic(() => import("./components/RegionalBreakdown"), { ssr: false });
-const PerformanceScore = dynamic(() => import("./components/PerformanceScore"), { ssr: false });
 const WowComparison = dynamic(() => import("./components/WowComparison"), { ssr: false });
 const MobileNav = dynamic(() => import("./components/MobileNav"), { ssr: false });
 const CommandPalette = dynamic(() => import("./components/CommandPalette"), { ssr: false });
 const TopTopics = dynamic(() => import("./components/TopTopics"), { ssr: false });
-const ExecutiveOneLiner = dynamic(() => import("./components/ExecutiveOneLiner"), { ssr: false });
-const ReleaseTimeline = dynamic(() => import("./components/ReleaseTimeline"), { ssr: false });
-const InsightCarousel = dynamic(() => import("./components/InsightCarousel"), { ssr: false });
-const SocialMediaCards = dynamic(() => import("./components/SocialMediaCards"), { ssr: false });
 const MediaVsAudience = dynamic(() => import("./components/MediaVsAudience"), { ssr: false });
 const MentionMomentum = dynamic(() => import("./components/MentionMomentum"), { ssr: false });
 const WeekdayHeatmap = dynamic(() => import("./components/WeekdayHeatmap"), { ssr: false });
-const PrReachScore = dynamic(() => import("./components/PrReachScore"), { ssr: false });
-const ActivityFeed = dynamic(() => import("./components/ActivityFeed"), { ssr: false });
-const NextMilestoneCountdown = dynamic(() => import("./components/NextMilestoneCountdown"), { ssr: false });
 const SentimentByPlatform = dynamic(() => import("./components/SentimentByPlatform"), { ssr: false });
 const WordCloud = dynamic(() => import("./components/WordCloud"), { ssr: false });
 const VelocityMeter = dynamic(() => import("./components/VelocityMeter"), { ssr: false });
-const HistoricalTrends = dynamic(() => import("./components/HistoricalTrends"), { ssr: false });
-const TrackHistory = dynamic(() => import("./components/TrackHistory"), { ssr: false });
-const YouTubeHistory = dynamic(() => import("./components/YouTubeHistory"), { ssr: false });
-const SocialHistory = dynamic(() => import("./components/SocialHistory"), { ssr: false });
-const MemberHistory = dynamic(() => import("./components/MemberHistory"), { ssr: false });
-const ViralityHistory = dynamic(() => import("./components/ViralityHistory"), { ssr: false });
-const ReportCalendar = dynamic(() => import("./components/ReportCalendar"), { ssr: false });
 const QuickShare = dynamic(() => import("./components/QuickShare"), { ssr: false });
 const ScreenshotButton = dynamic(() => import("./components/ScreenshotButton"), { ssr: false });
-const EngagementDepth = dynamic(() => import("./components/EngagementDepth"), { ssr: false });
-const StreamProjections = dynamic(() => import("./components/StreamProjections"), { ssr: false });
-const ContentEfficiency = dynamic(() => import("./components/ContentEfficiency"), { ssr: false });
-const ReleasePacing = dynamic(() => import("./components/ReleasePacing"), { ssr: false });
-const AudienceHealth = dynamic(() => import("./components/AudienceHealth"), { ssr: false });
 const ReachDiversity = dynamic(() => import("./components/ReachDiversity"), { ssr: false });
 const MarketPenetration = dynamic(() => import("./components/MarketPenetration"), { ssr: false });
-const SpotifyEmbed = dynamic(() => import("./components/SpotifyEmbed"), { ssr: false });
-const NotableChanges = dynamic(() => import("./components/NotableChanges"), { ssr: false });
-const WeeklyWins = dynamic(() => import("./components/WeeklyWins"), { ssr: false });
-const RiskRadar = dynamic(() => import("./components/RiskRadar"), { ssr: false });
-const ActionItems = dynamic(() => import("./components/ActionItems"), { ssr: false });
-const ComparisonTable = dynamic(() => import("./components/ComparisonTable"), { ssr: false });
 const ShareOfVoice = dynamic(() => import("./components/ShareOfVoice"), { ssr: false });
-const PrInsights = dynamic(() => import("./components/PrInsights"), { ssr: false });
 const MentionCalendar = dynamic(() => import("./components/MentionCalendar"), { ssr: false });
-const CulturalAffinity = dynamic(() => import("./components/CulturalAffinity"), { ssr: false });
-const DebutBenchmark = dynamic(() => import("./components/DebutBenchmark"), { ssr: false });
 const MetricAlerts = dynamic(() => import("./components/MetricAlerts"), { ssr: false });
 const PrintQR = dynamic(() => import("./components/PrintQR"), { ssr: false });
-const SectionDivider = dynamic(() => import("./components/SectionDivider"), { ssr: false });
-const RevenueEstimate = dynamic(() => import("./components/RevenueEstimate"), { ssr: false });
 const HeroScoreBadge = dynamic(() => import("./components/HeroScoreBadge"), { ssr: false });
 const SentimentWeekday = dynamic(() => import("./components/SentimentWeekday"), { ssr: false });
 const GrowthStreak = dynamic(() => import("./components/GrowthStreak"), { ssr: false });
-const TrackMomentum = dynamic(() => import("./components/TrackMomentum"), { ssr: false });
-const MomentumArrows = dynamic(() => import("./components/MomentumArrows"), { ssr: false });
 const ViralMoments = dynamic(() => import("./components/ViralMoments"), { ssr: false });
 const PulseGrid = dynamic(() => import("./components/PulseGrid"), { ssr: false });
 const GeoMap = dynamic(() => import("./components/GeoMap"), { ssr: false });
 const NavBreadcrumb = dynamic(() => import("./components/NavBreadcrumb"), { ssr: false });
-const SentimentShift = dynamic(() => import("./components/SentimentShift"), { ssr: false });
 const SectionMinimap = dynamic(() => import("./components/SectionMinimap"), { ssr: false });
 const QuickPeek = dynamic(() => import("./components/QuickPeek"), { ssr: false });
 
@@ -1189,376 +1150,18 @@ function Dashboard() {
         {/* Data Freshness Warning */}
         <DataFreshness reportDate={reportDate} />
 
-        {/* Release Timeline */}
-        <div id="release-timeline" className="scroll-mt-16" />
-        <SectionErrorBoundary sectionName="Release Timeline">
-        <AnimatedSection>
-          <section className="glass-hybe rounded-2xl p-6">
-            <div className="flex items-center gap-3 mb-5">
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center text-xs font-black text-white">📅</div>
-              <div>
-                <h2 className="text-sm font-bold text-white">Release Timeline</h2>
-                <p className="text-[10px] text-neutral-500">Content rollout since debut</p>
-              </div>
-            </div>
-            <ReleaseTimeline />
-          </section>
-        </AnimatedSection>
-        </SectionErrorBoundary>
 
-                {/* Insight Carousel — auto-cycling data insights */}
-        <InsightCarousel
-          listeners={liveListeners}
-          listenersPrior={bp.spotifyMonthlyListeners.prior}
-          tracks={liveTrackStreams.map(t => ({ name: t.name, streams: t.spotifyStreams.current, prior: t.spotifyStreams.prior }))}
-          ytVideos={liveYTVideos.map(v => ({ name: v.name.replace(/ (Performance Video|Official MV|Lyric Video|Debut Visualizer)/, ""), views: v.views.current, prior: v.views.prior }))}
-          snsFootprint={liveSocialMedia.totalFootprint.current}
-          snsPrior={liveSocialMedia.totalFootprint.prior}
-          topCountry={geoCountries[0] ? { name: geoCountries[0].name, flag: geoCountries[0].flag, pct: (geoCountries[0].listeners / geoCountries.reduce((s: number, c: any) => s + c.listeners, 0)) * 100 } : null}
-          prMentions={livePR.totalMentions}
-          prPerDay={livePR.perDay}
-          netSentiment={liveSentiment.positive.pct - liveSentiment.negative.pct}
-          topHashtag={liveSentiment.topHashtags?.[0]?.tag ?? null}
-        />
 
-        {/* Activity Feed — timeline of key events */}
-        <AnimatedSection>
-          <ActivityFeed
-            listeners={liveListeners}
-            listenersPrior={bp.spotifyMonthlyListeners.prior}
-            tracks={liveTrackStreams.map(t => ({ name: t.name, streams: t.spotifyStreams.current, prior: t.spotifyStreams.prior }))}
-            ytSubscribers={liveYTSubscribers}
-            snsFootprint={liveSocialMedia.totalFootprint.current}
-            snsPrior={liveSocialMedia.totalFootprint.prior}
-            prMentions={livePR.totalMentions}
-            prPerDay={livePR.perDay}
-            sentimentPositive={liveSentiment.positive.pct}
-            sentimentNegative={liveSentiment.negative.pct}
-            topHashtag={liveSentiment.topHashtags?.[0]?.tag ?? null}
-            reportDate={reportDate}
-          />
-        </AnimatedSection>
 
-        {/* Next Milestone Countdown — live ticking ETA */}
-        <NextMilestoneCountdown milestones={[
-          { label: "Spotify Monthly Listeners", current: liveListeners, target: 500000, emoji: "🎧", color: "#1DB954", dailyGrowth: bp.spotifyMonthlyListeners.prior ? (liveListeners - bp.spotifyMonthlyListeners.prior) / 5 : null },
-          { label: "0% — 10M Streams", current: liveTrackStreams[0]?.spotifyStreams.current ?? 0, target: 10000000, emoji: "💿", color: "#8b5cf6", dailyGrowth: bp.tracks[0]?.spotifyStreams.prior ? ((liveTrackStreams[0]?.spotifyStreams.current ?? 0) - bp.tracks[0].spotifyStreams.prior) / 5 : null },
-          { label: "KAWASAKI — 2M Streams", current: liveTrackStreams[2]?.spotifyStreams.current ?? 0, target: 2000000, emoji: "🏍️", color: "#ec4899", dailyGrowth: bp.tracks[2]?.spotifyStreams.prior ? ((liveTrackStreams[2]?.spotifyStreams.current ?? 0) - bp.tracks[2].spotifyStreams.prior) / 5 : null },
-          { label: "SNS Footprint — 2M", current: liveSocialMedia.totalFootprint.current, target: 2000000, emoji: "📱", color: "#06b6d4", dailyGrowth: liveSocialMedia.totalFootprint.prior ? (liveSocialMedia.totalFootprint.current - liveSocialMedia.totalFootprint.prior) / 5 : null },
-          { label: "YouTube Subscribers — 500K", current: liveYTSubscribers, target: 500000, emoji: "▶️", color: "#ef4444", dailyGrowth: null },
-          { label: "Cross-Platform — 50M", current: bp.totalCrossPlatformStreams.current, target: 50000000, emoji: "🌎", color: "#f59e0b", dailyGrowth: bp.totalCrossPlatformStreams.prior ? (bp.totalCrossPlatformStreams.current - bp.totalCrossPlatformStreams.prior) / 5 : null },
-        ]} />
 
-        {/* Key Highlights - Executive Summary */}
-        <div id="highlights" className="scroll-mt-16" />
-        <SectionErrorBoundary sectionName="Key Highlights">
-        <AnimatedSection>
-          <KeyHighlights
-            spotifyListeners={{ current: liveListeners, prior: bp.spotifyMonthlyListeners.prior }}
-            tracks={liveTrackStreams.map(t => ({ name: t.name, current: t.spotifyStreams.current, prior: t.spotifyStreams.prior }))}
-            ytVideos={liveYTVideos.map(v => ({ name: v.name, current: v.views.current, prior: v.views.prior }))}
-            snsTotal={{ current: liveSocialMedia.totalFootprint.current, prior: liveSocialMedia.totalFootprint.prior }}
-            totalStreams={{ current: bp.totalCrossPlatformStreams.current, prior: bp.totalCrossPlatformStreams.prior }}
-            dailyTopTrack={dailyStreams.length > 0 ? { name: dailyStreams[0].name, streams: dailyStreams[0].streams } : null}
-            mentionVolume={livePR.totalMentions}
-            sentimentPositivePct={liveSentiment.positive.pct}
-            topMarket={geoCountries[0]?.name || ""}
-            reportDate={reportDate}
-            priorDate={priorDate}
-          />
-        </AnimatedSection>
-        </SectionErrorBoundary>
 
-        {/* Notable Changes */}
-        <SectionErrorBoundary sectionName="Notable Changes">
-        <AnimatedSection>
-          <NotableChanges changes={[
-            ...(bp.spotifyMonthlyListeners.prior ? [{ metric: "Spotify Listeners", current: liveListeners, prior: bp.spotifyMonthlyListeners.prior, pctChange: ((liveListeners - bp.spotifyMonthlyListeners.prior) / bp.spotifyMonthlyListeners.prior) * 100, category: "streaming" as const, sectionId: "business" }] : []),
-            ...(bp.spotifyFollowers?.prior ? [{ metric: "Spotify Followers", current: liveFollowers, prior: bp.spotifyFollowers.prior, pctChange: ((liveFollowers - bp.spotifyFollowers.prior) / bp.spotifyFollowers.prior) * 100, category: "streaming" as const, sectionId: "business" }] : []),
-            ...liveTrackStreams.filter(t => t.spotifyStreams.prior).map(t => ({ metric: `${t.name} Streams`, current: t.spotifyStreams.current, prior: t.spotifyStreams.prior!, pctChange: ((t.spotifyStreams.current - t.spotifyStreams.prior!) / t.spotifyStreams.prior!) * 100, category: "streaming" as const, sectionId: "charts" })),
-            ...liveYTVideos.filter(v => v.views.prior).map(v => ({ metric: `${v.name.replace(/ (Performance Video|Official MV|Lyric Video|Debut Visualizer)/, "")} YT`, current: v.views.current, prior: v.views.prior!, pctChange: ((v.views.current - v.views.prior!) / v.views.prior!) * 100, category: "youtube" as const, sectionId: "business" })),
-            ...liveSocialMedia.platforms.filter(p => p.prior).map(p => ({ metric: `${p.platform} Followers`, current: p.current, prior: p.prior!, pctChange: ((p.current - p.prior!) / p.prior!) * 100, category: "social" as const, sectionId: "social" })),
-            ...(liveSocialMedia.totalFootprint.prior ? [{ metric: "Total SNS Footprint", current: liveSocialMedia.totalFootprint.current, prior: liveSocialMedia.totalFootprint.prior, pctChange: ((liveSocialMedia.totalFootprint.current - liveSocialMedia.totalFootprint.prior) / liveSocialMedia.totalFootprint.prior) * 100, category: "social" as const, sectionId: "social" }] : []),
-            ...(audioVirality.totalAudioViews.prior ? [{ metric: "Audio Views", current: audioVirality.totalAudioViews.current, prior: audioVirality.totalAudioViews.prior, pctChange: ((audioVirality.totalAudioViews.current - audioVirality.totalAudioViews.prior) / audioVirality.totalAudioViews.prior) * 100, category: "virality" as const, sectionId: "virality" }] : []),
-          ]} threshold={3} />
-        </AnimatedSection>
-        </SectionErrorBoundary>
 
-        {/* All Metrics Comparison Table */}
-        <div id="comparison" className="scroll-mt-16" />
-        <SectionErrorBoundary sectionName="Comparison Table">
-        <AnimatedSection>
-        <section className="glass-hybe rounded-2xl p-6">
-          <CollapsibleSection id="comparison-table" number="📋" title="All Metrics at a Glance" subtitle="Sortable · Filterable" color="bg-gradient-to-br from-slate-500 to-zinc-500">
-          <p className="text-[10px] text-neutral-500 mb-4">Every tracked metric in one table. Click column headers to sort. Filter by category.</p>
-          <ComparisonTable rows={[
-            ...(bp.spotifyMonthlyListeners.prior != null ? [{ metric: "Spotify Monthly Listeners", category: "spotify", current: liveListeners, prior: bp.spotifyMonthlyListeners.prior, change: liveListeners - bp.spotifyMonthlyListeners.prior, changePct: ((liveListeners - bp.spotifyMonthlyListeners.prior) / bp.spotifyMonthlyListeners.prior) * 100 }] : [{ metric: "Spotify Monthly Listeners", category: "spotify", current: liveListeners, prior: null, change: null, changePct: null }]),
-            ...(bp.spotifyFollowers?.prior != null ? [{ metric: "Spotify Followers", category: "spotify", current: liveFollowers, prior: bp.spotifyFollowers.prior, change: liveFollowers - bp.spotifyFollowers.prior, changePct: ((liveFollowers - bp.spotifyFollowers.prior) / bp.spotifyFollowers.prior) * 100 }] : [{ metric: "Spotify Followers", category: "spotify", current: liveFollowers, prior: null, change: null, changePct: null }]),
-            { metric: "Spotify Popularity", category: "spotify", current: livePopularity, prior: bp.spotifyPopularity.prior, change: bp.spotifyPopularity.prior != null ? livePopularity - bp.spotifyPopularity.prior : null, changePct: bp.spotifyPopularity.prior ? ((livePopularity - bp.spotifyPopularity.prior) / bp.spotifyPopularity.prior) * 100 : null },
-            ...liveTrackStreams.map(t => ({ metric: `${t.name} — Spotify Streams`, category: "spotify", current: t.spotifyStreams.current, prior: t.spotifyStreams.prior, change: t.spotifyStreams.prior != null ? t.spotifyStreams.current - t.spotifyStreams.prior : null, changePct: t.spotifyStreams.prior ? ((t.spotifyStreams.current - t.spotifyStreams.prior) / t.spotifyStreams.prior) * 100 : null })),
-            { metric: "Cross-Platform Streams", category: "spotify", current: bp.totalCrossPlatformStreams.current, prior: bp.totalCrossPlatformStreams.prior, change: bp.totalCrossPlatformStreams.prior != null ? bp.totalCrossPlatformStreams.current - bp.totalCrossPlatformStreams.prior : null, changePct: bp.totalCrossPlatformStreams.prior ? ((bp.totalCrossPlatformStreams.current - bp.totalCrossPlatformStreams.prior) / bp.totalCrossPlatformStreams.prior) * 100 : null },
-            ...liveYTVideos.map(v => ({ metric: `${v.name.replace(/ (Performance Video|Official MV|Lyric Video|Debut Visualizer)/, "")} — YT Views`, category: "youtube", current: v.views.current, prior: v.views.prior, change: v.views.prior != null ? v.views.current - v.views.prior : null, changePct: v.views.prior ? ((v.views.current - v.views.prior) / v.views.prior) * 100 : null })),
-            ...liveSocialMedia.platforms.map(p => ({ metric: `${p.platform} Followers`, category: "social", current: p.current, prior: p.prior, change: p.prior != null ? p.current - p.prior : null, changePct: p.prior ? ((p.current - p.prior) / p.prior) * 100 : null })),
-            { metric: "Total SNS Footprint", category: "social", current: liveSocialMedia.totalFootprint.current, prior: liveSocialMedia.totalFootprint.prior, change: liveSocialMedia.totalFootprint.prior != null ? liveSocialMedia.totalFootprint.current - liveSocialMedia.totalFootprint.prior : null, changePct: liveSocialMedia.totalFootprint.prior ? ((liveSocialMedia.totalFootprint.current - liveSocialMedia.totalFootprint.prior) / liveSocialMedia.totalFootprint.prior) * 100 : null },
-            { metric: "Total Audio Views", category: "virality", current: audioVirality.totalAudioViews.current, prior: audioVirality.totalAudioViews.prior, change: audioVirality.totalAudioViews.prior != null ? audioVirality.totalAudioViews.current - audioVirality.totalAudioViews.prior : null, changePct: audioVirality.totalAudioViews.prior ? ((audioVirality.totalAudioViews.current - audioVirality.totalAudioViews.prior) / audioVirality.totalAudioViews.prior) * 100 : null },
-            ...audioVirality.tracks.map((t: any) => ({ metric: `${t.name} TT Creates`, category: "virality" as const, current: t.tiktokCreates ?? 0, prior: t.priorTiktokCreates ?? null, change: t.priorTiktokCreates != null ? (t.tiktokCreates ?? 0) - t.priorTiktokCreates : null, changePct: t.priorTiktokCreates ? (((t.tiktokCreates ?? 0) - t.priorTiktokCreates) / t.priorTiktokCreates) * 100 : null })),
-            ...audioVirality.tracks.map((t: any) => ({ metric: `${t.name} IG Creates`, category: "virality" as const, current: t.igCreates ?? 0, prior: t.priorIgCreates ?? null, change: t.priorIgCreates != null ? (t.igCreates ?? 0) - t.priorIgCreates : null, changePct: t.priorIgCreates ? (((t.igCreates ?? 0) - t.priorIgCreates) / t.priorIgCreates) * 100 : null })),
-            { metric: "Total Member IG Followers", category: "social", current: totalMemberFollowers.current, prior: totalMemberFollowers.prior, change: totalMemberFollowers.prior != null ? totalMemberFollowers.current - totalMemberFollowers.prior : null, changePct: totalMemberFollowers.prior ? ((totalMemberFollowers.current - totalMemberFollowers.prior) / totalMemberFollowers.prior) * 100 : null },
-            { metric: "PR Mentions (7d)", category: "media", current: livePR.totalMentions, prior: null, change: null, changePct: livePR.wow?.changePct ?? null },
-            { metric: "Unique PR Authors", category: "media", current: livePR.uniqueAuthors, prior: null, change: null, changePct: null },
-          ]} />
-          </CollapsibleSection>
-        </section>
-        </AnimatedSection>
-        </SectionErrorBoundary>
 
-        {/* Analyst Note */}
-        <SectionErrorBoundary sectionName="Analyst Note">
-        <AnimatedSection>
-          <AnalystNote
-            reportDate={reportDate}
-            spotifyListeners={{ current: liveListeners, prior: bp.spotifyMonthlyListeners.prior }}
-            tracks={liveTrackStreams.map(t => ({ name: t.name, current: t.spotifyStreams.current, prior: t.spotifyStreams.prior }))}
-            ytSubscribers={liveYTSubscribers}
-            snsTotal={{ current: liveSocialMedia.totalFootprint.current, prior: liveSocialMedia.totalFootprint.prior }}
-            totalStreams={{ current: bp.totalCrossPlatformStreams.current, prior: bp.totalCrossPlatformStreams.prior }}
-            mentionVolume={livePR.totalMentions}
-            sentimentPositive={liveSentiment.positive.pct}
-            sentimentNegative={liveSentiment.negative.pct}
-            topMarket={geoCountries[0]?.name || ""}
-            dailyTopTrack={dailyStreams.length > 0 ? { name: dailyStreams[0].name, streams: dailyStreams[0].streams } : null}
-          />
-        </AnimatedSection>
-        </SectionErrorBoundary>
 
-        {/* Weekly Wins */}
-        <SectionErrorBoundary sectionName="Weekly Wins">
-        <AnimatedSection>
-          <WeeklyWins
-            listeners={{ current: liveListeners, prior: bp.spotifyMonthlyListeners.prior }}
-            followers={liveFollowers}
-            tracks={liveTrackStreams.map(t => ({ name: t.name, current: t.spotifyStreams.current, prior: t.spotifyStreams.prior }))}
-            ytViews={liveYTVideos.map(v => ({ name: v.name, current: v.views.current, prior: v.views.prior }))}
-            ytSubscribers={liveYTSubscribers}
-            snsFootprint={{ current: liveSocialMedia.totalFootprint.current, prior: liveSocialMedia.totalFootprint.prior }}
-            totalStreams={bp.totalCrossPlatformStreams.current}
-            mentions={livePR.totalMentions}
-            sentiment={{ positive: liveSentiment.positive.pct, negative: liveSentiment.negative.pct }}
-            audienceStats={{ streamsPerListener: audienceStats.streamsPerListener, saves: audienceStats.saves, streams: audienceStats.streams }}
-          />
-        </AnimatedSection>
-        </SectionErrorBoundary>
 
-        {/* Recommended Actions */}
-        <SectionErrorBoundary sectionName="Recommended Actions">
-        <AnimatedSection>
-          <ActionItems
-            listeners={liveListeners}
-            listenersPrior={bp.spotifyMonthlyListeners.prior}
-            totalStreams={bp.totalCrossPlatformStreams.current}
-            snsFootprint={liveSocialMedia.totalFootprint.current}
-            snsFootprintPrior={liveSocialMedia.totalFootprint.prior}
-            ytSubscribers={liveYTSubscribers}
-            sentimentPositive={liveSentiment.positive.pct}
-            sentimentNegative={liveSentiment.negative.pct}
-            mentionVolume={livePR.totalMentions}
-            tracks={liveTrackStreams.map(t => ({ name: t.name, current: t.spotifyStreams.current, prior: t.spotifyStreams.prior }))}
-            ytVideos={liveYTVideos.map(v => ({ name: v.name, current: v.views.current, prior: v.views.prior }))}
-            geoTop={geoCountries.slice(0, 5).map(c => ({ name: c.name, listeners: c.listeners }))}
-            dailyTopTrack={dailyStreams.length > 0 ? { name: dailyStreams.sort((a, b) => b.streams - a.streams)[0].name, streams: dailyStreams.sort((a, b) => b.streams - a.streams)[0].streams } : null}
-            spotifyFollowers={liveFollowers}
-            spotifyPopularity={bp.spotifyPopularity?.current ?? 0}
-          />
-        </AnimatedSection>
-        </SectionErrorBoundary>
 
-        {/* Risk Radar */}
-        <SectionErrorBoundary sectionName="Risk Radar">
-        <AnimatedSection>
-          <RiskRadar
-            listeners={{ current: liveListeners, prior: bp.spotifyMonthlyListeners.prior }}
-            tracks={liveTrackStreams.map(t => ({ name: t.name, current: t.spotifyStreams.current, prior: t.spotifyStreams.prior }))}
-            ytViews={liveYTVideos.map(v => ({ name: v.name, current: v.views.current, prior: v.views.prior }))}
-            snsFootprint={{ current: liveSocialMedia.totalFootprint.current, prior: liveSocialMedia.totalFootprint.prior }}
-            sentiment={{ positive: liveSentiment.positive.pct, negative: liveSentiment.negative.pct, neutral: liveSentiment.neutral.pct }}
-            geoConcentration={(() => {
-              const totalListeners = geoCountries.reduce((s, c) => s + c.listeners, 0) || 1;
-              const sorted = [...geoCountries].sort((a, b) => b.listeners - a.listeners);
-              return {
-                top1Pct: (sorted[0]?.listeners || 0) / totalListeners * 100,
-                top3Pct: sorted.slice(0, 3).reduce((s, c) => s + c.listeners, 0) / totalListeners * 100,
-              };
-            })()}
-            mentions={livePR.wow ? { current: livePR.totalMentions, wowChangePct: livePR.wow.changePct } : undefined}
-            dailyStreams={dailyStreams.map(t => ({ name: t.name, streams: t.streams, listeners: t.listeners }))}
-          />
-        </AnimatedSection>
-        </SectionErrorBoundary>
 
-        {/* Debut Benchmark Comparison */}
-        <div id="benchmark" className="scroll-mt-16" />
-        <SectionErrorBoundary sectionName="Debut Benchmark">
-        <AnimatedSection>
-        <section className="glass-hybe rounded-2xl p-5 sm:p-6">
-          <CollapsibleSection id="benchmark" number="📏" title="Debut Benchmark" subtitle={`Day ${(() => { const debut = new Date('2026-01-24T12:00:00'); const now = new Date(); return Math.floor((now.getTime() - debut.getTime()) / 86400000); })()} vs. Comparable LATAM Debuts`} color="bg-gradient-to-br from-amber-500 to-orange-500">
-            <DebutBenchmark
-              daysSinceDebut={(() => { const debut = new Date('2026-01-24T12:00:00'); const now = new Date(); return Math.floor((now.getTime() - debut.getTime()) / 86400000); })()}
-              spotifyListeners={liveListeners}
-              spotifyFollowers={bp.spotifyFollowers.current}
-              totalStreams={bp.totalCrossPlatformStreams.current}
-              snsFootprint={liveSocialMedia.totalFootprint.current}
-              ytSubscribers={liveYTSubscribers}
-              mediaMentions={livePR.totalMentions}
-            />
-          </CollapsibleSection>
-        </section>
-        </AnimatedSection>
-        </SectionErrorBoundary>
 
-        {/* Performance Score */}
-        <div id="score" className="scroll-mt-16" />
-        <SectionErrorBoundary sectionName="Performance Score">
-        <AnimatedSection>
-          <PerformanceScore metrics={(() => {
-            // Streaming growth (listener growth %)
-            const listenerGrowth = bp.spotifyMonthlyListeners.prior
-              ? ((liveListeners - bp.spotifyMonthlyListeners.prior) / bp.spotifyMonthlyListeners.prior) * 100
-              : 0;
-            const streamingScore = Math.min(100, Math.max(0, 50 + listenerGrowth * 8));
-
-            // Social reach (SNS footprint vs 2M target)
-            const snsScore = Math.min(100, (liveSocialMedia.totalFootprint.current / 2000000) * 100);
-
-            // Content velocity (track growth avg)
-            const trackGrowths = liveTrackStreams.filter(t => t.spotifyStreams.prior).map(t =>
-              ((t.spotifyStreams.current - t.spotifyStreams.prior!) / t.spotifyStreams.prior!) * 100
-            );
-            const avgTrackGrowth = trackGrowths.length > 0 ? trackGrowths.reduce((a, b) => a + b, 0) / trackGrowths.length : 0;
-            const contentScore = Math.min(100, Math.max(0, 40 + avgTrackGrowth * 4));
-
-            // Media presence (mentions volume — 1000/day = 100 score)
-            const mediaScore = Math.min(100, (livePR.perDay / 1000) * 100);
-
-            // Sentiment health (net sentiment mapped: -100→0, 0→50, +100→100)
-            const netSentiment = liveSentiment.positive.pct - liveSentiment.negative.pct;
-            const sentimentScore = Math.min(100, Math.max(0, 50 + netSentiment));
-
-            // Milestone progress (avg of all milestones)
-            const milestoneTargets = [
-              { current: liveListeners, target: 500000 },
-              { current: liveTrackStreams[0]?.spotifyStreams.current ?? 0, target: 10000000 },
-              { current: liveSocialMedia.totalFootprint.current, target: 2000000 },
-              { current: liveYTSubscribers, target: 500000 },
-            ];
-            const milestoneScore = Math.round(milestoneTargets.reduce((s, m) => s + Math.min(100, (m.current / m.target) * 100), 0) / milestoneTargets.length);
-
-            // Prior period scores (using prior values where available)
-            const priorSnsScore = liveSocialMedia.totalFootprint.prior
-              ? Math.min(100, (liveSocialMedia.totalFootprint.prior / 2000000) * 100)
-              : undefined;
-            const priorMediaScore = livePR.wow?.priorTotal
-              ? Math.min(100, ((livePR.wow.priorTotal / 7) / 1000) * 100)
-              : undefined;
-            const priorMilestoneTargets = [
-              { current: bp.spotifyMonthlyListeners.prior ?? liveListeners, target: 500000 },
-              { current: bp.tracks[0]?.spotifyStreams.prior ?? 0, target: 10000000 },
-              { current: liveSocialMedia.totalFootprint.prior ?? liveSocialMedia.totalFootprint.current, target: 2000000 },
-              { current: liveSocialMedia.platforms.find(p => p.platform === "YouTube")?.prior ?? liveYTSubscribers, target: 500000 },
-            ];
-            const priorMilestoneScore = Math.round(priorMilestoneTargets.reduce((s, m) => s + Math.min(100, (m.current / m.target) * 100), 0) / priorMilestoneTargets.length);
-
-            return [
-              { label: "Streaming Growth", score: Math.round(streamingScore), weight: 25, color: "bg-emerald-500", sectionId: "business" },
-              { label: "Social Reach", score: Math.round(snsScore), weight: 20, color: "bg-cyan-500", sectionId: "social", priorScore: priorSnsScore != null ? Math.round(priorSnsScore) : undefined },
-              { label: "Content Velocity", score: Math.round(contentScore), weight: 20, color: "bg-violet-500", sectionId: "charts" },
-              { label: "Media Presence", score: Math.round(mediaScore), weight: 15, color: "bg-pink-500", sectionId: "pr", priorScore: priorMediaScore != null ? Math.round(priorMediaScore) : undefined },
-              { label: "Sentiment Health", score: Math.round(sentimentScore), weight: 10, color: "bg-amber-500", sectionId: "sentiment" },
-              { label: "Milestone Progress", score: milestoneScore, weight: 10, color: "bg-indigo-500", sectionId: "milestones", priorScore: priorMilestoneScore },
-            ];
-          })()} />
-        </AnimatedSection>
-        </SectionErrorBoundary>
-
-        {/* Milestones & Targets */}
-        <div id="milestones" className="scroll-mt-16" />
-        <SectionErrorBoundary sectionName="Milestones">
-        <AnimatedSection>
-          <MilestonesTracker milestones={[
-            { label: "Spotify Monthly Listeners", current: liveListeners, target: 500000, prior: bp.spotifyMonthlyListeners.prior, priorDaysAgo: 5, icon: "🎧", color: "bg-gradient-to-r from-spotify to-emerald-400" },
-            { label: "0% — 10M Streams", current: liveTrackStreams[0]?.spotifyStreams.current ?? 0, target: 10000000, prior: bp.tracks[0]?.spotifyStreams.prior, priorDaysAgo: 5, icon: "💿", color: "bg-gradient-to-r from-violet-500 to-purple-400" },
-            { label: "KAWASAKI — 2M Streams", current: liveTrackStreams[2]?.spotifyStreams.current ?? 0, target: 2000000, prior: bp.tracks[2]?.spotifyStreams.prior, priorDaysAgo: 5, icon: "🏍️", color: "bg-gradient-to-r from-pink-500 to-rose-400" },
-            { label: "SNS Footprint — 2M", current: liveSocialMedia.totalFootprint.current, target: 2000000, prior: liveSocialMedia.totalFootprint.prior, priorDaysAgo: 5, icon: "📱", color: "bg-gradient-to-r from-tiktok to-cyan-400" },
-            { label: "YouTube Subscribers — 500K", current: liveYTSubscribers, target: 500000, prior: liveSocialMedia.platforms.find(p => p.platform === "YouTube")?.prior ?? null, priorDaysAgo: 5, icon: "▶️", color: "bg-gradient-to-r from-red-500 to-red-400" },
-            { label: "Cross-Platform Streams — 50M", current: bp.totalCrossPlatformStreams.current, target: 50000000, prior: bp.totalCrossPlatformStreams.prior, priorDaysAgo: 5, icon: "🌎", color: "bg-gradient-to-r from-amber-500 to-orange-400" },
-          ]} />
-        </AnimatedSection>
-        </SectionErrorBoundary>
-
-        {/* ── Divider: Executive Summary → Performance Data ── */}
-        <SectionDivider label="Performance Data" variant="violet" subtitle="Growth · Historical · Streaming · Charts" />
-
-        {/* Growth Velocity */}
-        <div id="velocity" className="scroll-mt-16" />
-        <SectionErrorBoundary sectionName="Growth Velocity">
-        <AnimatedSection>
-        <section className="glass-hybe rounded-2xl p-5 sm:p-6">
-          <CollapsibleSection id="velocity" number="📊" title="Growth Velocity" subtitle="Period-over-Period %" color="bg-gradient-to-br from-cyan-500 to-blue-500">
-          <GrowthVelocity items={[
-            ...(bp.spotifyMonthlyListeners.prior ? [{ label: "Spotify Listeners", category: "spotify" as const, pct: ((liveListeners - bp.spotifyMonthlyListeners.prior) / bp.spotifyMonthlyListeners.prior) * 100 }] : []),
-            ...liveTrackStreams.filter(t => t.spotifyStreams.prior).map(t => ({
-              label: `${t.name} Streams`,
-              category: "spotify" as const,
-              pct: ((t.spotifyStreams.current - t.spotifyStreams.prior!) / t.spotifyStreams.prior!) * 100,
-            })),
-            ...liveYTVideos.filter(v => v.views.prior).map(v => {
-              const shortName = v.name.replace(/ (Performance Video|Official MV|Lyric Video|Debut Visualizer)/, "").trim();
-              return {
-                label: `${shortName} YT`,
-                category: "youtube" as const,
-                pct: ((v.views.current - v.views.prior!) / v.views.prior!) * 100,
-              };
-            }),
-            ...liveSocialMedia.platforms.filter(p => p.prior).map(p => ({
-              label: p.platform,
-              category: "sns" as const,
-              pct: ((p.current - p.prior!) / p.prior!) * 100,
-            })),
-            ...(liveSocialMedia.totalFootprint.prior ? [{ label: "Total SNS", category: "sns" as const, pct: ((liveSocialMedia.totalFootprint.current - liveSocialMedia.totalFootprint.prior) / liveSocialMedia.totalFootprint.prior) * 100 }] : []),
-          ]} />
-          </CollapsibleSection>
-        </section>
-        </AnimatedSection>
-        </SectionErrorBoundary>
-
-        {/* Historical Trends — multi-date line chart from Supabase */}
-        <div id="historical" className="scroll-mt-16" />
-        <SectionErrorBoundary sectionName="Historical Trends">
-        <AnimatedSection>
-        <section className="glass-hybe rounded-2xl p-6">
-          <CollapsibleSection id="historical-trends" number="📈" title="Historical Trends" subtitle="All Report Dates" color="bg-gradient-to-br from-emerald-500 to-cyan-400">
-            <HistoricalTrends />
-            <div className="mt-6 pt-5 border-t border-white/[0.05]">
-              <TrackHistory />
-            </div>
-            <div className="mt-6 pt-5 border-t border-white/[0.05]">
-              <YouTubeHistory />
-            </div>
-            <div className="mt-6 pt-5 border-t border-white/[0.05]">
-              <SocialHistory />
-            </div>
-            <div className="mt-6 pt-5 border-t border-white/[0.05]">
-              <MemberHistory />
-            </div>
-            <div className="mt-6 pt-5 border-t border-white/[0.05]">
-              <ViralityHistory />
-            </div>
-            <div className="mt-6 pt-5 border-t border-white/[0.05]">
-              <ReportCalendar />
-            </div>
-          </CollapsibleSection>
-        </section>
-        </AnimatedSection>
-        </SectionErrorBoundary>
 
         {/* Section 1: Business Performance */}
         <div id="business" className="scroll-mt-16 print-page-break" />
@@ -1697,124 +1300,8 @@ function Dashboard() {
         </AnimatedSection>
         </SectionErrorBoundary>
 
-        {/* Stream Velocity & Projections */}
-        <SectionErrorBoundary sectionName="Stream Projections">
-        <AnimatedSection>
-        <section className="glass-hybe rounded-2xl p-6">
-          <CollapsibleSection id="stream-projections" number="🚀" title="Stream Velocity & Projections" subtitle="Run rates → milestones" color="bg-gradient-to-br from-emerald-500 to-cyan-500">
-            <StreamProjections
-              tracks={liveTrackStreams.map(t => ({
-                name: t.name,
-                currentStreams: t.spotifyStreams.current,
-                priorStreams: t.spotifyStreams.prior,
-                periodDays: 5,
-              }))}
-              dailyStreams={dailyStreams.map(d => ({ name: d.name, streams: d.streams }))}
-            />
-          </CollapsibleSection>
-        </section>
-        </AnimatedSection>
-        </SectionErrorBoundary>
 
-        {/* Daily Streams (SFA) */}
-        <div id="daily" className="scroll-mt-16" />
-        <SectionErrorBoundary sectionName="Daily Snapshot">
-        <AnimatedSection>
-        <section className="glass-hybe rounded-2xl p-6">
-          <CollapsibleSection id="daily-snapshot" number="⚡" title="Spotify for Artists — Daily Snapshot" subtitle={`${reportDate} (24h)`} color="bg-gradient-to-br from-spotify to-emerald-400" collapsedSummary={dailyStreams.length > 0 ? `${dailyStreams.map(t => `${t.name} ${fmt(t.streams)}`).join(' · ')} daily streams` : undefined}>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {dailyStreams.map(t => (
-              <div key={t.name} className="bg-white/[0.02] rounded-xl p-4 border border-white/[0.04]">
-                <p className="font-bold text-white text-sm mb-3">
-                  {getTrackSpotifyUrl(t.name) ? (
-                    <a href={getTrackSpotifyUrl(t.name)!} target="_blank" rel="noopener noreferrer" className="hover:text-spotify transition-colors inline-flex items-center gap-1.5">
-                      {t.name}
-                      <span className="text-spotify opacity-60 text-[10px]">🟢</span>
-                    </a>
-                  ) : t.name}
-                </p>
-                <div className="grid grid-cols-3 gap-2">
-                  <div>
-                    <p className="text-[9px] text-neutral-500 uppercase">Streams</p>
-                    <p className="text-lg font-extrabold text-spotify">{fmt(t.streams)}</p>
-                  </div>
-                  <div>
-                    <p className="text-[9px] text-neutral-500 uppercase">Listeners</p>
-                    <p className="text-lg font-extrabold text-white">{fmt(t.listeners)}</p>
-                  </div>
-                  <div>
-                    <p className="text-[9px] text-neutral-500 uppercase"><MetricTooltip term="Saves">Saves</MetricTooltip></p>
-                    <p className="text-lg font-extrabold text-violet-400">{fmt(t.saves)}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <EngagementDepth tracks={dailyStreams} />
-          <DailyRevenue tracks={dailyStreams.map(d => ({ name: d.name, streams: d.streams }))} />
-          <DailyComparisonChart tracks={dailyStreams} />
-          </CollapsibleSection>
-        </section>
-        </AnimatedSection>
-        </SectionErrorBoundary>
 
-        {/* Charts */}
-        <div id="charts" className="scroll-mt-16 print-page-break" />
-        <SectionErrorBoundary sectionName="Streaming Charts">
-        <AnimatedSection>
-        <section className="space-y-4">
-          <StreamingCharts
-            spotifyTracks={bp.tracks.map(t => ({ name: t.name, streams: t.spotifyStreams.current }))}
-            youtubeVideos={liveYTVideos.map(v => ({ name: v.name.split(":")[0].replace("YouTube Views", "").trim() || v.name, views: v.views.current }))}
-            dailyStreams={dailyStreams.map(d => ({ name: d.name, streams: d.streams }))}
-          />
-          <section className="glass-hybe rounded-2xl p-6">
-            <SpotifyEmbed />
-          </section>
-          <ContentEfficiency
-            tracks={liveTrackStreams.map(t => ({ name: t.name, streams: t.spotifyStreams.current }))}
-            reportDate={reportDate}
-          />
-          <PlatformDistribution
-            spotifyStreams={liveTrackStreams.reduce((s, t) => s + t.spotifyStreams.current, 0)}
-            youtubeViews={liveYTVideos.reduce((s, v) => s + v.views.current, 0)}
-            tiktokAudioViews={audioVirality.totalAudioViews.current}
-          />
-          <section className="glass-hybe rounded-2xl p-6">
-            <CollapsibleSection id="revenue-estimate" number="💰" title="Estimated Revenue" subtitle="Industry avg rates" color="bg-gradient-to-br from-emerald-500 to-teal-500">
-              <p className="text-[10px] text-neutral-500 mb-4">Revenue projections based on cumulative streams across all platforms using industry-average per-stream payout rates.</p>
-              <RevenueEstimate
-                spotifyStreams={liveTrackStreams.reduce((s, t) => s + t.spotifyStreams.current, 0)}
-                youtubeViews={liveYTVideos.reduce((s, v) => s + v.views.current, 0)}
-                tiktokAudioViews={audioVirality.totalAudioViews.current}
-                spotifyStreamsPrior={liveTrackStreams.reduce((s, t) => s + (t.spotifyStreams.prior ?? 0), 0) || null}
-                youtubeViewsPrior={liveYTVideos.reduce((s, v) => s + (v.views.prior ?? 0), 0) || null}
-                tiktokAudioViewsPrior={audioVirality.totalAudioViews.prior}
-                tracks={[
-                  { name: "0%", spotifyStreams: liveTrackStreams[0]?.spotifyStreams.current ?? 0, dailyStreams: dailyStreams[0]?.streams ?? 0, color: "#22c55e" },
-                  { name: "0% (PT)", spotifyStreams: liveTrackStreams[1]?.spotifyStreams.current ?? 0, dailyStreams: dailyStreams[2]?.streams ?? 0, color: "#a78bfa" },
-                  { name: "KAWASAKI", spotifyStreams: liveTrackStreams[2]?.spotifyStreams.current ?? 0, dailyStreams: dailyStreams[1]?.streams ?? 0, color: "#ec4899" },
-                ]}
-                daysBetween={(() => { try { const d1 = new Date(reportDate); const d2 = new Date(priorDate); return Math.max(1, Math.round((d1.getTime() - d2.getTime()) / 86400000)); } catch { return undefined; } })()}
-              />
-            </CollapsibleSection>
-          </section>
-          <section className="glass-hybe rounded-2xl p-6">
-            <CollapsibleSection id="release-pacing" number="🏁" title="Release Pacing Comparison" subtitle="Streams from Day 0" color="bg-gradient-to-br from-amber-500 to-pink-500">
-              <p className="text-[10px] text-neutral-500 mb-4">How fast each track accumulated Spotify streams since its release date. Steeper curves = faster growth.</p>
-              <ReleasePacing
-                tracks={[
-                  { name: "0%", releaseDate: getTrackReleaseDate("0%") || "2026-01-31", currentStreams: liveTrackStreams[0]?.spotifyStreams.current ?? 0, dailyRate: dailyStreams[0]?.streams ?? 0 },
-                  { name: "0% (Portuguese Version)", releaseDate: getTrackReleaseDate("0% (Portuguese Version)") || "2026-02-03", currentStreams: liveTrackStreams[1]?.spotifyStreams.current ?? 0, dailyRate: dailyStreams[2]?.streams ?? 0 },
-                  { name: "KAWASAKI", releaseDate: getTrackReleaseDate("KAWASAKI") || "2026-02-07", currentStreams: liveTrackStreams[2]?.spotifyStreams.current ?? 0, dailyRate: dailyStreams[1]?.streams ?? 0 },
-                ]}
-                reportDate={reportDate}
-              />
-            </CollapsibleSection>
-          </section>
-        </section>
-        </AnimatedSection>
-        </SectionErrorBoundary>
 
         {/* Section 2: Social Media */}
         <div id="social" className="scroll-mt-16 print-page-break" />
@@ -1966,38 +1453,6 @@ function Dashboard() {
         </AnimatedSection>
         </SectionErrorBoundary>
 
-        {/* Track Performance Radar */}
-        <div id="track-radar" className="scroll-mt-16" />
-        <SectionErrorBoundary sectionName="Track Comparison">
-        <AnimatedSection>
-        <section className="glass-hybe rounded-2xl p-6">
-          <CollapsibleSection id="track-comparison" number="🎯" title="Track Performance Comparison" subtitle="Cross-Dimensional Radar" color="bg-gradient-to-br from-emerald-500 to-cyan-500">
-          <p className="text-[10px] text-neutral-500 mb-4">Each dimension normalized to 100% of the top performer — showing relative strengths across streams, virality, and engagement.</p>
-          <TrackRadar tracks={[
-            { name: "0%", spotifyStreams: liveTrackStreams[0].spotifyStreams.current, dailyStreams: dailyStreams[0]?.streams ?? 0, tiktokCreates: audioVirality.tracks[0]?.tiktokCreates ?? 0, igCreates: audioVirality.tracks[0]?.igCreates ?? 0, saves: dailyStreams[0]?.saves ?? 0 },
-            { name: "0% (PT)", spotifyStreams: liveTrackStreams[1].spotifyStreams.current, dailyStreams: dailyStreams[2]?.streams ?? 0, tiktokCreates: audioVirality.tracks[1]?.tiktokCreates ?? 0, igCreates: audioVirality.tracks[1]?.igCreates ?? 0, saves: dailyStreams[2]?.saves ?? 0 },
-            { name: "KAWASAKI", spotifyStreams: liveTrackStreams[2].spotifyStreams.current, dailyStreams: dailyStreams[1]?.streams ?? 0, tiktokCreates: audioVirality.tracks[2]?.tiktokCreates ?? 0, igCreates: audioVirality.tracks[2]?.igCreates ?? 0, saves: dailyStreams[1]?.saves ?? 0 },
-          ]} />
-          <div className="mt-5">
-            <TrackMomentum tracks={[
-              { name: "0%", spotifyStreams: liveTrackStreams[0].spotifyStreams.current, priorStreams: liveTrackStreams[0].spotifyStreams.prior, dailyStreams: dailyStreams[0]?.streams ?? 0, tiktokCreates: audioVirality.tracks[0]?.tiktokCreates ?? 0, igCreates: audioVirality.tracks[0]?.igCreates ?? 0, saves: dailyStreams[0]?.saves ?? 0, listeners: dailyStreams[0]?.listeners ?? 0, releaseDate: "2026-01-31" },
-              { name: "0% (PT)", spotifyStreams: liveTrackStreams[1].spotifyStreams.current, priorStreams: liveTrackStreams[1].spotifyStreams.prior, dailyStreams: dailyStreams[2]?.streams ?? 0, tiktokCreates: audioVirality.tracks[1]?.tiktokCreates ?? 0, igCreates: audioVirality.tracks[1]?.igCreates ?? 0, saves: dailyStreams[2]?.saves ?? 0, listeners: dailyStreams[2]?.listeners ?? 0, releaseDate: "2026-02-03" },
-              { name: "KAWASAKI", spotifyStreams: liveTrackStreams[2].spotifyStreams.current, priorStreams: liveTrackStreams[2].spotifyStreams.prior, dailyStreams: dailyStreams[1]?.streams ?? 0, tiktokCreates: audioVirality.tracks[2]?.tiktokCreates ?? 0, igCreates: audioVirality.tracks[2]?.igCreates ?? 0, saves: dailyStreams[1]?.saves ?? 0, listeners: dailyStreams[1]?.listeners ?? 0, releaseDate: "2026-02-07" },
-            ]} />
-          </div>
-          <ContentHeatmap tracks={[
-            { name: "0%", metrics: { totalStreams: liveTrackStreams[0].spotifyStreams.current, dailyStreams: dailyStreams[0]?.streams ?? 0, dailySaves: dailyStreams[0]?.saves ?? 0, tiktokCreates: audioVirality.tracks[0]?.tiktokCreates ?? 0, igCreates: audioVirality.tracks[0]?.igCreates ?? 0, ytViews: businessPerformance.youtubeVideos[1]?.views.current ?? 0 } },
-            { name: "0% (PT)", metrics: { totalStreams: liveTrackStreams[1].spotifyStreams.current, dailyStreams: dailyStreams[2]?.streams ?? 0, dailySaves: dailyStreams[2]?.saves ?? 0, tiktokCreates: audioVirality.tracks[1]?.tiktokCreates ?? 0, igCreates: audioVirality.tracks[1]?.igCreates ?? 0, ytViews: businessPerformance.youtubeVideos[2]?.views.current ?? 0 } },
-            { name: "KAWASAKI", metrics: { totalStreams: liveTrackStreams[2].spotifyStreams.current, dailyStreams: dailyStreams[1]?.streams ?? 0, dailySaves: dailyStreams[1]?.saves ?? 0, tiktokCreates: audioVirality.tracks[2]?.tiktokCreates ?? 0, igCreates: audioVirality.tracks[2]?.igCreates ?? 0, ytViews: businessPerformance.youtubeVideos[0]?.views.current ?? 0 } },
-          ]} />
-          </CollapsibleSection>
-        </section>
-        </AnimatedSection>
-        </SectionErrorBoundary>
-
-        {/* ── Divider: Streaming → Artist & Community ── */}
-        <SectionDivider label="Artist & Community" variant="cyan" subtitle="Members · Geography · Audience" />
-
         {/* Section 4: Band Member Followers */}
         <div id="members" className="scroll-mt-16 print-page-break" />
         <SectionErrorBoundary sectionName="Band Members">
@@ -2136,59 +1591,6 @@ function Dashboard() {
         </AnimatedSection>
         </SectionErrorBoundary>
 
-        {/* Audience Deep Dive */}
-        <div id="audience" className="scroll-mt-16" />
-        <SectionErrorBoundary sectionName="Audience">
-        <AnimatedSection>
-        <section className="glass-hybe rounded-2xl p-6">
-          <CollapsibleSection id="audience-dive" number="📊" title="Audience Deep Dive" subtitle={`Spotify for Artists · ${audienceStats.period}`} color="bg-gradient-to-br from-amber-500 to-orange-400" collapsedSummary={`${fmt(audienceStats.listeners)} listeners · ${fmt(audienceStats.streams)} streams · ${audienceStats.streamsPerListener.toFixed(1)} SPL · ${fmt(audienceStats.saves)} saves`}>
-          <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-            {[
-              { label: "Listeners", value: audienceStats.listeners, prior: (audienceStats as any).priorListeners ?? null, accent: "" },
-              { label: "Streams", value: audienceStats.streams, prior: (audienceStats as any).priorStreams ?? null, accent: "" },
-              { label: "Streams / Listener", value: audienceStats.streamsPerListener, prior: (audienceStats as any).priorStreamsPerListener ?? null, accent: "text-amber-400", isSpl: true },
-              { label: "Saves", value: audienceStats.saves, prior: (audienceStats as any).priorSaves ?? null, accent: "text-violet-400" },
-              { label: "Playlist Adds", value: audienceStats.playlistAdds, prior: (audienceStats as any).priorPlaylistAdds ?? null, accent: "text-cyan-400" },
-              { label: "Followers", value: audienceStats.followers, prior: (audienceStats as any).priorFollowers ?? null, accent: "text-spotify" },
-            ].map(s => (
-              <div key={s.label} className="bg-white/[0.02] rounded-xl p-3 border border-white/[0.04] text-center">
-                <p className="text-[9px] text-neutral-500 uppercase tracking-wider">{s.label}</p>
-                <p className={`text-lg font-extrabold mt-1 ${s.accent || "text-white"}`}>
-                  {s.isSpl ? (s.value as number).toFixed(2) : fmt(s.value as number)}
-                </p>
-                {s.prior != null && s.prior > 0 && (
-                  <DodBadge current={s.isSpl ? s.value * 1000 : s.value} prior={s.isSpl ? s.prior * 1000 : s.prior} />
-                )}
-              </div>
-            ))}
-          </div>
-          <AudienceFunnel
-            listeners={audienceStats.listeners}
-            streams={audienceStats.streams}
-            saves={audienceStats.saves}
-            playlistAdds={audienceStats.playlistAdds}
-            followers={audienceStats.followers}
-            priorListeners={(audienceStats as any).priorListeners ?? null}
-            priorStreams={(audienceStats as any).priorStreams ?? null}
-            priorSaves={(audienceStats as any).priorSaves ?? null}
-            priorPlaylistAdds={(audienceStats as any).priorPlaylistAdds ?? null}
-            priorFollowers={(audienceStats as any).priorFollowers ?? null}
-          />
-          <AudienceHealth
-            listeners={audienceStats.listeners}
-            streams={audienceStats.streams}
-            saves={audienceStats.saves}
-            playlistAdds={audienceStats.playlistAdds}
-            followers={audienceStats.followers}
-            streamsPerListener={audienceStats.streamsPerListener}
-          />
-          </CollapsibleSection>
-        </section>
-        </AnimatedSection>
-        </SectionErrorBoundary>
-
-        {/* ── Divider: Community → Media Intelligence ── */}
-        <SectionDivider label="Media Intelligence" variant="emerald" subtitle="PR · Sentiment · Cultural Affinity" />
 
         {/* Section 6: PR & Media */}
         <div id="pr" className="scroll-mt-16 print-page-break" />
@@ -2663,16 +2065,6 @@ function Dashboard() {
         </AnimatedSection>
         </SectionErrorBoundary>
 
-        {/* Section 8: Cultural Affinity */}
-        <SectionErrorBoundary sectionName="Cultural Affinity">
-        <AnimatedSection>
-        <section id="section-cultural" className="scroll-mt-16">
-          <CollapsibleSection id="cultural-affinity" number="8" title="Cultural Affinity" subtitle={`Meltwater · Cultural context & audience themes · ${mwRange}d`} color="bg-gradient-to-br from-fuchsia-500 to-purple-400" collapsedSummary="Cultural themes, hashtags & sentiment from dedicated affinity search">
-            <CulturalAffinity days={mwRange} />
-          </CollapsibleSection>
-        </section>
-        </AnimatedSection>
-        </SectionErrorBoundary>
 
         {/* Footer */}
         <footer className="relative py-12 border-t border-white/[0.04] overflow-hidden">
