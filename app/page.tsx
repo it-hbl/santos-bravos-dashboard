@@ -37,6 +37,7 @@ import { ErrorBoundary, SectionErrorBoundary } from "./components/ErrorBoundary"
 import GlowCard from "./components/GlowCard";
 import DynamicFavicon from "./components/DynamicFavicon";
 import GrowthGlow from "./components/GrowthGlow";
+import MetricHistoryPopover from "./components/MetricHistoryPopover";
 import StaleDataBanner from "./components/StaleDataBanner";
 import MetricSpotlight from "./components/MetricSpotlight";
 import useSectionHash from "./components/useSectionHash";
@@ -215,11 +216,12 @@ function InlineSparkline({ points, positive }: { points: number[]; positive: boo
   );
 }
 
-function MetricRow({ label, current, prior, accent, tooltip, href }: { label: string; current: number; prior: number | null; accent?: string; tooltip?: string; href?: string }) {
+function MetricRow({ label, current, prior, accent, tooltip, href, dbColumn, trackName, videoName }: { label: string; current: number; prior: number | null; accent?: string; tooltip?: string; href?: string; dbColumn?: string; trackName?: string; videoName?: string }) {
   const d = dod(current, prior);
   const labelContent = tooltip ? <MetricTooltip term={tooltip}>{label}</MetricTooltip> : label;
   const trend = trendPoints(prior, current);
   const isPositive = prior !== null ? current >= prior : true;
+  const valueEl = <span className={`text-sm font-bold tabular-nums ${accent || "text-white"}`}>{fmt(current)}</span>;
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3 border-b border-white/[0.03] last:border-0 group hover:bg-white/[0.01] px-2 -mx-2 rounded gap-1 sm:gap-0">
       <span className="text-sm text-neutral-400 group-hover:text-neutral-300 transition-colors flex-1 truncate">
@@ -232,7 +234,11 @@ function MetricRow({ label, current, prior, accent, tooltip, href }: { label: st
       </span>
       <div className="flex items-center gap-3 sm:gap-4 pl-0 sm:pl-4">
         <InlineSparkline points={trend} positive={isPositive} />
-        <span className={`text-sm font-bold tabular-nums ${accent || "text-white"}`}>{fmt(current)}</span>
+        {dbColumn ? (
+          <MetricHistoryPopover dbColumn={dbColumn} trackName={trackName} videoName={videoName} label={label} current={current}>
+            {valueEl}
+          </MetricHistoryPopover>
+        ) : valueEl}
         {prior !== null && (
           <>
             <span className="text-[10px] text-neutral-600 tabular-nums hidden sm:inline w-16 text-right">{fmt(prior)}</span>
@@ -1568,16 +1574,16 @@ function Dashboard() {
             <span className="w-16 text-right">Change</span>
             <span className="w-16 text-right"><MetricTooltip term="DoD">DoD %</MetricTooltip></span>
           </div>
-          <MetricRow label={bp.spotifyMonthlyListeners.label} current={liveListeners} prior={bp.spotifyMonthlyListeners.prior} accent="text-spotify" />
-          <MetricRow label={bp.spotifyFollowers.label} current={liveFollowers} prior={bp.spotifyFollowers.prior} accent="text-spotify" />
-          <MetricRow label="Spotify Popularity Index" current={livePopularity} prior={bp.spotifyPopularity.prior} tooltip="Spotify Popularity Index" />
+          <MetricRow label={bp.spotifyMonthlyListeners.label} current={liveListeners} prior={bp.spotifyMonthlyListeners.prior} accent="text-spotify" dbColumn="spotify_listeners" />
+          <MetricRow label={bp.spotifyFollowers.label} current={liveFollowers} prior={bp.spotifyFollowers.prior} accent="text-spotify" dbColumn="spotify_followers" />
+          <MetricRow label="Spotify Popularity Index" current={livePopularity} prior={bp.spotifyPopularity.prior} tooltip="Spotify Popularity Index" dbColumn="spotify_popularity" />
           {liveTrackStreams.map(t => (
-            <MetricRow key={t.name} label={`Spotify Total Streams: ${t.name}`} current={t.spotifyStreams.current} prior={t.spotifyStreams.prior} accent="text-spotify" href={getTrackSpotifyUrl(t.name) ?? undefined} />
+            <MetricRow key={t.name} label={`Spotify Total Streams: ${t.name}`} current={t.spotifyStreams.current} prior={t.spotifyStreams.prior} accent="text-spotify" href={getTrackSpotifyUrl(t.name) ?? undefined} dbColumn="spotify_streams" trackName={t.name} />
           ))}
           <div className="my-3 border-t border-white/[0.05]" />
-          <MetricRow label={bp.totalCrossPlatformStreams.label} current={bp.totalCrossPlatformStreams.current} prior={bp.totalCrossPlatformStreams.prior} tooltip="Cross-Platform Streams" />
+          <MetricRow label={bp.totalCrossPlatformStreams.label} current={bp.totalCrossPlatformStreams.current} prior={bp.totalCrossPlatformStreams.prior} tooltip="Cross-Platform Streams" dbColumn="cross_platform_streams" />
           {liveYTVideos.map(v => (
-            <MetricRow key={v.name} label={`YouTube Views: ${v.name}`} current={v.views.current} prior={v.views.prior} accent="text-ytred" href={getVideoYoutubeUrl(v.name) ?? undefined} />
+            <MetricRow key={v.name} label={`YouTube Views: ${v.name}`} current={v.views.current} prior={v.views.prior} accent="text-ytred" href={getVideoYoutubeUrl(v.name) ?? undefined} dbColumn="views" videoName={v.name} />
           ))}
 
           {/* YouTube Engagement Breakdown */}
@@ -1684,7 +1690,7 @@ function Dashboard() {
           )}
 
           <div className="my-3 border-t border-white/[0.05]" />
-          <MetricRow label={bp.spl.label} current={bp.spl.current} prior={bp.spl.prior ?? null} accent="text-amber-400" />
+          <MetricRow label={bp.spl.label} current={bp.spl.current} prior={bp.spl.prior ?? null} accent="text-amber-400" dbColumn="spl" />
           </CollapsibleSection>
         </section>
         </GrowthGlow>
