@@ -241,34 +241,45 @@ function SectionHeader({ number, title, subtitle, color }: { number: string; tit
 
 /** Compact live-updating "Xd Yh ago" badge showing data age */
 function DataAge({ reportDate }: { reportDate: string }) {
-  const [age, setAge] = useState("");
+  const [label, setLabel] = useState("");
+  const [isUpToDate, setIsUpToDate] = useState(true);
   useEffect(() => {
     function compute() {
       try {
         const d = new Date(reportDate);
         if (isNaN(d.getTime())) return;
-        const diffMs = Date.now() - d.getTime();
-        if (diffMs < 0) return;
-        const hours = Math.floor(diffMs / 3600000);
-        const days = Math.floor(hours / 24);
-        const remainH = hours % 24;
-        if (days > 0) setAge(`${days}d ${remainH}h ago`);
-        else if (hours > 0) setAge(`${hours}h ago`);
-        else setAge("just now");
+        const now = new Date();
+        const todayStr = now.toISOString().slice(0, 10);
+        const yesterdayStr = new Date(now.getTime() - 86400000).toISOString().slice(0, 10);
+        const reportStr = d.toISOString().slice(0, 10);
+        
+        // Report covers yesterday's data, generated today
+        // So if report date = yesterday or today, it's up to date
+        if (reportStr === todayStr || reportStr === yesterdayStr) {
+          setLabel("Last run: Today");
+          setIsUpToDate(true);
+        } else {
+          // Calculate days ago
+          const diffDays = Math.floor((now.getTime() - d.getTime()) / 86400000);
+          if (diffDays <= 2) {
+            setLabel("Last run: Yesterday");
+            setIsUpToDate(false);
+          } else {
+            const monthDay = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+            setLabel(`Last run: ${monthDay}`);
+            setIsUpToDate(false);
+          }
+        }
       } catch {}
     }
     compute();
     const iv = setInterval(compute, 60000);
     return () => clearInterval(iv);
   }, [reportDate]);
-  if (!age) return null;
-  const diffMs = (() => { try { return Date.now() - new Date(reportDate).getTime(); } catch { return 0; } })();
-  const isStale = diffMs > 86400000 * 2; // > 2 days
-  const isAging = diffMs > 86400000; // > 1 day
-  const color = isStale ? "text-red-400 bg-red-500/10" : isAging ? "text-amber-400 bg-amber-500/10" : "text-neutral-500 bg-white/[0.03]";
+  if (!label) return null;
   return (
-    <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full ${color}`}>
-      {age}
+    <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full ${isUpToDate ? "text-neutral-500 bg-white/[0.03]" : "text-amber-400 bg-amber-500/10"}`}>
+      {label}
     </span>
   );
 }
@@ -825,22 +836,31 @@ function Dashboard() {
             </div>
             <div className="text-right">
               <div className="flex items-center gap-1.5 justify-end">
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse-slow" />
-                <span className="text-[10px] text-emerald-400 font-semibold">DATA CURRENT</span>
-                <DataAge reportDate={reportDate} />
-              </div>
-              <p className="text-[9px] text-neutral-600 mt-0.5">
                 {(() => {
                   try {
                     const d = new Date(reportDate);
-                    if (!isNaN(d.getTime())) {
-                      const dayName = d.toLocaleDateString("en-US", { weekday: "long" });
-                      return `${dayName} report · Supabase-backed`;
-                    }
-                  } catch {}
-                  return "Auto-updated via API pipeline";
+                    const now = new Date();
+                    const reportStr = d.toISOString().slice(0, 10);
+                    const yesterdayStr = new Date(now.getTime() - 86400000).toISOString().slice(0, 10);
+                    const todayStr = now.toISOString().slice(0, 10);
+                    const upToDate = reportStr === todayStr || reportStr === yesterdayStr;
+                    return upToDate ? (
+                      <>
+                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                        <span className="text-[10px] text-emerald-400 font-semibold">Report up to date</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-[10px]">⚠️</span>
+                        <span className="text-[10px] text-amber-400 font-semibold">Report may be outdated</span>
+                      </>
+                    );
+                  } catch {
+                    return <span className="text-[10px] text-neutral-500 font-semibold">Report</span>;
+                  }
                 })()}
-              </p>
+                <DataAge reportDate={reportDate} />
+              </div>
               <DebutTimer />
             </div>
           </div>
